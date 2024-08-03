@@ -4,5 +4,5 @@ using UnityEngine;
 
 public class Node : MonoBehaviour
 {
-	[SerializeField] private List<Node> nextNodes;
+	public List<Node> nextNodes;
 }
