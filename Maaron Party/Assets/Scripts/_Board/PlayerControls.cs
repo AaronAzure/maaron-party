@@ -15,6 +15,7 @@ public class PlayerControls : MonoBehaviour
 	
 	[Space] [Header("Model")]
 	[SerializeField] private Transform model;
+	[SerializeField] private GameObject[] models;
 	[SerializeField] private Transform vCam;
 	[SerializeField] private Direction up;
 	[SerializeField] private Direction down;
@@ -32,26 +33,42 @@ public class PlayerControls : MonoBehaviour
 
 	[Space] [Header("UI")]
 	[SerializeField] private GameObject canvas;
+	private BoardManager bm;
 
 
 	[Space] [Header("States")]
 	[SerializeField] private bool isAtFork;
 
+
+	[Space] [Header("HACKS")]
+	[SerializeField] private int controlledRoll=-1;
 	
 	private void OnEnable() 
 	{
-		if (nextNode == null)
-			this.enabled = false;
+		//if (nextNode == null)
+		//	this.enabled = false;
 		startPos = this.transform.position;
+		HidePaths();
 	}
 
 	private void Start() 
 	{
-		//UpdateMovesLeft( Random.Range(1, 11) );
-		if (canvas != null)
-			canvas.SetActive(true);
 		if (vCam != null)
 			vCam.parent = null;
+		bm = BoardManager.Instance;
+	}
+
+	public void SetModel(int ind)
+	{
+		for (int i=0 ; i<models.Length ; i++)
+			models[i].SetActive(false);
+		if (models != null && ind >= 0 && ind < models.Length)
+			models[ind].SetActive(true);
+	}
+
+	public void SetStartNode(Node startNode)
+	{
+		nextNode = startNode;
 	}
 
 	// Update is called once per frame
@@ -73,34 +90,79 @@ public class PlayerControls : MonoBehaviour
 			}
 			else
 			{
-				startPos = transform.position;
-				// more than one path
-				if (nextNode.nextNodes.Count > 1)
+				time = 0;
+				UpdateMovesLeft(movesLeft-1);
+				if (movesLeft <= 0)
 				{
-					isAtFork = true;
-					HidePaths();
-					for (int i=0 ; i<nextNode.nextNodes.Count ; i++)
-						RevealPaths(nextNode.nextNodes[i].transform.position, i);
+					currNode = nextNode; 
+					movesLeftTxt.text = "";
+					EndTurn();
+					bm.NextPlayerTurn();
+					if (nextNode.nextNodes.Count == 1)
+						nextNode = nextNode.nextNodes[0];
+					else
+						nextNode = null;
 				}
-				// single path
 				else
 				{
-					nextNode = nextNode.nextNodes[0];
+					startPos = transform.position;
+					// more than one path
+					if (nextNode.nextNodes.Count > 1)
+					{
+						isAtFork = true;
+						HidePaths();
+						for (int i=0 ; i<nextNode.nextNodes.Count ; i++)
+							RevealPaths(nextNode.nextNodes[i].transform.position, i);
+					}
+					// single path
+					else
+					{
+						nextNode = nextNode.nextNodes[0];
+					}
 				}
-				UpdateMovesLeft(movesLeft-1);
-				
-				time = 0;
-				if (movesLeft <= 0)
-					if (canvas != null)
-						canvas.SetActive(true);
 			}
 		}
 	}
 
 
+	public void YourTurn()
+	{
+		vCam.gameObject.SetActive(true);
+		if (canvas != null)
+			canvas.SetActive(true);
+		this.enabled = true;
+	}
+	public void EndTurn()
+	{
+		vCam.gameObject.SetActive(false);
+		if (canvas != null)
+			canvas.SetActive(false);
+		this.enabled = false;
+	}
+
 	public void ROLL_DICE()
 	{
-		UpdateMovesLeft( Random.Range(1, 11) );
+		if (currNode != null)
+		{
+			if (currNode.nextNodes.Count > 1)
+			{
+				isAtFork = true;
+				HidePaths();
+				for (int i=0 ; i<currNode.nextNodes.Count ; i++)
+					RevealPaths(currNode.nextNodes[i].transform.position, i);
+				nextNode = currNode;
+			}
+			else
+			{
+				isAtFork = false;
+				nextNode = currNode.nextNodes[0];
+			}
+		}
+
+		int rng = controlledRoll != -1 ? controlledRoll : Random.Range(1, 11);
+		Debug.Log($"<color=magenta>ROLLED {rng}</color>");
+		UpdateMovesLeft( rng );
+
 		if (canvas != null)
 			canvas.SetActive(false);
 	}
@@ -176,24 +238,6 @@ public class PlayerControls : MonoBehaviour
 	{
 		movesLeft = x;
 		movesLeftTxt.text = $"{movesLeft}";
-		
-		//Debug.Log($"<color=magenta> moving {(goingUp ? "UP" : "")}{(goingDown ? "DOWN" : "")} {(goingRight ? "RIGHT" : "")}{(goingLeft ? "LEFT" : "")}</color>");
-		//// up
-		//if ((toPos.x > -0.333f && toPos.x < 0.333f) && toPos.z > 0.667f) {Debug.Log("<color=magenta> moving UP</color>");}
-		//// down
-		//else if ((toPos.x > -0.333f && toPos.x < 0.333f) && toPos.z < -0.667f) {Debug.Log("<color=magenta> moving DOWN</color>");}
-		//// left
-		//else if (toPos.x < -0.667f && (toPos.z > -0.333f && toPos.z < 0.333f)) {Debug.Log("<color=magenta> moving LEFT</color>");}
-		//// right
-		//else if (toPos.x > 0.667f && (toPos.z > -0.333f && toPos.z < 0.333f)) {Debug.Log("<color=magenta> moving RIGHT</color>");}
-		//// up left
-		//else if (toPos.x < -0.667f && toPos.z > 0.667f) {Debug.Log("<color=magenta> moving UP LEFT</color>");}
-		//// up right
-		//else if (toPos.x > 0.667f && toPos.z > 0.667f) {Debug.Log("<color=magenta> moving UP RIGHT</color>");}
-		//// down left
-		//else if (toPos.x < -0.667f && toPos.z < -0.667f) {Debug.Log("<color=magenta> moving DOWN LEFT</color>");}
-		//// down right
-		//else if (toPos.x > 0.667f && toPos.z < -0.667f) {Debug.Log("<color=magenta> moving DOWN RIGHT</color>");}
 	}
 
 	IEnumerator MoveCo()
