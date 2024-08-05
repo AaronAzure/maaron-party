@@ -33,9 +33,18 @@ public class PlayerControls : MonoBehaviour
 	[Space] [SerializeField] private int movesLeft;
 	[SerializeField] private TextMeshPro movesLeftTxt;
 
+	
+	
+	[Space] [Header("Stats")]
+	[SerializeField] private int coins=10;
+	[SerializeField] private int stars;
+
 
 	[Space] [Header("UI")]
 	[SerializeField] private GameObject canvas;
+	[SerializeField] private Transform dataUi;
+	[SerializeField] private TextMeshProUGUI coinTxt;
+	[SerializeField] private TextMeshProUGUI starTxt;
 	private BoardManager bm;
 	private GameManager gm;
 
@@ -65,6 +74,11 @@ public class PlayerControls : MonoBehaviour
 		{
 			currNode = NodeManager.Instance.GetNode( gm.GetCurrNode(playerId) );
 			startPos = transform.position = currNode.transform.position;
+		}
+		if (bm != null)
+		{
+			dataUi.parent = bm.GetUiLayout();
+			dataUi.localScale = Vector3.one;
 		}
 	}
 

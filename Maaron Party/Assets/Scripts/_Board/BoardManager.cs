@@ -12,12 +12,22 @@ public class BoardManager : MonoBehaviour
 	GameManager gm;
 
 
+	[Space] [Header("Universal")]
+	[SerializeField] private Transform dataUi;
+
+
 	[Space] [Header("MUST REFERENCE PER BOARD")]
 	[SerializeField] private Node startNode;
+
 
 	private void Awake() 
 	{
 		Instance = this;		
+	}
+
+	public Transform GetUiLayout()
+	{
+		return dataUi;
 	}
 
 	private void Start() 
