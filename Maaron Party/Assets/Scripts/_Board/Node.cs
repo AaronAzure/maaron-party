@@ -6,6 +6,7 @@ public class Node : MonoBehaviour
 {
 	public List<Node> nextNodes;
 	private Vector3 offset = new Vector3(0,0.25f);
+	public ushort nodeId;
 
 	private void OnDrawGizmosSelected() 
 	{

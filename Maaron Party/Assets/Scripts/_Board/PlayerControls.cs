@@ -1,10 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Rewired;
 using UnityEngine;
 
 public class PlayerControls : MonoBehaviour
 {
+	private Player player;
+	private int playerId;
 	[SerializeField] private Node currNode;
 	[SerializeField] private Node nextNode;
 	[SerializeField] private float moveSpeed=2.5f;
@@ -34,6 +37,7 @@ public class PlayerControls : MonoBehaviour
 	[Space] [Header("UI")]
 	[SerializeField] private GameObject canvas;
 	private BoardManager bm;
+	private GameManager gm;
 
 
 	[Space] [Header("States")]
@@ -56,6 +60,17 @@ public class PlayerControls : MonoBehaviour
 		if (vCam != null)
 			vCam.parent = null;
 		bm = BoardManager.Instance;
+		gm = GameManager.Instance;
+		if (gm.hasStarted)
+		{
+			currNode = NodeManager.Instance.GetNode( gm.GetCurrNode(playerId) );
+			startPos = transform.position = currNode.transform.position;
+		}
+	}
+
+	public void SetId(int id)
+	{
+		playerId = id;
 	}
 
 	public void SetModel(int ind)
@@ -138,6 +153,7 @@ public class PlayerControls : MonoBehaviour
 		if (canvas != null)
 			canvas.SetActive(false);
 		this.enabled = false;
+		gm.SaveCurrNode(currNode.nodeId, playerId);
 	}
 
 	public void ROLL_DICE()

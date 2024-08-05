@@ -22,17 +22,21 @@ public class BoardManager : MonoBehaviour
 
 	private void Start() 
 	{
+		gm = GameManager.Instance;
 		for (int i=0 ; i<players.Length ; i++)
 		{
 			if (players[i] != null && players[i].gameObject.activeInHierarchy)
 			{
 				players[i].SetModel(i);
-				players[i].SetStartNode(startNode);
-				GameManager.Instance.IncreaseNumPlayers();
+				players[i].SetId(i);
+				if (!gm.hasStarted)
+				{
+					players[i].SetStartNode(startNode);
+					gm.IncreaseNumPlayers();
+				}
 			}
 		}
 		nPlayers = players.Length;
-		gm = GameManager.Instance;
 		NextPlayerTurn(true);
 	}
 

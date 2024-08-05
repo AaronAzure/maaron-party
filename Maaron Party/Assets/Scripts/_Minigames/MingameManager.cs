@@ -1,15 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class MingameManager : MonoBehaviour
 {
 	public static MingameManager Instance;
-	[SerializeField] private bool playersCanMove=true;
-	[SerializeField] private bool playersCanJump;
+	private GameManager gm;
 	[SerializeField] private MinigameControls player;
 	[SerializeField] private Transform spawnPos;
+	[SerializeField] private TextMeshProUGUI timerTxt;
 	private int nPlayers;
+
+	
+	[Space] [Header("Specific Rules")]
+	[SerializeField] private int timer=30;
+	[SerializeField] private bool playersCanMove=true;
+	[SerializeField] private bool playersCanJump;
+
 
 	private void Awake() 
 	{
@@ -18,7 +26,8 @@ public class MingameManager : MonoBehaviour
 
 	private void Start() 
 	{
-		nPlayers = GameManager.Instance.nPlayers;
+		gm = GameManager.Instance;
+		nPlayers = gm.nPlayers;
 		for (int i=0 ; i<nPlayers ; i++)
 		{
 			/* Distance around the circle */  
@@ -42,5 +51,26 @@ public class MingameManager : MonoBehaviour
 			obj.canMove = playersCanMove;
 			obj.canJump = playersCanJump;
 		}
+
+		timerTxt.text = $"{timer}";
+		StartCoroutine( CountdownCo() );
+	}
+
+	IEnumerator CountdownCo()
+	{
+		yield return new WaitForSeconds(1);
+		timerTxt.text = $"{--timer}";
+
+		if (timer > 0)
+			StartCoroutine( CountdownCo() );
+		// game over
+		else
+			MinigameOver();
+	} 
+
+	private void MinigameOver()
+	{
+
+		gm.ReturnToBoard("");
 	}
 }
