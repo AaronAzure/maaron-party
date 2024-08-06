@@ -533,6 +533,15 @@ MonoBehaviour:
       _behaviorId: 0
       _userAssignable: 1
       _categoryId: 0
+    - _id: 4
+      _name: Start
+      _type: 1
+      _descriptiveName: Start
+      _positiveDescriptiveName: 
+      _negativeDescriptiveName: 
+      _behaviorId: 0
+      _userAssignable: 1
+      _categoryId: 0
     - _id: 1
       _name: Decline
       _type: 1
@@ -569,7 +578,7 @@ MonoBehaviour:
     actionCategoryMap:
       list:
       - categoryId: 0
-        actionIds: 00000000010000000200000003000000
+        actionIds: 0400000000000000010000000200000003000000
     inputBehaviors:
     - _id: 0
       _name: Default
@@ -577,8 +586,8 @@ MonoBehaviour:
       _digitalAxisSimulation: 1
       _digitalAxisSnap: 1
       _digitalAxisInstantReverse: 0
-      _digitalAxisGravity: 3
-      _digitalAxisSensitivity: 3
+      _digitalAxisGravity: 10
+      _digitalAxisSensitivity: 10
       _mouseXYAxisMode: 0
       _mouseOtherAxisMode: 0
       _mouseXYAxisSensitivity: 1
@@ -743,7 +752,7 @@ MonoBehaviour:
     controllerMapLayoutManagerRuleSets: []
     controllerMapEnablerRuleSets: []
     playerIdCounter: 5
-    actionIdCounter: 4
+    actionIdCounter: 5
     actionCategoryIdCounter: 1
     inputBehaviorIdCounter: 1
     mapCategoryIdCounter: 1

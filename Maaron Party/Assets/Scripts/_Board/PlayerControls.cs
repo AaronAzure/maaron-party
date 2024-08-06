@@ -286,7 +286,7 @@ public class PlayerControls : MonoBehaviour
 	{
 		// no event
 		if (currNode.GetNodeEffect(this))
-			yield return new WaitForSeconds(1);
+			yield return new WaitForSeconds(0.5f);
 		else 
 			yield return new WaitForSeconds(0.5f);
 
