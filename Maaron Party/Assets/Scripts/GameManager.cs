@@ -11,6 +11,8 @@ public class GameManager : MonoBehaviour
 
 	[Space] [Header("In game references")]
 	[SerializeField] private List<ushort> currNodes;
+	[SerializeField] private List<int> coins;
+	[SerializeField] private List<int> stars;
 	public bool hasStarted {get; private set;}
 
 
@@ -26,6 +28,8 @@ public class GameManager : MonoBehaviour
 	private void Start() 
 	{
 		currNodes = new();
+		coins = new();
+		stars = new();
 	}
 
 	public void IncreaseNumPlayers()
@@ -37,6 +41,8 @@ public class GameManager : MonoBehaviour
 		nPlayers--;
 	}
 
+	//* --------------------
+	//* ------- save -------
 	public void SaveCurrNode(ushort nodeId, int playerId)
 	{
 		if (currNodes == null)
@@ -45,11 +51,38 @@ public class GameManager : MonoBehaviour
 			currNodes.Add(0);
 		currNodes[playerId] = nodeId;
 	}
-
 	public ushort GetCurrNode(int playerId)
 	{
 		return currNodes[playerId];
 	}
+
+	public void SaveCoins(int newCoin, int playerId)
+	{
+		if (coins == null)
+			coins = new();
+		while (coins.Count <= playerId)
+			coins.Add(0);
+		coins[playerId] = newCoin;
+	}
+	public int GetCoins(int playerId)
+	{
+		return coins[playerId];
+	}
+
+	public void SaveStars(int newStar, int playerId)
+	{
+		if (stars == null)
+			stars = new();
+		while (stars.Count <= playerId)
+			stars.Add(0);
+		stars[playerId] = newStar;
+	}
+	public int GetStars(int playerId)
+	{
+		return stars[playerId];
+	}
+	//* ------- save -------
+	//* --------------------
 
 
 	public void LoadPreviewMinigame(string minigameName)

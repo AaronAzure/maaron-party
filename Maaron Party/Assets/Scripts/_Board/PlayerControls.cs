@@ -20,7 +20,14 @@ public class PlayerControls : MonoBehaviour
 	[SerializeField] private Transform model;
 	[SerializeField] private GameObject[] models;
 	[SerializeField] private Transform vCam;
-	[SerializeField] private Direction up;
+
+	[Space] [SerializeField] private GameObject bonusObj;
+	[SerializeField] private TextMeshPro bonusTxt;
+	
+	[Space] [SerializeField] private GameObject penaltyObj;
+	[SerializeField] private TextMeshPro penaltyTxt;
+
+	[Space] [SerializeField] private Direction up;
 	[SerializeField] private Direction down;
 	[SerializeField] private Direction left;
 	[SerializeField] private Direction right;
@@ -37,7 +44,10 @@ public class PlayerControls : MonoBehaviour
 	
 	[Space] [Header("Stats")]
 	[SerializeField] private int coins=10;
+	private int coinsT;
 	[SerializeField] private int stars;
+	private int starsT;
+	[SerializeField] private float currencyT;
 
 
 	[Space] [Header("UI")]
@@ -51,10 +61,12 @@ public class PlayerControls : MonoBehaviour
 
 	[Space] [Header("States")]
 	[SerializeField] private bool isAtFork;
+	private bool isCurrencyAsync;
 
 
 	[Space] [Header("HACKS")]
 	[SerializeField] private int controlledRoll=-1;
+
 	
 	private void OnEnable() 
 	{
@@ -72,14 +84,20 @@ public class PlayerControls : MonoBehaviour
 		gm = GameManager.Instance;
 		if (gm.hasStarted)
 		{
-			currNode = NodeManager.Instance.GetNode( gm.GetCurrNode(playerId) );
-			startPos = transform.position = currNode.transform.position;
+			LoadData();
+		}
+		else
+		{
+			coinsT = coins;
+			starsT = stars;
 		}
 		if (bm != null)
 		{
 			dataUi.parent = bm.GetUiLayout();
 			dataUi.localScale = Vector3.one;
 		}
+		coinTxt.text = $"{coins}";
+		starTxt.text = $"{stars}";
 	}
 
 	public void SetId(int id)
@@ -103,6 +121,37 @@ public class PlayerControls : MonoBehaviour
 	// Update is called once per frame
 	void FixedUpdate()
 	{
+		if (coins != coinsT)
+		{
+			if (currencyT < 0.1f)
+			{
+				currencyT += Time.fixedDeltaTime;
+			} 
+			else
+			{
+				coinsT = coinsT < coins ? coinsT + 1 : coinsT - 1;
+				coinTxt.text = $"{coinsT}";
+				currencyT = 0;
+			}
+			if (coins == coinsT)
+				isCurrencyAsync = false;
+		}
+		else if (stars != starsT)
+		{
+			if (currencyT < 0.1f)
+			{
+				currencyT += Time.fixedDeltaTime;
+			} 
+			else
+			{
+				starsT = starsT < stars ? starsT + 1 : starsT - 1;
+				starTxt.text = $"{starsT}";
+				currencyT = 0;
+			}
+			if (stars == starsT)
+				isCurrencyAsync = false;
+		}
+
 		if (isAtFork) {}
 		else if (movesLeft > 0)
 		{
@@ -125,12 +174,11 @@ public class PlayerControls : MonoBehaviour
 				{
 					currNode = nextNode; 
 					movesLeftTxt.text = "";
-					EndTurn();
-					bm.NextPlayerTurn();
-					if (nextNode.nextNodes.Count == 1)
-						nextNode = nextNode.nextNodes[0];
-					else
-						nextNode = null;
+					StartCoroutine( NodeEffectCo() );
+					//if (nextNode.nextNodes.Count == 1)
+					//	nextNode = nextNode.nextNodes[0];
+					//else
+					//	nextNode = null;
 				}
 				else
 				{
@@ -167,7 +215,21 @@ public class PlayerControls : MonoBehaviour
 		if (canvas != null)
 			canvas.SetActive(false);
 		this.enabled = false;
+		SaveData();
+	}
+
+	private void SaveData()
+	{
 		gm.SaveCurrNode(currNode.nodeId, playerId);
+		gm.SaveCoins(coins, playerId);
+		gm.SaveStars(stars, playerId);
+	}
+	private void LoadData()
+	{
+		currNode = NodeManager.Instance.GetNode( gm.GetCurrNode(playerId) );
+		startPos = transform.position = currNode.transform.position;
+		coinsT = coins = gm.GetCoins(playerId);
+		starsT = stars = gm.GetStars(playerId);
 	}
 
 	public void ROLL_DICE()
@@ -195,6 +257,39 @@ public class PlayerControls : MonoBehaviour
 
 		if (canvas != null)
 			canvas.SetActive(false);
+	}
+
+	public void NodeEffect(int bonus)
+	{
+		coins = Mathf.Clamp(coins + bonus, 0, 999);
+		isCurrencyAsync = true;
+		if (bonus > 0)
+		{
+			bonusObj.SetActive(false);
+			bonusObj.SetActive(true);
+			bonusTxt.text = $"+{bonus}";
+		}
+		else if (bonus < 0)
+		{
+			penaltyObj.SetActive(false);
+			penaltyObj.SetActive(true);
+			penaltyTxt.text = $"{bonus}";
+		}
+	}
+
+	private IEnumerator NodeEffectCo()
+	{
+		// no event
+		if (currNode.GetNodeEffect(this))
+			yield return new WaitForSeconds(1);
+		else 
+			yield return new WaitForSeconds(0.5f);
+
+		while (isCurrencyAsync)
+			yield return new WaitForSeconds(0.1f);
+
+		EndTurn();
+		bm.NextPlayerTurn();
 	}
 
 	void HidePaths()

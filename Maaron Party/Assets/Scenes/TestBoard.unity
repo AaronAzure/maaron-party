@@ -410,6 +410,7 @@ MonoBehaviour:
   - {fileID: 1936129281}
   - {fileID: 1789614075}
   nodeId: 0
+  nodeSpace: 0
 --- !u!65 &286477830
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -861,6 +862,7 @@ MonoBehaviour:
   nextNodes:
   - {fileID: 1579293315}
   nodeId: 0
+  nodeSpace: 0
 --- !u!65 &363018439
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -982,6 +984,7 @@ MonoBehaviour:
   nextNodes:
   - {fileID: 1396887183}
   nodeId: 0
+  nodeSpace: 0
 --- !u!65 &386447133
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1763,6 +1766,7 @@ MonoBehaviour:
   nextNodes:
   - {fileID: 386447132}
   nodeId: 0
+  nodeSpace: 0
 --- !u!65 &476096658
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2049,6 +2053,7 @@ MonoBehaviour:
   nextNodes:
   - {fileID: 1233478654}
   nodeId: 0
+  nodeSpace: 1
 --- !u!65 &501606877
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2090,7 +2095,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ce76c81285e4d4a40b922343348c54c2, type: 2}
+  - {fileID: 2100000, guid: ad0d8d7adedf3f14091ca952cb06fe04, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2596,6 +2601,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currNodes: 
+  coins: 
+  stars: 
 --- !u!81 &602978721
 AudioListener:
   m_ObjectHideFlags: 0
@@ -3558,6 +3565,7 @@ MonoBehaviour:
   nextNodes:
   - {fileID: 944015831}
   nodeId: 0
+  nodeSpace: 0
 --- !u!65 &817165365
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3844,6 +3852,7 @@ MonoBehaviour:
   nextNodes:
   - {fileID: 501606876}
   nodeId: 0
+  nodeSpace: 0
 --- !u!65 &944015832
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4721,6 +4730,7 @@ MonoBehaviour:
   nextNodes:
   - {fileID: 476096657}
   nodeId: 0
+  nodeSpace: 0
 --- !u!65 &1233478655
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5189,6 +5199,10 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 295344567}
+    - target: {fileID: 3341318893670588201, guid: 8a9d11e354baf9d48b9000cbafda63eb, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 4034592724259323725, guid: 8a9d11e354baf9d48b9000cbafda63eb, type: 3}
       propertyPath: m_Mesh
       value: 
@@ -5328,6 +5342,7 @@ MonoBehaviour:
   nextNodes:
   - {fileID: 817165364}
   nodeId: 0
+  nodeSpace: 0
 --- !u!65 &1321710709
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5449,6 +5464,7 @@ MonoBehaviour:
   nextNodes:
   - {fileID: 1321710708}
   nodeId: 0
+  nodeSpace: 1
 --- !u!65 &1324328555
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5490,7 +5506,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ce76c81285e4d4a40b922343348c54c2, type: 2}
+  - {fileID: 2100000, guid: ad0d8d7adedf3f14091ca952cb06fe04, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5570,6 +5586,7 @@ MonoBehaviour:
   nextNodes:
   - {fileID: 817165364}
   nodeId: 0
+  nodeSpace: 0
 --- !u!65 &1389163349
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5691,6 +5708,7 @@ MonoBehaviour:
   nextNodes:
   - {fileID: 1605083311}
   nodeId: 0
+  nodeSpace: 0
 --- !u!65 &1396887184
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -7045,6 +7063,7 @@ MonoBehaviour:
   nextNodes:
   - {fileID: 1799432915}
   nodeId: 0
+  nodeSpace: 0
 --- !u!65 &1579293316
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -7166,6 +7185,7 @@ MonoBehaviour:
   nextNodes:
   - {fileID: 286477829}
   nodeId: 0
+  nodeSpace: 1
 --- !u!65 &1605083312
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -7207,7 +7227,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ce76c81285e4d4a40b922343348c54c2, type: 2}
+  - {fileID: 2100000, guid: ad0d8d7adedf3f14091ca952cb06fe04, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -7287,6 +7307,7 @@ MonoBehaviour:
   nextNodes:
   - {fileID: 1389163348}
   nodeId: 0
+  nodeSpace: 0
 --- !u!65 &1616208866
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -7738,6 +7759,7 @@ MonoBehaviour:
   nextNodes:
   - {fileID: 1324328554}
   nodeId: 0
+  nodeSpace: 0
 --- !u!65 &1789614076
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -7859,6 +7881,7 @@ MonoBehaviour:
   nextNodes:
   - {fileID: 2084789254}
   nodeId: 0
+  nodeSpace: 0
 --- !u!65 &1799432916
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -8615,6 +8638,7 @@ MonoBehaviour:
   nextNodes:
   - {fileID: 363018438}
   nodeId: 0
+  nodeSpace: 0
 --- !u!65 &1936129282
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -9524,6 +9548,7 @@ MonoBehaviour:
   nextNodes:
   - {fileID: 1616208865}
   nodeId: 0
+  nodeSpace: 1
 --- !u!65 &2084789255
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -9565,7 +9590,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ce76c81285e4d4a40b922343348c54c2, type: 2}
+  - {fileID: 2100000, guid: ad0d8d7adedf3f14091ca952cb06fe04, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -9984,6 +10009,10 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 1696972144}
+    - target: {fileID: 3341318893670588201, guid: 8a9d11e354baf9d48b9000cbafda63eb, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 4034592724259323725, guid: 8a9d11e354baf9d48b9000cbafda63eb, type: 3}
       propertyPath: m_Mesh
       value: 
