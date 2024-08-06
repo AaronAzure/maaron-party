@@ -2851,7 +2851,7 @@ GameObject:
   - component: {fileID: 3661611179274880267}
   - component: {fileID: 1865344036838428059}
   m_Layer: 0
-  m_Name: Image
+  m_Name: pfp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4649,8 +4649,10 @@ MonoBehaviour:
   movesLeftTxt: {fileID: 1320651501714771416}
   coins: 10
   stars: 0
+  currencyT: 0
   canvas: {fileID: 8987175816818211784}
   dataUi: {fileID: 3953830480148402668}
+  dataImg: {fileID: 1865344036838428059}
   coinTxt: {fileID: 237942978694384833}
   starTxt: {fileID: 4799556476913100222}
   isAtFork: 0

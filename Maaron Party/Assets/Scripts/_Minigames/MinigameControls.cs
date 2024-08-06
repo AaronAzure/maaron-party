@@ -28,6 +28,11 @@ public class MinigameControls : MonoBehaviour
 		player = ReInput.players.GetPlayer(playerId);
 	}
 
+	public void SetId(int id)
+	{
+		playerId = id;
+	}
+
 	public void SetModel(int ind)
 	{
 		for (int i=0 ; i<models.Length ; i++)
@@ -47,14 +52,13 @@ public class MinigameControls : MonoBehaviour
 		float moveX = player.GetAxis("Move Horizontal");
 		float moveZ = player.GetAxis("Move Vertical");
 
-		Vector3 moveDir = Vector3.forward * moveZ + Vector3.right * moveX;
-		//float spd = moveSpeed;
-		//float maxSpd = maxSpeed;
-		rb.AddForce(moveDir.normalized * moveSpeed, ForceMode.Impulse);
+		var dir = new Vector3(moveX, 0, moveZ).normalized * moveSpeed;
+		rb.velocity = new Vector3(dir.x, rb.velocity.y, dir.z);
+		//Vector3 moveDir = Vector3.forward * moveZ + Vector3.right * moveX;
+		//rb.AddForce(moveDir.normalized * moveSpeed, ForceMode.Impulse);
 
-		if (rb.velocity.magnitude > maxSpeed)
-			rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxSpeed);
-		//rb.velocity = new Vector3(moveX, rb.velocity.y, moveZ);
+		//if (rb.velocity.magnitude > maxSpeed)
+		//	rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxSpeed);
 		if (moveX != 0 || moveZ != 0)
 			Rotate(moveX, moveZ);
 	}
@@ -64,5 +68,15 @@ public class MinigameControls : MonoBehaviour
 		Vector3 lookPos = new Vector3(x, 0, z);
 		var rotation = Quaternion.LookRotation(lookPos);
 		model.rotation = Quaternion.Slerp(model.rotation, rotation, Time.fixedDeltaTime * rotateSpeed);
+	}
+
+	private void OnTriggerEnter(Collider other) 
+	{
+		if (enabled && other.gameObject.CompareTag("Death"))
+		{
+			MinigameManager.Instance.PlayerEliminated(playerId);
+			this.enabled = false;
+			gameObject.SetActive(false);
+		}
 	}
 }

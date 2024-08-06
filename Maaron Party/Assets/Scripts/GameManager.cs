@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
 	[SerializeField] private List<int> coins;
 	[SerializeField] private List<int> stars;
 	public bool hasStarted {get; private set;}
+	[SerializeField] Animator anim;
 
 
 	private void Awake() 
@@ -84,6 +85,10 @@ public class GameManager : MonoBehaviour
 	//* ------- save -------
 	//* --------------------
 
+	public void TriggerTransition(bool fadeIn)
+	{
+		anim.SetTrigger(fadeIn ? "in" : "out");
+	}
 
 	public void LoadPreviewMinigame(string minigameName)
 	{
@@ -91,12 +96,45 @@ public class GameManager : MonoBehaviour
 		StartCoroutine( LoadPreviewMinigameCo(minigameName) );
 	}
 
+	string minigameName;
 	IEnumerator LoadPreviewMinigameCo(string minigameName)
 	{
-		yield return new WaitForSeconds(2f);
+		yield return new WaitForSeconds(1.5f);
+		TriggerTransition(true);
+
+		yield return new WaitForSeconds(0.5f);
+		this.minigameName = minigameName;
 		SceneManager.LoadScene(1);
 		SceneManager.LoadSceneAsync(minigameName, LoadSceneMode.Additive);
 	}
+	public void ReloadPreviewMinigame()
+	{
+		SceneManager.UnloadSceneAsync(minigameName);
+		SceneManager.LoadSceneAsync(minigameName, LoadSceneMode.Additive);
+	}
+
+	public int GetPrizeValue(int place)
+	{
+		switch (place)
+		{
+			case 0: return nPlayers == 2 ? 3 : nPlayers == 3 ? 0 : 0 ;
+			case 1: return nPlayers == 2 ? 15 : nPlayers == 3 ? 5 : 3 ;
+			case 2: return nPlayers == 2 ? 15 : nPlayers == 3 ? 15 : 5 ;
+			case 3: return nPlayers == 2 ? 15 : nPlayers == 3 ? 15 : 15 ;
+		}
+		return 0;
+	}
+	public void AwardMinigamePrize(int[] rewards)
+	{
+		for (int i=0 ; i<rewards.Length ; i++)
+		{
+			if (i < coins.Count)
+			{
+				coins[i] += rewards[i];
+			}
+		}
+	}
+
 
 	public void ReturnToBoard(string minigameName)
 	{

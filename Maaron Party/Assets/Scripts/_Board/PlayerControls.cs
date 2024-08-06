@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using Rewired;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerControls : MonoBehaviour
 {
@@ -53,6 +54,7 @@ public class PlayerControls : MonoBehaviour
 	[Space] [Header("UI")]
 	[SerializeField] private GameObject canvas;
 	[SerializeField] private Transform dataUi;
+	[SerializeField] private Image dataImg;
 	[SerializeField] private TextMeshProUGUI coinTxt;
 	[SerializeField] private TextMeshProUGUI starTxt;
 	private BoardManager bm;
@@ -91,11 +93,6 @@ public class PlayerControls : MonoBehaviour
 			coinsT = coins;
 			starsT = stars;
 		}
-		if (bm != null)
-		{
-			dataUi.parent = bm.GetUiLayout();
-			dataUi.localScale = Vector3.one;
-		}
 		coinTxt.text = $"{coins}";
 		starTxt.text = $"{stars}";
 	}
@@ -111,6 +108,14 @@ public class PlayerControls : MonoBehaviour
 			models[i].SetActive(false);
 		if (models != null && ind >= 0 && ind < models.Length)
 			models[ind].SetActive(true);
+		bm = BoardManager.Instance;
+		if (bm != null)
+		{
+			dataImg.color = ind == 0 ? new Color(0,1,0) : ind == 1 ? new Color(1,0.6f,0) 
+				: ind == 2 ? new Color(1,0.5f,0.8f) : Color.blue;
+			dataUi.parent = bm.GetUiLayout();
+			dataUi.localScale = Vector3.one;
+		}
 	}
 
 	public void SetStartNode(Node startNode)

@@ -4,15 +4,24 @@ using UnityEngine;
 
 public class PreviewManager : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+	public static PreviewManager Instance;
+	[SerializeField] private Animator anim;
+	private GameManager gm;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+	private void Awake() 
+	{
+		Instance = this;
+	}
+
+	// Start is called before the first frame update
+	void Start()
+	{
+		gm = GameManager.Instance;
+		gm.TriggerTransition(false);
+	}
+
+	public void TriggerTransition(bool fadeIn)
+	{
+		anim.SetTrigger(fadeIn ? "in" : "out");
+	}
 }

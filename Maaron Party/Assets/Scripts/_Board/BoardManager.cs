@@ -48,6 +48,7 @@ public class BoardManager : MonoBehaviour
 		}
 		nPlayers = players.Length;
 		NextPlayerTurn(true);
+		gm.TriggerTransition(false);
 	}
 
 	public void NextPlayerTurn(bool firstTurn=false)
