@@ -113,7 +113,7 @@ public class PlayerControls : MonoBehaviour
 		{
 			dataImg.color = ind == 0 ? new Color(0,1,0) : ind == 1 ? new Color(1,0.6f,0) 
 				: ind == 2 ? new Color(1,0.5f,0.8f) : Color.blue;
-			dataUi.parent = bm.GetUiLayout();
+			dataUi.SetParent(bm.GetUiLayout());
 			dataUi.localScale = Vector3.one;
 		}
 	}

@@ -31,6 +31,8 @@ public class GameManager : MonoBehaviour
 		currNodes = new();
 		coins = new();
 		stars = new();
+		if (BoardManager.Instance == null)
+			TriggerTransition(false);
 	}
 
 	public void IncreaseNumPlayers()
