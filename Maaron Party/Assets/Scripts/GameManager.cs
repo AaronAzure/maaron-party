@@ -1,12 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class GameManager : MonoBehaviour
+public class GameManager : NetworkBehaviour
 {
 	public static GameManager Instance;
-	public int nPlayers {get; private set;}
+	//public int nPlayers {get; private set;}
+	//public NetworkList<ulong> players = new NetworkList<ulong>();
+	//public NetworkVariable<List<ulong>> players = new NetworkVariable<List<ulong>>(
+	//	new(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+	public NetworkVariable<int> nPlayers = new NetworkVariable<int>(
+		0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+
+
+	[Space] [Header("Lobby Manager")]
+	public Transform spawnHolder;
+	[SerializeField] private GameObject buttons;
+	[SerializeField] private Button hostBtn;
+	[SerializeField] private Button clientBtn;
+	[SerializeField] private Button startBtn;
 
 
 	[Space] [Header("In game references")]
@@ -24,6 +39,16 @@ public class GameManager : MonoBehaviour
 		else
 			Destroy(gameObject);
 		DontDestroyOnLoad(this);
+
+		hostBtn.onClick.AddListener(() => {
+			StartHost();
+		});	
+		clientBtn.onClick.AddListener(() => {
+			StartClient();
+		});	
+		startBtn.onClick.AddListener(() => {
+			StartGame();
+		});	
 	}
 
 	private void Start() 
@@ -35,13 +60,76 @@ public class GameManager : MonoBehaviour
 			TriggerTransition(false);
 	}
 
+	public void StartHost()
+	{
+		NetworkManager.Singleton.StartHost();
+		if (buttons != null) buttons.SetActive(false);
+		if (startBtn != null)
+			startBtn.gameObject.SetActive(true);
+	}
+	public void StartClient()
+	{
+		NetworkManager.Singleton.StartClient();
+		if (buttons != null) buttons.SetActive(false);
+	}
+	//public void StartGame()
+	//{
+	//	NetworkManager.Singleton.SceneManager.LoadScene("TestBoard", LoadSceneMode.Single);
+	//}
+
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~ NETWORK ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	[ServerRpc(RequireOwnership=false)] public void JoinGameServerRpc()
+	{
+		if (!IsHost) return;
+		nPlayers.Value++;
+		//Debug.Log($"Player {id} joined!!");
+		//if (!players.Value.Contains(id))
+		//	players.Value.Add(id);
+	}
+	[ServerRpc(RequireOwnership=false)] public void LeftGameServerRpc()
+	{
+		if (!IsHost) return;
+		nPlayers.Value--;
+		//if (players != null && players.Value.Contains(id))
+		//{
+		//	players.Value.Remove(id);
+		//}
+	}
+
+	public void StartGame()
+	{
+		StartCoroutine( CountdownCo() );
+	}
+	IEnumerator CountdownCo()
+	{
+		yield return new WaitForSeconds(1);
+		//if (IsHost)
+		//	timeLeft.Value -= 1;
+		//if (timeLeftTxt != null)
+		//{
+		//	int mins = (int) timeLeft.Value / 60;
+		//	int secs = (int) timeLeft.Value % 60;
+		//	timeLeftTxt.text = $"{mins}:{(secs < 10 ? "0" + secs : secs)}";
+		//}
+		//if (IsHost && timeLeft.Value % discoverTime == 0)
+		//	DiscoverServerRpc();
+		//if (timeLeft.Value > 0)
+		//	StartCoroutine( CountdownCo() );
+	}
+
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~ NETWORK ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
 	public void IncreaseNumPlayers()
 	{
-		nPlayers++;
+		nPlayers.Value++;
 	}
 	public void DecreaseNumPlayers()
 	{
-		nPlayers--;
+		nPlayers.Value--;
 	}
 
 	//* --------------------
@@ -119,10 +207,10 @@ public class GameManager : MonoBehaviour
 	{
 		switch (place)
 		{
-			case 0: return nPlayers == 2 ? 3 : nPlayers == 3 ? 0 : 0 ;
-			case 1: return nPlayers == 2 ? 15 : nPlayers == 3 ? 5 : 3 ;
-			case 2: return nPlayers == 2 ? 15 : nPlayers == 3 ? 15 : 5 ;
-			case 3: return nPlayers == 2 ? 15 : nPlayers == 3 ? 15 : 15 ;
+			case 0: return nPlayers.Value == 2 ? 3 : nPlayers.Value == 3 ? 0 : 0 ;
+			case 1: return nPlayers.Value == 2 ? 15 : nPlayers.Value == 3 ? 5 : 3 ;
+			case 2: return nPlayers.Value == 2 ? 15 : nPlayers.Value == 3 ? 15 : 5 ;
+			case 3: return nPlayers.Value == 2 ? 15 : nPlayers.Value == 3 ? 15 : 15 ;
 		}
 		return 0;
 	}

@@ -6,6 +6,7 @@ using TMPro;
 
 public class LobbyObject : NetworkBehaviour
 {
+	private GameManager gm;
 	[SerializeField] private GameObject buttons;
 	[SerializeField] private TextMeshProUGUI characterTxt;
 	[SerializeField] private int maxCharacters=4;
@@ -18,6 +19,11 @@ public class LobbyObject : NetworkBehaviour
 		characterInd.OnValueChanged += (int prevInd, int newInd) => {
 			ChangeName(newInd);
 		};
+	}
+	public override void OnNetworkDespawn()
+	{
+		if (gm != null)
+			gm.LeftGameServerRpc();
 	}
 
 	private void ChangeName(int ind)
@@ -42,12 +48,14 @@ public class LobbyObject : NetworkBehaviour
 
 	private void Start() 
 	{
-		transform.SetParent(LobbyManager.Instance.spawnHolder, true);
+		gm = GameManager.Instance;
+		transform.SetParent(gm.spawnHolder, true);
 		transform.localScale = Vector3.one;
 		ChangeName((int) OwnerClientId);
 		if (IsOwner)
 		{
 			buttons.SetActive(true);
+			gm.JoinGameServerRpc();
 		}
 	}
 

@@ -38,7 +38,7 @@ public class MinigameManager : MonoBehaviour
 		gm = GameManager.Instance;
 		if (gm != null)
 		{
-			nPlayers = gm.nPlayers;
+			nPlayers = gm.nPlayers.Value;
 			if (PreviewManager.Instance == null)
 				gm.TriggerTransition(false);
 		}
