@@ -3,6 +3,7 @@
 # Get latest from https://github.com/github/gitignore/blob/main/Unity.gitignore
 #
 **/[Ll]ibrary/
+Maaron Party_clone_[0123]/
 ~/Maaron Party/[Ll]ibrary/
 Maaron Party/[Ll]ibrary/*
 Maaron Party/[Ll]ibrary/
