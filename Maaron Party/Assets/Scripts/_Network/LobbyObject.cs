@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Unity.Netcode;
 using TMPro;
 
@@ -10,6 +11,7 @@ public class LobbyObject : NetworkBehaviour
 	[SerializeField] private GameObject buttons;
 	[SerializeField] private TextMeshProUGUI characterTxt;
 	[SerializeField] private int maxCharacters=4;
+	[SerializeField] private Image pfp;
 	public NetworkVariable<int> characterInd = new NetworkVariable<int>(
 		0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
@@ -22,7 +24,7 @@ public class LobbyObject : NetworkBehaviour
 	}
 	public override void OnNetworkDespawn()
 	{
-		if (gm != null)
+		if (gm != null && IsOwner)
 			gm.LeftGameServerRpc();
 	}
 
@@ -44,6 +46,8 @@ public class LobbyObject : NetworkBehaviour
 				characterTxt.text = "Blue";
 				break;
 		}
+		pfp.color = ind == 0 ? new Color(0,1,0) : ind == 1 ? new Color(1,0.6f,0) 
+				: ind == 2 ? new Color(1,0.5f,0.8f) : Color.blue;
 	}
 
 	private void Start() 
@@ -54,6 +58,7 @@ public class LobbyObject : NetworkBehaviour
 		ChangeName((int) OwnerClientId);
 		if (IsOwner)
 		{
+			Debug.Log($"=>  {OwnerClientId}");
 			buttons.SetActive(true);
 			gm.JoinGameServerRpc();
 		}

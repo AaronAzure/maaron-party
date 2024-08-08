@@ -4,8 +4,9 @@ using TMPro;
 using Rewired;
 using UnityEngine;
 using UnityEngine.UI;
+using Unity.Netcode;
 
-public class PlayerControls : MonoBehaviour
+public class PlayerControls : NetworkBehaviour
 {
 	private Player player;
 	private int playerId;
@@ -15,6 +16,8 @@ public class PlayerControls : MonoBehaviour
 	[SerializeField] private float rotateSpeed=5f;
 	private Vector3 startPos;
 	private float time;
+	public NetworkVariable<ulong> id = new NetworkVariable<ulong>(
+		0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
 	
 	[Space] [Header("Model")]
@@ -69,6 +72,12 @@ public class PlayerControls : MonoBehaviour
 	[Space] [Header("HACKS")]
 	[SerializeField] private int controlledRoll=-1;
 
+	public override void OnNetworkSpawn()
+	{
+		id.OnValueChanged += (ulong prevId, ulong newId) => {
+			SetModel((int) newId);
+		};
+	}
 	
 	private void OnEnable() 
 	{
@@ -84,6 +93,8 @@ public class PlayerControls : MonoBehaviour
 			vCam.parent = null;
 		bm = BoardManager.Instance;
 		gm = GameManager.Instance;
+		if (!IsOwner) return;
+		id.Value = OwnerClientId;
 		if (gm.hasStarted)
 		{
 			LoadData();
@@ -104,6 +115,8 @@ public class PlayerControls : MonoBehaviour
 
 	public void SetModel(int ind)
 	{
+		Debug.Log($"__ PLAYER {id} __");
+		name = $"__ PLAYER {id} __";
 		for (int i=0 ; i<models.Length ; i++)
 			models[i].SetActive(false);
 		if (models != null && ind >= 0 && ind < models.Length)
@@ -126,6 +139,7 @@ public class PlayerControls : MonoBehaviour
 	// Update is called once per frame
 	void FixedUpdate()
 	{
+		if (!IsOwner) return;
 		if (coins != coinsT)
 		{
 			if (currencyT < 0.1f)

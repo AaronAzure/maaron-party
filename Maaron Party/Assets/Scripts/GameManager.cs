@@ -29,6 +29,7 @@ public class GameManager : NetworkBehaviour
 	[SerializeField] private List<int> coins;
 	[SerializeField] private List<int> stars;
 	public bool hasStarted {get; private set;}
+	public bool lobbyCreated {get; private set;}
 	[SerializeField] Animator anim;
 
 
@@ -91,7 +92,8 @@ public class GameManager : NetworkBehaviour
 	[ServerRpc(RequireOwnership=false)] public void LeftGameServerRpc()
 	{
 		if (!IsHost) return;
-		nPlayers.Value--;
+		if (!lobbyCreated)
+			nPlayers.Value--;
 		//if (players != null && players.Value.Contains(id))
 		//{
 		//	players.Value.Remove(id);
@@ -100,23 +102,15 @@ public class GameManager : NetworkBehaviour
 
 	public void StartGame()
 	{
-		StartCoroutine( CountdownCo() );
+		lobbyCreated = true;
+		StartCoroutine( StartGameCo() );
 	}
-	IEnumerator CountdownCo()
+	IEnumerator StartGameCo()
 	{
-		yield return new WaitForSeconds(1);
-		//if (IsHost)
-		//	timeLeft.Value -= 1;
-		//if (timeLeftTxt != null)
-		//{
-		//	int mins = (int) timeLeft.Value / 60;
-		//	int secs = (int) timeLeft.Value % 60;
-		//	timeLeftTxt.text = $"{mins}:{(secs < 10 ? "0" + secs : secs)}";
-		//}
-		//if (IsHost && timeLeft.Value % discoverTime == 0)
-		//	DiscoverServerRpc();
-		//if (timeLeft.Value > 0)
-		//	StartCoroutine( CountdownCo() );
+		//TriggerTransition(true);
+		TriggerTransitionServerRpc(true);
+		yield return new WaitForSeconds(0.5f);
+		NetworkManager.Singleton.SceneManager.LoadScene("TestBoard", LoadSceneMode.Single);
 	}
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~ NETWORK ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -176,6 +170,14 @@ public class GameManager : NetworkBehaviour
 	//* --------------------
 
 	public void TriggerTransition(bool fadeIn)
+	{
+		anim.SetTrigger(fadeIn ? "in" : "out");
+	}
+	[ServerRpc(RequireOwnership=false)] public void TriggerTransitionServerRpc(bool fadeIn) // broadcast
+	{
+		TriggerTransitionClientRpc(fadeIn);
+	}
+	[ClientRpc(RequireOwnership=false)] public void TriggerTransitionClientRpc(bool fadeIn)
 	{
 		anim.SetTrigger(fadeIn ? "in" : "out");
 	}
