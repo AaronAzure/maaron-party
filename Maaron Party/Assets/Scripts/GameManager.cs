@@ -9,11 +9,12 @@ public class GameManager : NetworkBehaviour
 {
 	public static GameManager Instance;
 	//public int nPlayers {get; private set;}
-	//public NetworkList<ulong> players = new NetworkList<ulong>();
 	//public NetworkVariable<List<ulong>> players = new NetworkVariable<List<ulong>>(
 	//	new(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 	public NetworkVariable<int> nPlayers = new NetworkVariable<int>(
 		0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+	public NetworkList<ulong> players;
+	public NetworkList<int> playerModels;
 
 
 	[Space] [Header("Lobby Manager")]
@@ -50,6 +51,20 @@ public class GameManager : NetworkBehaviour
 		startBtn.onClick.AddListener(() => {
 			StartGame();
 		});	
+
+		players = new NetworkList<ulong>(
+			default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner
+		);
+		playerModels = new NetworkList<int>(
+			default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner
+		);
+	}
+
+	public override void OnDestroy() 
+	{
+		base.OnDestroy();
+		players.Dispose();
+		playerModels.Dispose();
 	}
 
 	private void Start() 
@@ -81,28 +96,51 @@ public class GameManager : NetworkBehaviour
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~ NETWORK ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	[ServerRpc(RequireOwnership=false)] public void JoinGameServerRpc()
+	[ServerRpc(RequireOwnership=false)] public void JoinGameServerRpc(ulong id)
 	{
 		if (!IsHost) return;
 		nPlayers.Value++;
 		//Debug.Log($"Player {id} joined!!");
-		//if (!players.Value.Contains(id))
-		//	players.Value.Add(id);
+		if (!players.Contains(id))
+			players.Add(id);
 	}
-	[ServerRpc(RequireOwnership=false)] public void LeftGameServerRpc()
+	[ServerRpc(RequireOwnership=false)] public void LeftGameServerRpc(ulong id)
 	{
 		if (!IsHost) return;
 		if (!lobbyCreated)
 			nPlayers.Value--;
-		//if (players != null && players.Value.Contains(id))
-		//{
-		//	players.Value.Remove(id);
-		//}
+		if (players != null && players.Contains(id))
+			players.Remove(id);
+	}
+
+	[ServerRpc(RequireOwnership=false)] public void SetPlayerModelServerRpc(int ind)
+	{
+		Debug.Log($"<color=blue>SetPlayerModelServerRpc = {ind}</color>");
+		playerModels.Add(ind);
+	}
+	[ClientRpc(RequireOwnership=false)] public void SetPlayerModelClientRpc(ClientRpcParams rpc)
+	{
+		Debug.Log($"<color=blue>SetPlayerModelClientRpc</color>");
+		LobbyObject.Instance.SendPlayerModelServerRpc();
 	}
 
 	public void StartGame()
 	{
 		lobbyCreated = true;
+		for (int i=0 ; i<NetworkManager.Singleton.ConnectedClientsIds.Count ; i++)
+		{
+			SetPlayerModelClientRpc(
+				new ClientRpcParams { 
+					Send = new ClientRpcSendParams { 
+						TargetClientIds = new List<ulong> {NetworkManager.Singleton.ConnectedClientsIds[i]}
+					}
+				}
+			);
+		}
+		string s = "<color=cyan>NetworkManager.Singleton.ConnectedClientsIds: ";
+		foreach (ulong x in NetworkManager.Singleton.ConnectedClientsIds)
+			s += $"|{x}| ";
+		Debug.Log(s + "</color>");
 		StartCoroutine( StartGameCo() );
 	}
 	IEnumerator StartGameCo()
@@ -110,7 +148,22 @@ public class GameManager : NetworkBehaviour
 		//TriggerTransition(true);
 		TriggerTransitionServerRpc(true);
 		yield return new WaitForSeconds(0.5f);
+		string s = "<color=yellow>playerModels: ";
+		foreach (int x in playerModels)
+			s += $"|{x}| ";
+		Debug.Log(s + "</color>");
 		NetworkManager.Singleton.SceneManager.LoadScene("TestBoard", LoadSceneMode.Single);
+	}
+
+	[ServerRpc(RequireOwnership=false)] public void NextPlayerTurnServerRpc(ulong id)
+	{
+		BoardManager.Instance.NextPlayerTurnClientRpc(
+			new ClientRpcParams { 
+				Send = new ClientRpcSendParams { 
+					TargetClientIds = new List<ulong> {id}
+				}
+			}
+		);
 	}
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~ NETWORK ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

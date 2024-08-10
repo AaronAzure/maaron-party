@@ -8,6 +8,7 @@ using Unity.Netcode;
 
 public class PlayerControls : NetworkBehaviour
 {
+	public static PlayerControls Instance;
 	private Player player;
 	private int playerId;
 	[SerializeField] private Node currNode;
@@ -47,8 +48,11 @@ public class PlayerControls : NetworkBehaviour
 	
 	
 	[Space] [Header("Stats")]
-	[SerializeField] private int coins=10;
-	private int coinsT;
+	[SerializeField] private NetworkVariable<int> coins = new NetworkVariable<int>(
+		10, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+	//[SerializeField] private int coins=10;
+	private NetworkVariable<int> coinsT = new NetworkVariable<int>(0,
+		NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 	[SerializeField] private int stars;
 	private int starsT;
 	[SerializeField] private float currencyT;
@@ -77,6 +81,9 @@ public class PlayerControls : NetworkBehaviour
 		id.OnValueChanged += (ulong prevId, ulong newId) => {
 			SetModel((int) newId);
 		};
+		coinsT.OnValueChanged += (int prevCoins, int newCoins) => {
+			coinTxt.text = coinTxt.text = $"{newCoins}";
+		};
 	}
 	
 	private void OnEnable() 
@@ -93,18 +100,24 @@ public class PlayerControls : NetworkBehaviour
 			vCam.parent = null;
 		bm = BoardManager.Instance;
 		gm = GameManager.Instance;
+		dataUi.SetParent(bm.GetUiLayout());
+		dataUi.localScale = Vector3.one;
+		dataImg.color = OwnerClientId == 0 ? new Color(0,1,0) : OwnerClientId == 1 ? new Color(1,0.6f,0) 
+			: OwnerClientId == 2 ? new Color(1,0.5f,0.8f) : Color.blue;
+		SetModel( gm.playerModels[(int) OwnerClientId] );
 		if (!IsOwner) return;
 		id.Value = OwnerClientId;
+		Instance = this;
 		if (gm.hasStarted)
 		{
 			LoadData();
 		}
 		else
 		{
-			coinsT = coins;
+			coinsT.Value = coins.Value;
 			starsT = stars;
 		}
-		coinTxt.text = $"{coins}";
+		coinTxt.text = $"{coins.Value}";
 		starTxt.text = $"{stars}";
 	}
 
@@ -121,14 +134,8 @@ public class PlayerControls : NetworkBehaviour
 			models[i].SetActive(false);
 		if (models != null && ind >= 0 && ind < models.Length)
 			models[ind].SetActive(true);
-		bm = BoardManager.Instance;
-		if (bm != null)
-		{
-			dataImg.color = ind == 0 ? new Color(0,1,0) : ind == 1 ? new Color(1,0.6f,0) 
-				: ind == 2 ? new Color(1,0.5f,0.8f) : Color.blue;
-			dataUi.SetParent(bm.GetUiLayout());
-			dataUi.localScale = Vector3.one;
-		}
+		dataImg.color = ind == 0 ? new Color(0,1,0) : ind == 1 ? new Color(1,0.6f,0) 
+			: ind == 2 ? new Color(1,0.5f,0.8f) : Color.blue;
 	}
 
 	public void SetStartNode(Node startNode)
@@ -140,7 +147,7 @@ public class PlayerControls : NetworkBehaviour
 	void FixedUpdate()
 	{
 		if (!IsOwner) return;
-		if (coins != coinsT)
+		if (coins.Value != coinsT.Value)
 		{
 			if (currencyT < 0.1f)
 			{
@@ -148,11 +155,11 @@ public class PlayerControls : NetworkBehaviour
 			} 
 			else
 			{
-				coinsT = coinsT < coins ? coinsT + 1 : coinsT - 1;
+				coinsT.Value = coinsT.Value < coins.Value ? coinsT.Value + 1 : coinsT.Value - 1;
 				coinTxt.text = $"{coinsT}";
 				currencyT = 0;
 			}
-			if (coins == coinsT)
+			if (coins.Value == coinsT.Value)
 				isCurrencyAsync = false;
 		}
 		else if (stars != starsT)
@@ -240,14 +247,14 @@ public class PlayerControls : NetworkBehaviour
 	private void SaveData()
 	{
 		gm.SaveCurrNode(currNode.nodeId, playerId);
-		gm.SaveCoins(coins, playerId);
+		gm.SaveCoins(coins.Value, playerId);
 		gm.SaveStars(stars, playerId);
 	}
 	private void LoadData()
 	{
 		currNode = NodeManager.Instance.GetNode( gm.GetCurrNode(playerId) );
 		startPos = transform.position = currNode.transform.position;
-		coinsT = coins = gm.GetCoins(playerId);
+		coinsT.Value = coins.Value = gm.GetCoins(playerId);
 		starsT = stars = gm.GetStars(playerId);
 	}
 
@@ -280,7 +287,7 @@ public class PlayerControls : NetworkBehaviour
 
 	public void NodeEffect(int bonus)
 	{
-		coins = Mathf.Clamp(coins + bonus, 0, 999);
+		coins.Value = Mathf.Clamp(coins.Value + bonus, 0, 999);
 		isCurrencyAsync = true;
 		if (bonus > 0)
 		{

@@ -2,14 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
+using UnityEngine.Experimental.AI;
 
 public class BoardManager : NetworkBehaviour
 {
 	public static BoardManager Instance;
-	//[SerializeField] private PlayerControls playerToSpawn;
 	[SerializeField] private NetworkObject playerToSpawn;
 	[SerializeField] private Transform spawnPos;
 	[SerializeField] private PlayerControls[] players;
+	private PlayerControls _player;
 	int nTurn;
 	int nPlayerOrder;
 	int nPlayers;
@@ -37,44 +38,16 @@ public class BoardManager : NetworkBehaviour
 	private void Start() 
 	{
 		gm = GameManager.Instance;
-		gm.TriggerTransition(false);
 
-		//var networkObject = NetworkManager.SpawnManager.InstantiateAndSpawn(
-		//	playerToSpawn, OwnerClientId, position:spawnPos.position + new Vector3(-2 + 2*(int)OwnerClientId,0,0));
-		//var p = networkObject.GetComponent<PlayerControls>();
-		//p.SetModel((int) OwnerClientId);
-		//p.SetId((int) OwnerClientId);
-		//if (!gm.hasStarted)
-		//	p.SetStartNode(startNode);
-		//Debug.Log($"{p.name} Joined");
-		//players[i] = p;
-		Debug.Log($"==> {ClientObject.Instance.id}");
-		SpawnPlayerServerRpc((int) ClientObject.Instance.id);
+		Debug.Log($"<color=magenta>===> {NetworkManager.Singleton.LocalClientId}</color>");
+		SpawnPlayerServerRpc((int) NetworkManager.Singleton.LocalClientId);
 
+		// only host can start game
 		if (!IsHost) return;
 		nPlayers = gm.nPlayers.Value;
 		players = new PlayerControls[nPlayers];
-		//for (int i=0 ; i<nPlayers ; i++)
-		//{
-		//	//var p = Instantiate(playerToSpawn, spawnPos.position + new Vector3(-2 + 2*i,0,0) , Quaternion.identity);
-		//	//p.GetComponent<NetworkObject>().SpawnWithOwnership((ulong) i);
-		//	var networkObject = NetworkManager.SpawnManager.InstantiateAndSpawn(
-		//		playerToSpawn, (ulong) i);
-		//		//playerToSpawn, (ulong) i, position:spawnPos.position + new Vector3(-2 + 2*i,0,0));
-		//	var p = networkObject.GetComponent<PlayerControls>();
-
-		//	//p.transform.position = spawnPos.position + new Vector3(-2 + 2*i,0,0);
-		//	//var p = Instantiate(playerToSpawn, spawnPos.position + new Vector3(-2 + 2*i,0,0) , Quaternion.identity);
-		//	p.SetModel(i);
-		//	p.SetId(i);
-		//	if (!gm.hasStarted)
-		//	{
-		//		p.SetStartNode(startNode);
-		//	}
-		//	players[i] = p;
-		//	Debug.Log($"{p.name} Joined");
-		//}
 		//NextPlayerTurn(true);
+		StartCoroutine( StartGameCo() );
 	}
 
 	[ServerRpc(RequireOwnership=false)] public void SpawnPlayerServerRpc(int clientId)
@@ -82,13 +55,47 @@ public class BoardManager : NetworkBehaviour
 		var networkObject = NetworkManager.SpawnManager.InstantiateAndSpawn(
 			playerToSpawn, (ulong) clientId, position:spawnPos.position + new Vector3(-2 + 2*clientId,0,0));
 		var p = networkObject.GetComponent<PlayerControls>();
-		p.SetModel(clientId);
+		//p.SetModel(gm.playerModels[clientId]);
 		//p.SetId(clientId);
 		if (!gm.hasStarted)
 			p.SetStartNode(startNode);
 		Debug.Log($"{p.name} Joined");
 	}
+	[ClientRpc(RequireOwnership=false)] public void SpawnPlayerClientRpc(int clientId)
+	{ 
+		_player = PlayerControls.Instance;
+		_player.SetStartNode(startNode);
+	}
 
+	IEnumerator StartGameCo()
+	{
+		yield return new WaitForSeconds(0.5f);
+		gm.TriggerTransition(false);
+		
+		yield return new WaitForSeconds(1);
+		gm.NextPlayerTurnServerRpc(0);
+		//NextPlayerTurn(true);
+	}
+
+	//[ServerRpc(RequireOwnership=false)] public void NextPlayerTurnServerRpc(ulong id)
+	//{
+	//	NextPlayerTurnClientRpc(
+	//		new ClientRpcParams { 
+	//			Send = new ClientRpcSendParams { 
+	//				TargetClientIds = new List<ulong> {id}
+	//			}
+	//		}
+	//	);
+	//	player.YourTurn();
+	//}
+	[ClientRpc(RequireOwnership=false)] public void NextPlayerTurnClientRpc(ClientRpcParams crp)
+	{
+		Debug.Log($"<color=magenta>-- PLAYER {NetworkManager.Singleton.LocalClientId}'s TURN</color>");
+		if (_player == null)
+			_player = PlayerControls.Instance;
+
+		_player.YourTurn();
+	}
 	public void NextPlayerTurn(bool firstTurn=false)
 	{
 		if (!firstTurn)
