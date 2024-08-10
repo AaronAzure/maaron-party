@@ -127,6 +127,7 @@ public class GameManager : NetworkBehaviour
 	public void StartGame()
 	{
 		lobbyCreated = true;
+		NetworkManager.Singleton.SceneManager.OnLoadComplete += this.OnLoadComplete;
 		for (int i=0 ; i<NetworkManager.Singleton.ConnectedClientsIds.Count ; i++)
 		{
 			SetPlayerModelClientRpc(
@@ -235,33 +236,48 @@ public class GameManager : NetworkBehaviour
 	{
 		TriggerTransitionClientRpc(fadeIn);
 	}
-	[ClientRpc(RequireOwnership=false)] public void TriggerTransitionClientRpc(bool fadeIn)
+	[ClientRpc(RequireOwnership=false)] private void TriggerTransitionClientRpc(bool fadeIn)
 	{
 		anim.SetTrigger(fadeIn ? "in" : "out");
 	}
 
-	public void LoadPreviewMinigame(string minigameName)
+	[ServerRpc(RequireOwnership=false)] public void LoadPreviewMinigameServerRpc(string minigameName)
 	{
 		hasStarted = true;
 		StartCoroutine( LoadPreviewMinigameCo(minigameName) );
 	}
 
 	string minigameName;
+	bool previewLoaded;
 	IEnumerator LoadPreviewMinigameCo(string minigameName)
 	{
 		yield return new WaitForSeconds(1.5f);
-		TriggerTransition(true);
+		TriggerTransitionServerRpc(true);
 
 		yield return new WaitForSeconds(0.5f);
+		previewLoaded = false;
 		this.minigameName = minigameName;
-		SceneManager.LoadScene(1);
-		SceneManager.LoadSceneAsync(minigameName, LoadSceneMode.Additive);
+		NetworkManager.Singleton.SceneManager.LoadScene("TestPreview", LoadSceneMode.Single);
+		
+		while (!previewLoaded)
+			yield return null;
+		//yield return new WaitForSeconds(0.5f);
+		NetworkManager.Singleton.SceneManager.LoadScene(minigameName, LoadSceneMode.Additive);
+		//SceneManager.LoadScene(1);
+		//SceneManager.LoadSceneAsync(minigameName, LoadSceneMode.Additive);
 	}
 	public void ReloadPreviewMinigame()
 	{
-		SceneManager.UnloadSceneAsync(minigameName);
-		SceneManager.LoadSceneAsync(minigameName, LoadSceneMode.Additive);
+		//NetworkManager.Singleton.SceneManager.UnloadScene("")
+		//NetworkManager.Singleton.SceneManager.LoadScene("TestMinigame", LoadSceneMode.Additive);
+		//SceneManager.UnloadSceneAsync(minigameName);
+		//SceneManager.LoadSceneAsync(minigameName, LoadSceneMode.Additive);
 	}
+	private void OnLoadComplete(ulong clientId, string sceneName, LoadSceneMode loadSceneMode)
+    {
+        Debug.Log("OnLoadComplete clientId: " + clientId + " scene: " + sceneName + " mode: " + loadSceneMode);
+		previewLoaded = true;
+    }
 
 	public int GetPrizeValue(int place)
 	{
@@ -288,6 +304,6 @@ public class GameManager : NetworkBehaviour
 
 	public void ReturnToBoard(string minigameName)
 	{
-		SceneManager.LoadScene(0);
+		//SceneManager.LoadScene(0);
 	}
 }

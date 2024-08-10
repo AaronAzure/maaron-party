@@ -40,7 +40,8 @@ public class MinigameManager : MonoBehaviour
 		{
 			nPlayers = gm.nPlayers.Value;
 			if (PreviewManager.Instance == null)
-				gm.TriggerTransition(false);
+				gm.TriggerTransitionServerRpc(false);
+				//gm.TriggerTransition(false);
 		}
 		for (int i=0 ; i<nPlayers ; i++)
 		{
@@ -130,7 +131,7 @@ public class MinigameManager : MonoBehaviour
 			Debug.Log(d);
 
 			yield return new WaitForSeconds(0.5f);
-			gm.TriggerTransition(true);
+			//gm.TriggerTransition(true);
 			gm.AwardMinigamePrize(rewards);
 
 			yield return new WaitForSeconds(0.5f);

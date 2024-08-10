@@ -78,9 +78,6 @@ public class PlayerControls : NetworkBehaviour
 
 	public override void OnNetworkSpawn()
 	{
-		//id.OnValueChanged += (ulong prevId, ulong newId) => {
-		//	SetModel((int) newId);
-		//};
 		coinsT.OnValueChanged += (int prevCoins, int newCoins) => {
 			coinTxt.text = coinTxt.text = $"{newCoins}";
 		};
@@ -107,26 +104,11 @@ public class PlayerControls : NetworkBehaviour
 		dataImg.color = OwnerClientId == 0 ? new Color(0,1,0) : OwnerClientId == 1 ? new Color(1,0.6f,0) 
 			: OwnerClientId == 2 ? new Color(1,0.5f,0.8f) : Color.blue;
 		SetModel( gm.playerModels[(int) OwnerClientId] );
-		//foreach (int x in gm.playerModels)
-		//Debug.Log($"<color=yellow>playerModel: {gm.playerModels[(int) OwnerClientId]}</color>");
-		//SetModel(gm.playerModels[(int)OwnerClientId]);
-		//string s = "<color=yellow>playerModels: ";
-		//for (int i=0 ; i<gm.playerModels.Count ; i++)
-		//{
-		//	s += $"|{gm.playerModels[i]}={(i == (int)OwnerClientId)}| ";
-		//	if (i == (int)OwnerClientId)
-		//	{
-		//		SetModel(gm.playerModels[i]);
-		//	}	
-		//}
-		//Debug.Log(s + "</color>");
 		
 		if (!IsOwner) return;
 		Debug.Log($"<color=cyan>{name} is OWNER!!</color>", gameObject);
 		id.Value = OwnerClientId;
 		startPos = this.transform.position;
-		//Instance = this;
-		//Debug.Log($"<color=cyan>OwnerClientId: {OwnerClientId}</color>");
 		if (gm.hasStarted)
 		{
 			LoadData();

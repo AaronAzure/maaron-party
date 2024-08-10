@@ -76,17 +76,6 @@ public class BoardManager : NetworkBehaviour
 		//NextPlayerTurn(true);
 	}
 
-	//[ServerRpc(RequireOwnership=false)] public void NextPlayerTurnServerRpc(ulong id)
-	//{
-	//	NextPlayerTurnClientRpc(
-	//		new ClientRpcParams { 
-	//			Send = new ClientRpcSendParams { 
-	//				TargetClientIds = new List<ulong> {id}
-	//			}
-	//		}
-	//	);
-	//	player.YourTurn();
-	//}
 	[ClientRpc(RequireOwnership=false)] public void NextPlayerTurnClientRpc(ClientRpcParams crp)
 	{
 		Debug.Log($"<color=magenta>-- PLAYER {NetworkManager.Singleton.LocalClientId}'s TURN</color>");
@@ -105,12 +94,13 @@ public class BoardManager : NetworkBehaviour
 		if (nPlayerOrder.Value >= 0 && nPlayerOrder.Value < players.Length)
 			gm.NextPlayerTurnServerRpc((ulong) ++nPlayerOrder.Value);
 		else if (nPlayerOrder.Value >= nPlayers)
-			gm.LoadMinigameServerRpc();
+			gm.LoadPreviewMinigameServerRpc("TestMinigame");
+			//gm.LoadMinigameServerRpc();
 			//LoadMinigame("TestMinigame");
 	}
 
 	void LoadMinigame(string minigameName)
 	{
-		gm.LoadPreviewMinigame(minigameName);
+		//gm.LoadPreviewMinigame(minigameName);
 	}
 }
