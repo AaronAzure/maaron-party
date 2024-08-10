@@ -78,19 +78,21 @@ public class PlayerControls : NetworkBehaviour
 
 	public override void OnNetworkSpawn()
 	{
-		id.OnValueChanged += (ulong prevId, ulong newId) => {
-			SetModel((int) newId);
-		};
+		//id.OnValueChanged += (ulong prevId, ulong newId) => {
+		//	SetModel((int) newId);
+		//};
 		coinsT.OnValueChanged += (int prevCoins, int newCoins) => {
 			coinTxt.text = coinTxt.text = $"{newCoins}";
 		};
+		if (IsOwner)
+			Instance = this;
 	}
-	
+
 	private void OnEnable() 
 	{
 		//if (nextNode == null)
 		//	this.enabled = false;
-		startPos = this.transform.position;
+		//startPos = this.transform.position;
 		HidePaths();
 	}
 
@@ -105,9 +107,26 @@ public class PlayerControls : NetworkBehaviour
 		dataImg.color = OwnerClientId == 0 ? new Color(0,1,0) : OwnerClientId == 1 ? new Color(1,0.6f,0) 
 			: OwnerClientId == 2 ? new Color(1,0.5f,0.8f) : Color.blue;
 		SetModel( gm.playerModels[(int) OwnerClientId] );
+		//foreach (int x in gm.playerModels)
+		//Debug.Log($"<color=yellow>playerModel: {gm.playerModels[(int) OwnerClientId]}</color>");
+		//SetModel(gm.playerModels[(int)OwnerClientId]);
+		//string s = "<color=yellow>playerModels: ";
+		//for (int i=0 ; i<gm.playerModels.Count ; i++)
+		//{
+		//	s += $"|{gm.playerModels[i]}={(i == (int)OwnerClientId)}| ";
+		//	if (i == (int)OwnerClientId)
+		//	{
+		//		SetModel(gm.playerModels[i]);
+		//	}	
+		//}
+		//Debug.Log(s + "</color>");
+		
 		if (!IsOwner) return;
+		Debug.Log($"<color=cyan>{name} is OWNER!!</color>", gameObject);
 		id.Value = OwnerClientId;
-		Instance = this;
+		startPos = this.transform.position;
+		//Instance = this;
+		//Debug.Log($"<color=cyan>OwnerClientId: {OwnerClientId}</color>");
 		if (gm.hasStarted)
 		{
 			LoadData();
@@ -128,8 +147,8 @@ public class PlayerControls : NetworkBehaviour
 
 	public void SetModel(int ind)
 	{
-		Debug.Log($"__ PLAYER {id} __");
-		name = $"__ PLAYER {id} __";
+		Debug.Log($"__ PLAYER {id.Value} |{ind}|__");
+		name = $"__ PLAYER {id.Value} __";
 		for (int i=0 ; i<models.Length ; i++)
 			models[i].SetActive(false);
 		if (models != null && ind >= 0 && ind < models.Length)
@@ -156,7 +175,7 @@ public class PlayerControls : NetworkBehaviour
 			else
 			{
 				coinsT.Value = coinsT.Value < coins.Value ? coinsT.Value + 1 : coinsT.Value - 1;
-				coinTxt.text = $"{coinsT}";
+				coinTxt.text = $"{coinsT.Value}";
 				currencyT = 0;
 			}
 			if (coins.Value == coinsT.Value)

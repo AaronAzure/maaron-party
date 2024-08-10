@@ -56,7 +56,6 @@ public class LobbyObject : NetworkBehaviour
 		gm = GameManager.Instance;
 		transform.SetParent(gm.spawnHolder, true);
 		transform.localScale = Vector3.one;
-		ChangeName((int) OwnerClientId);
 
 		if (IsOwner)
 		{
@@ -65,12 +64,14 @@ public class LobbyObject : NetworkBehaviour
 			//Debug.Log($"=>  {OwnerClientId}");
 			buttons.SetActive(true);
 			gm.JoinGameServerRpc(OwnerClientId);
+			characterInd.Value = (int) OwnerClientId;
 		}
+		ChangeName(characterInd.Value);
 	}
 
 	[ServerRpc(RequireOwnership=false)] public void SendPlayerModelServerRpc()
 	{
-		Debug.Log($"<color=blue>SendPlayerModelServerRpc</color>");
+		//Debug.Log($"<color=blue>SendPlayerModelServerRpc</color>");
 		gm.SetPlayerModelServerRpc(characterInd.Value);
 	}
 

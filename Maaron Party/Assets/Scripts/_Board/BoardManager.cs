@@ -12,7 +12,8 @@ public class BoardManager : NetworkBehaviour
 	[SerializeField] private PlayerControls[] players;
 	private PlayerControls _player;
 	int nTurn;
-	int nPlayerOrder;
+	public NetworkVariable<int> nPlayerOrder = new NetworkVariable<int>(
+		0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 	int nPlayers;
 	GameManager gm;
 
@@ -46,7 +47,6 @@ public class BoardManager : NetworkBehaviour
 		if (!IsHost) return;
 		nPlayers = gm.nPlayers.Value;
 		players = new PlayerControls[nPlayers];
-		//NextPlayerTurn(true);
 		StartCoroutine( StartGameCo() );
 	}
 
@@ -55,10 +55,9 @@ public class BoardManager : NetworkBehaviour
 		var networkObject = NetworkManager.SpawnManager.InstantiateAndSpawn(
 			playerToSpawn, (ulong) clientId, position:spawnPos.position + new Vector3(-2 + 2*clientId,0,0));
 		var p = networkObject.GetComponent<PlayerControls>();
-		//p.SetModel(gm.playerModels[clientId]);
-		//p.SetId(clientId);
 		if (!gm.hasStarted)
-			p.SetStartNode(startNode);
+			SpawnPlayerClientRpc(clientId);
+			//p.SetStartNode(startNode);
 		Debug.Log($"{p.name} Joined");
 	}
 	[ClientRpc(RequireOwnership=false)] public void SpawnPlayerClientRpc(int clientId)
@@ -70,7 +69,7 @@ public class BoardManager : NetworkBehaviour
 	IEnumerator StartGameCo()
 	{
 		yield return new WaitForSeconds(0.5f);
-		gm.TriggerTransition(false);
+		gm.TriggerTransitionServerRpc(false);
 		
 		yield return new WaitForSeconds(1);
 		gm.NextPlayerTurnServerRpc(0);
@@ -93,18 +92,21 @@ public class BoardManager : NetworkBehaviour
 		Debug.Log($"<color=magenta>-- PLAYER {NetworkManager.Singleton.LocalClientId}'s TURN</color>");
 		if (_player == null)
 			_player = PlayerControls.Instance;
-
+		else
+			Debug.Log("<color=red>PlayerControls.Instance is NULL</color");
 		_player.YourTurn();
 	}
 	public void NextPlayerTurn(bool firstTurn=false)
 	{
-		if (!firstTurn)
-			nPlayerOrder = ++nPlayerOrder;
-			//nPlayerOrder = ++nPlayerOrder % nPlayers;
-		if (nPlayerOrder >= 0 && nPlayerOrder < players.Length)
-			players[nPlayerOrder].YourTurn();
-		else if (nPlayerOrder >= nPlayers)
-			LoadMinigame("TestMinigame");
+		//if (!firstTurn)
+		//	nPlayerOrder = ++nPlayerOrder;
+		//	//nPlayerOrder = ++nPlayerOrder % nPlayers;
+		//	players[nPlayerOrder].YourTurn();
+		if (nPlayerOrder.Value >= 0 && nPlayerOrder.Value < players.Length)
+			gm.NextPlayerTurnServerRpc((ulong) ++nPlayerOrder.Value);
+		else if (nPlayerOrder.Value >= nPlayers)
+			gm.LoadMinigameServerRpc();
+			//LoadMinigame("TestMinigame");
 	}
 
 	void LoadMinigame(string minigameName)

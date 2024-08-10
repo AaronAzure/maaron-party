@@ -115,12 +115,12 @@ public class GameManager : NetworkBehaviour
 
 	[ServerRpc(RequireOwnership=false)] public void SetPlayerModelServerRpc(int ind)
 	{
-		Debug.Log($"<color=blue>SetPlayerModelServerRpc = {ind}</color>");
+		//Debug.Log($"<color=blue>SetPlayerModelServerRpc = {ind}</color>");
 		playerModels.Add(ind);
 	}
 	[ClientRpc(RequireOwnership=false)] public void SetPlayerModelClientRpc(ClientRpcParams rpc)
 	{
-		Debug.Log($"<color=blue>SetPlayerModelClientRpc</color>");
+		//Debug.Log($"<color=blue>SetPlayerModelClientRpc</color>");
 		LobbyObject.Instance.SendPlayerModelServerRpc();
 	}
 
@@ -137,21 +137,16 @@ public class GameManager : NetworkBehaviour
 				}
 			);
 		}
-		string s = "<color=cyan>NetworkManager.Singleton.ConnectedClientsIds: ";
-		foreach (ulong x in NetworkManager.Singleton.ConnectedClientsIds)
-			s += $"|{x}| ";
-		Debug.Log(s + "</color>");
+		//string s = "<color=cyan>NetworkManager.Singleton.ConnectedClientsIds: ";
+		//foreach (ulong x in NetworkManager.Singleton.ConnectedClientsIds)
+		//	s += $"|{x}| ";
+		//Debug.Log(s + "</color>");
 		StartCoroutine( StartGameCo() );
 	}
 	IEnumerator StartGameCo()
 	{
-		//TriggerTransition(true);
 		TriggerTransitionServerRpc(true);
 		yield return new WaitForSeconds(0.5f);
-		string s = "<color=yellow>playerModels: ";
-		foreach (int x in playerModels)
-			s += $"|{x}| ";
-		Debug.Log(s + "</color>");
 		NetworkManager.Singleton.SceneManager.LoadScene("TestBoard", LoadSceneMode.Single);
 	}
 
@@ -164,6 +159,16 @@ public class GameManager : NetworkBehaviour
 				}
 			}
 		);
+	}
+	[ServerRpc(RequireOwnership=false)] public void LoadMinigameServerRpc()
+	{
+		StartCoroutine(LoadMinigameCo());
+	}
+	IEnumerator LoadMinigameCo()
+	{
+		TriggerTransitionServerRpc(true);
+		yield return new WaitForSeconds(0.5f);
+		NetworkManager.Singleton.SceneManager.LoadScene("TestMinigame", LoadSceneMode.Single);
 	}
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~ NETWORK ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
