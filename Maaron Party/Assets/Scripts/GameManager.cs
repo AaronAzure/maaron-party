@@ -4,6 +4,7 @@ using UnityEngine;
 using Unity.Netcode;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using Unity.VisualScripting;
 
 public class GameManager : NetworkBehaviour
 {
@@ -15,6 +16,7 @@ public class GameManager : NetworkBehaviour
 		0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 	public NetworkList<ulong> players;
 	public NetworkList<int> playerModels;
+	private Scene m_LoadedScene;
 
 
 	[Space] [Header("Lobby Manager")]
@@ -124,10 +126,56 @@ public class GameManager : NetworkBehaviour
 		LobbyObject.Instance.SendPlayerModelServerRpc();
 	}
 
+	public override void OnNetworkSpawn()
+	{
+		base.OnNetworkSpawn();
+		NetworkManager.Singleton.SceneManager.OnLoadComplete += this.OnLoadComplete;
+		NetworkManager.Singleton.SceneManager.OnUnloadComplete += this.OnUnloadComplete;
+		NetworkManager.SceneManager.OnSceneEvent += SceneManager_OnSceneEvent;
+	}
+	private void SceneManager_OnSceneEvent(SceneEvent sceneEvent)
+    {
+        var clientOrServer = sceneEvent.ClientId == NetworkManager.ServerClientId ? "server" : "client";
+        switch (sceneEvent.SceneEventType)
+        {
+            case SceneEventType.LoadComplete:
+                {
+                    // We want to handle this for only the server-side
+                    if (sceneEvent.ClientId == NetworkManager.ServerClientId)
+                    {
+                        // *** IMPORTANT ***
+                        // Keep track of the loaded scene, you need this to unload it
+                        m_LoadedScene = sceneEvent.Scene;
+                    }
+                    Debug.Log($"Loaded the {sceneEvent.SceneName} scene on " +
+                        $"{clientOrServer}-({sceneEvent.ClientId}).");
+                    break;
+                }
+            case SceneEventType.UnloadComplete:
+                {
+                    Debug.Log($"Unloaded the {sceneEvent.SceneName} scene on " +
+                        $"{clientOrServer}-({sceneEvent.ClientId}).");
+                    break;
+                }
+            case SceneEventType.LoadEventCompleted:
+            case SceneEventType.UnloadEventCompleted:
+                {
+                    var loadUnload = sceneEvent.SceneEventType == SceneEventType.LoadEventCompleted ? "Load" : "Unload";
+                    Debug.Log($"{loadUnload} event completed for the following client " +
+                        $"identifiers:({sceneEvent.ClientsThatCompleted})");
+                    if (sceneEvent.ClientsThatTimedOut.Count > 0)
+                    {
+                        Debug.LogWarning($"{loadUnload} event timed out for the following client " +
+                            $"identifiers:({sceneEvent.ClientsThatTimedOut})");
+                    }
+                    break;
+                }
+        }
+    }
+
 	public void StartGame()
 	{
 		lobbyCreated = true;
-		NetworkManager.Singleton.SceneManager.OnLoadComplete += this.OnLoadComplete;
 		for (int i=0 ; i<NetworkManager.Singleton.ConnectedClientsIds.Count ; i++)
 		{
 			SetPlayerModelClientRpc(
@@ -142,6 +190,7 @@ public class GameManager : NetworkBehaviour
 		//foreach (ulong x in NetworkManager.Singleton.ConnectedClientsIds)
 		//	s += $"|{x}| ";
 		//Debug.Log(s + "</color>");
+		startBtn.gameObject.SetActive(false);
 		StartCoroutine( StartGameCo() );
 	}
 	IEnumerator StartGameCo()
@@ -241,14 +290,14 @@ public class GameManager : NetworkBehaviour
 		anim.SetTrigger(fadeIn ? "in" : "out");
 	}
 
+	string minigameName;
+	bool previewLoaded;
+	bool unloaded;
 	[ServerRpc(RequireOwnership=false)] public void LoadPreviewMinigameServerRpc(string minigameName)
 	{
 		hasStarted = true;
 		StartCoroutine( LoadPreviewMinigameCo(minigameName) );
 	}
-
-	string minigameName;
-	bool previewLoaded;
 	IEnumerator LoadPreviewMinigameCo(string minigameName)
 	{
 		yield return new WaitForSeconds(1.5f);
@@ -257,27 +306,52 @@ public class GameManager : NetworkBehaviour
 		yield return new WaitForSeconds(0.5f);
 		previewLoaded = false;
 		this.minigameName = minigameName;
-		NetworkManager.Singleton.SceneManager.LoadScene("TestPreview", LoadSceneMode.Single);
+		SceneEventProgressStatus status = NetworkManager.Singleton.SceneManager.LoadScene("TestPreview", LoadSceneMode.Single);
 		
 		while (!previewLoaded)
+		//while (status == SceneEventProgressStatus.SceneNotLoaded)
 			yield return null;
-		//yield return new WaitForSeconds(0.5f);
 		NetworkManager.Singleton.SceneManager.LoadScene(minigameName, LoadSceneMode.Additive);
+
 		//SceneManager.LoadScene(1);
 		//SceneManager.LoadSceneAsync(minigameName, LoadSceneMode.Additive);
 	}
-	public void ReloadPreviewMinigame()
+
+	[ServerRpc(RequireOwnership=false)] public void ReloadPreviewMinigameServerRpc()
 	{
-		//NetworkManager.Singleton.SceneManager.UnloadScene("")
+		//NetworkManager.Singleton.SceneManager.UnloadScene(m_LoadedScene);
 		//NetworkManager.Singleton.SceneManager.LoadScene("TestMinigame", LoadSceneMode.Additive);
 		//SceneManager.UnloadSceneAsync(minigameName);
 		//SceneManager.LoadSceneAsync(minigameName, LoadSceneMode.Additive);
+		StartCoroutine( ReloadPreviewMinigameCo() );
 	}
+	IEnumerator ReloadPreviewMinigameCo()
+	{
+		//TriggerTransitionServerRpc(true);
+		yield return new WaitForSeconds(0.5f);
+		unloaded = false;
+		NetworkManager.Singleton.SceneManager.UnloadScene(m_LoadedScene);
+		//NetworkManager.Singleton.SceneManager.LoadScene("TestPreview", LoadSceneMode.Single);
+		
+		while (!unloaded)
+			yield return null;
+		NetworkManager.Singleton.SceneManager.LoadScene(minigameName, LoadSceneMode.Additive);
+
+		//SceneManager.LoadScene(1);
+		//SceneManager.LoadSceneAsync(minigameName, LoadSceneMode.Additive);
+	}
+
+	
 	private void OnLoadComplete(ulong clientId, string sceneName, LoadSceneMode loadSceneMode)
-    {
-        Debug.Log("OnLoadComplete clientId: " + clientId + " scene: " + sceneName + " mode: " + loadSceneMode);
+	{
+		Debug.Log("OnLoadComplete clientId: " + clientId + " scene: " + sceneName + " mode: " + loadSceneMode);
 		previewLoaded = true;
-    }
+	}
+	private void OnUnloadComplete(ulong clientId, string sceneName)
+	{
+		Debug.Log("OnLoadComplete clientId: " + clientId + " scene: " + sceneName);
+		unloaded = true;
+	}
 
 	public int GetPrizeValue(int place)
 	{

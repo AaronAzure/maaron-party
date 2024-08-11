@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class PreviewManager : MonoBehaviour
+public class PreviewManager : NetworkBehaviour
 {
 	public static PreviewManager Instance;
 	[SerializeField] private Animator anim;
@@ -20,7 +21,11 @@ public class PreviewManager : MonoBehaviour
 		gm.TriggerTransition(false);
 	}
 
-	public void TriggerTransition(bool fadeIn)
+	[ServerRpc(RequireOwnership=false)] public void TriggerTransitionServerRpc(bool fadeIn)
+	{
+		TriggerTransitionClientRpc(fadeIn);
+	}
+	[ClientRpc(RequireOwnership=false)] private void TriggerTransitionClientRpc(bool fadeIn)
 	{
 		anim.SetTrigger(fadeIn ? "in" : "out");
 	}

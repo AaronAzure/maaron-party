@@ -4624,7 +4624,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2064642963
+  GlobalObjectIdHash: 4105052291
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -4683,7 +4683,7 @@ MonoBehaviour:
   coinTxt: {fileID: 237942978694384833}
   starTxt: {fileID: 4799556476913100222}
   isAtFork: 0
-  controlledRoll: -1
+  controlledRoll: 1
 --- !u!114 &6848800868030178541
 MonoBehaviour:
   m_ObjectHideFlags: 0

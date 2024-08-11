@@ -54,13 +54,13 @@ public class MinigameManager : NetworkBehaviour
 		timerTxt.text = $"{timer}";
 		countdownCo = StartCoroutine( CountdownCo() );
 		if (PreviewManager.Instance != null)
-			PreviewManager.Instance.TriggerTransition(false);
+			PreviewManager.Instance.TriggerTransitionServerRpc(false);
 	}
 
 	[ServerRpc(RequireOwnership=false)] public void SpawnPlayerServerRpc(int clientId)
 	{
 		/* Distance around the circle */  
-		float radians = 2 * Mathf.PI / nPlayers * clientId;
+		float radians = 180 + (2 * Mathf.PI / nPlayers * clientId);
 		
 		/* Get the vector direction */ 
 		float vertical = Mathf.Sin(radians);
@@ -127,10 +127,10 @@ public class MinigameManager : NetworkBehaviour
 		if (PreviewManager.Instance != null)
 		{
 			yield return new WaitForSeconds(0.5f);
-			PreviewManager.Instance.TriggerTransition(true);
+			PreviewManager.Instance.TriggerTransitionServerRpc(true);
 
 			yield return new WaitForSeconds(0.5f);
-			gm.ReloadPreviewMinigame();
+			gm.ReloadPreviewMinigameServerRpc();
 		}
 		// real
 		else

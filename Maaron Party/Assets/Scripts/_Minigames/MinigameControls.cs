@@ -37,11 +37,12 @@ public class MinigameControls : NetworkBehaviour
 	{
 		gm = GameManager.Instance;
 		SetModel( gm.playerModels[(int) OwnerClientId] );
+		mm = MinigameManager.Instance;
+		transform.parent = mm.transform;
 		if (!IsOwner) enabled = false;
 
 		playerId = (int) OwnerClientId;
 		player = ReInput.players.GetPlayer(playerId);
-		mm = MinigameManager.Instance;
 	}
 
 	public void SetModel(int ind)
@@ -88,11 +89,11 @@ public class MinigameControls : NetworkBehaviour
 
 	private void OnTriggerEnter(Collider other) 
 	{
-		if (enabled && other.gameObject.CompareTag("Death"))
+		if (IsOwner && enabled && other.gameObject.CompareTag("Death"))
 		{
 			MinigameManager.Instance.PlayerEliminatedServerRpc(playerId);
-			//this.enabled = false;
-			//gameObject.SetActive(false);
+			this.enabled = false;
+			gameObject.SetActive(false);
 		}
 	}
 }

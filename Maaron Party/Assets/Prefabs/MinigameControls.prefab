@@ -948,7 +948,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1563969759
+  GlobalObjectIdHash: 147899399
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -969,6 +969,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11884a3402f7c794da3e988e6da37fee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gm: {fileID: 0}
+  mm: {fileID: 0}
   playerId: 0
   moveSpeed: 8
   maxSpeed: 5
@@ -996,7 +998,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UseUnreliableDeltas: 0
   SyncPositionX: 1
-  SyncPositionY: 0
+  SyncPositionY: 1
   SyncPositionZ: 1
   SyncRotAngleX: 0
   SyncRotAngleY: 0
