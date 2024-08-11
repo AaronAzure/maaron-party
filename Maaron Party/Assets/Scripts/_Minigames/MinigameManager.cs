@@ -47,30 +47,6 @@ public class MinigameManager : NetworkBehaviour
 		
 		// Spawn players
 		SpawnPlayerServerRpc((int) NetworkManager.Singleton.LocalClientId);
-		//for (int i=0 ; i<nPlayers ; i++)
-		//{
-		//	/* Distance around the circle */  
-		//	float radians = 2 * Mathf.PI / nPlayers * i;
-			
-		//	/* Get the vector direction */ 
-		//	float vertical = Mathf.Sin(radians);
-		//	float horizontal = Mathf.Cos(radians); 
-			
-		//	Vector3 spawnDir = new Vector3 (horizontal, 0, vertical);
-			
-		//	/* Get the spawn position */ 
-		//	Vector3 spawnP = spawnPos.position + spawnDir * 3; // Radius is just the distance away from the point
-			
-		//	/* Now spawn */
-			
-		//	/* Rotate the enemy to face towards player */
-		//	var obj = Instantiate(player, spawnP, Quaternion.identity, spawnHolder);
-		//	obj.transform.LookAt(spawnPos);
-		//	obj.SetModel(i);
-		//	obj.SetId(i);
-		//	obj.canMove = playersCanMove;
-		//	obj.canJump = playersCanJump;
-		//}
 		rewards = new int[nPlayers];
 		for (int i=0 ; i<rewards.Length ; i++)
 			rewards[i] = -1;
@@ -96,13 +72,17 @@ public class MinigameManager : NetworkBehaviour
 		Vector3 spawnP = spawnPos.position + spawnDir * 3; // Radius is just the distance away from the point
 
 		var networkObject = NetworkManager.SpawnManager.InstantiateAndSpawn(
-			playerToSpawn, (ulong) clientId, position:spawnP);
-		if (!gm.hasStarted)
-			SpawnPlayerClientRpc(clientId);
+			playerToSpawn, (ulong) clientId, position:spawnP, destroyWithScene:true);
+		InitPlayerClientRpc();
+
+		MinigameControls obj = networkObject.GetComponent<MinigameControls>();
 	}
-	[ClientRpc(RequireOwnership=false)] private void SpawnPlayerClientRpc(int clientId)
+	[ClientRpc(RequireOwnership=false)] private void InitPlayerClientRpc()
 	{ 
 		_player = MinigameControls.Instance;
+		//_player.transform.LookAt(spawnPos);
+		_player.canMove = playersCanMove;
+		_player.canJump = playersCanJump;
 	}
 
 	IEnumerator CountdownCo()
@@ -118,15 +98,20 @@ public class MinigameManager : NetworkBehaviour
 	} 
 
 	bool gameFin;
-	public void PlayerEliminated(int id)
+	[ServerRpc(RequireOwnership=false)] public void PlayerEliminatedServerRpc(int id)
 	{
 		if (id < rewards.Length)
 			rewards[id] = gm.GetPrizeValue(nOut++);
+		PlayerEliminatedClientRpc((ulong) id);
 		if (lastManStanding && nOut == nPlayers - 1)
 		{
 			StopCoroutine( countdownCo );
 			GameOver();
 		}
+	}
+	[ClientRpc(RequireOwnership=false)] private void PlayerEliminatedClientRpc(ulong id)
+	{
+		_player.DeathClientRpc(id);
 	}
 	private void GameOver()
 	{

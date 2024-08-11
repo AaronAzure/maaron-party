@@ -35,16 +35,13 @@ public class MinigameControls : NetworkBehaviour
 	// Start is called before the first frame update
 	void Start()
 	{
-		player = ReInput.players.GetPlayer(playerId);
 		gm = GameManager.Instance;
-		mm = MinigameManager.Instance;
 		SetModel( gm.playerModels[(int) OwnerClientId] );
 		if (!IsOwner) enabled = false;
-	}
 
-	public void SetId(int id)
-	{
-		playerId = id;
+		playerId = (int) OwnerClientId;
+		player = ReInput.players.GetPlayer(playerId);
+		mm = MinigameManager.Instance;
 	}
 
 	public void SetModel(int ind)
@@ -57,6 +54,7 @@ public class MinigameControls : NetworkBehaviour
 
 	private void FixedUpdate() 
 	{
+		if (!IsOwner) return;
 		if (canMove)
 			Move();
 	}
@@ -68,11 +66,7 @@ public class MinigameControls : NetworkBehaviour
 
 		var dir = new Vector3(moveX, 0, moveZ).normalized * moveSpeed;
 		rb.velocity = new Vector3(dir.x, rb.velocity.y, dir.z);
-		//Vector3 moveDir = Vector3.forward * moveZ + Vector3.right * moveX;
-		//rb.AddForce(moveDir.normalized * moveSpeed, ForceMode.Impulse);
 
-		//if (rb.velocity.magnitude > maxSpeed)
-		//	rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxSpeed);
 		if (moveX != 0 || moveZ != 0)
 			Rotate(moveX, moveZ);
 	}
@@ -83,14 +77,22 @@ public class MinigameControls : NetworkBehaviour
 		var rotation = Quaternion.LookRotation(lookPos);
 		model.rotation = Quaternion.Slerp(model.rotation, rotation, Time.fixedDeltaTime * rotateSpeed);
 	}
+	[ClientRpc(RequireOwnership = false)] public void DeathClientRpc(ulong targetId)
+	{
+		if (OwnerClientId == targetId)
+		{
+			this.enabled = false;
+			gameObject.SetActive(false);
+		}
+	}
 
 	private void OnTriggerEnter(Collider other) 
 	{
 		if (enabled && other.gameObject.CompareTag("Death"))
 		{
-			MinigameManager.Instance.PlayerEliminated(playerId);
-			this.enabled = false;
-			gameObject.SetActive(false);
+			MinigameManager.Instance.PlayerEliminatedServerRpc(playerId);
+			//this.enabled = false;
+			//gameObject.SetActive(false);
 		}
 	}
 }
