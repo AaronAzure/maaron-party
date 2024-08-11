@@ -2,12 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using Unity.Netcode;
 
-public class MinigameManager : MonoBehaviour
+public class MinigameManager : NetworkBehaviour
 {
 	public static MinigameManager Instance;
 	private GameManager gm;
-	[SerializeField] private MinigameControls player;
+	private MinigameControls _player;
+	[SerializeField] private NetworkObject playerToSpawn;
 	[SerializeField] private Transform spawnHolder;
 	[SerializeField] private Transform spawnPos;
 	[SerializeField] private TextMeshProUGUI timerTxt;
@@ -41,32 +43,34 @@ public class MinigameManager : MonoBehaviour
 			nPlayers = gm.nPlayers.Value;
 			if (PreviewManager.Instance == null)
 				gm.TriggerTransitionServerRpc(false);
-				//gm.TriggerTransition(false);
 		}
-		for (int i=0 ; i<nPlayers ; i++)
-		{
-			/* Distance around the circle */  
-			float radians = 2 * Mathf.PI / nPlayers * i;
+		
+		// Spawn players
+		SpawnPlayerServerRpc((int) NetworkManager.Singleton.LocalClientId);
+		//for (int i=0 ; i<nPlayers ; i++)
+		//{
+		//	/* Distance around the circle */  
+		//	float radians = 2 * Mathf.PI / nPlayers * i;
 			
-			/* Get the vector direction */ 
-			float vertical = Mathf.Sin(radians);
-			float horizontal = Mathf.Cos(radians); 
+		//	/* Get the vector direction */ 
+		//	float vertical = Mathf.Sin(radians);
+		//	float horizontal = Mathf.Cos(radians); 
 			
-			Vector3 spawnDir = new Vector3 (horizontal, 0, vertical);
+		//	Vector3 spawnDir = new Vector3 (horizontal, 0, vertical);
 			
-			/* Get the spawn position */ 
-			Vector3 spawnP = spawnPos.position + spawnDir * 3; // Radius is just the distance away from the point
+		//	/* Get the spawn position */ 
+		//	Vector3 spawnP = spawnPos.position + spawnDir * 3; // Radius is just the distance away from the point
 			
-			/* Now spawn */
+		//	/* Now spawn */
 			
-			/* Rotate the enemy to face towards player */
-			var obj = Instantiate(player, spawnP, Quaternion.identity, spawnHolder);
-			obj.transform.LookAt(spawnPos);
-			obj.SetModel(i);
-			obj.SetId(i);
-			obj.canMove = playersCanMove;
-			obj.canJump = playersCanJump;
-		}
+		//	/* Rotate the enemy to face towards player */
+		//	var obj = Instantiate(player, spawnP, Quaternion.identity, spawnHolder);
+		//	obj.transform.LookAt(spawnPos);
+		//	obj.SetModel(i);
+		//	obj.SetId(i);
+		//	obj.canMove = playersCanMove;
+		//	obj.canJump = playersCanJump;
+		//}
 		rewards = new int[nPlayers];
 		for (int i=0 ; i<rewards.Length ; i++)
 			rewards[i] = -1;
@@ -75,6 +79,30 @@ public class MinigameManager : MonoBehaviour
 		countdownCo = StartCoroutine( CountdownCo() );
 		if (PreviewManager.Instance != null)
 			PreviewManager.Instance.TriggerTransition(false);
+	}
+
+	[ServerRpc(RequireOwnership=false)] public void SpawnPlayerServerRpc(int clientId)
+	{
+		/* Distance around the circle */  
+		float radians = 2 * Mathf.PI / nPlayers * clientId;
+		
+		/* Get the vector direction */ 
+		float vertical = Mathf.Sin(radians);
+		float horizontal = Mathf.Cos(radians); 
+		
+		Vector3 spawnDir = new Vector3 (horizontal, 0, vertical);
+		
+		/* Get the spawn position */ 
+		Vector3 spawnP = spawnPos.position + spawnDir * 3; // Radius is just the distance away from the point
+
+		var networkObject = NetworkManager.SpawnManager.InstantiateAndSpawn(
+			playerToSpawn, (ulong) clientId, position:spawnP);
+		if (!gm.hasStarted)
+			SpawnPlayerClientRpc(clientId);
+	}
+	[ClientRpc(RequireOwnership=false)] private void SpawnPlayerClientRpc(int clientId)
+	{ 
+		_player = MinigameControls.Instance;
 	}
 
 	IEnumerator CountdownCo()

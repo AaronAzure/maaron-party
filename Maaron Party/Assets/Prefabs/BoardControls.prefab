@@ -4629,7 +4629,7 @@ MonoBehaviour:
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
+  SceneMigrationSynchronization: 0
   SpawnWithObservers: 1
   DontDestroyWithOwner: 1
   AutoObjectParentSync: 1
@@ -4651,6 +4651,7 @@ MonoBehaviour:
   rotateSpeed: 7.5
   id:
     m_InternalValue: 0
+  nwObj: {fileID: 2048611876850834971}
   model: {fileID: 6183082833554358603}
   models:
   - {fileID: 3019022781079674692}

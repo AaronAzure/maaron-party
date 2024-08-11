@@ -53,14 +53,14 @@ public class BoardManager : NetworkBehaviour
 	[ServerRpc(RequireOwnership=false)] public void SpawnPlayerServerRpc(int clientId)
 	{
 		var networkObject = NetworkManager.SpawnManager.InstantiateAndSpawn(
-			playerToSpawn, (ulong) clientId, position:spawnPos.position + new Vector3(-2 + 2*clientId,0,0));
+			playerToSpawn, (ulong) clientId, position:spawnPos.position + new Vector3(-2 + 2*clientId,0,0), destroyWithScene:true);
 		var p = networkObject.GetComponent<PlayerControls>();
 		if (!gm.hasStarted)
 			SpawnPlayerClientRpc(clientId);
 			//p.SetStartNode(startNode);
 		Debug.Log($"{p.name} Joined");
 	}
-	[ClientRpc(RequireOwnership=false)] public void SpawnPlayerClientRpc(int clientId)
+	[ClientRpc(RequireOwnership=false)] private void SpawnPlayerClientRpc(int clientId)
 	{ 
 		_player = PlayerControls.Instance;
 		_player.SetStartNode(startNode);
@@ -94,7 +94,10 @@ public class BoardManager : NetworkBehaviour
 		if (nPlayerOrder.Value >= 0 && nPlayerOrder.Value < players.Length)
 			gm.NextPlayerTurnServerRpc((ulong) ++nPlayerOrder.Value);
 		else if (nPlayerOrder.Value >= nPlayers)
+		{
+			//DisablePlayerServerRpc();
 			gm.LoadPreviewMinigameServerRpc("TestMinigame");
+		}
 			//gm.LoadMinigameServerRpc();
 			//LoadMinigame("TestMinigame");
 	}

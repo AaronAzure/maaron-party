@@ -17,9 +17,12 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private float rotateSpeed=5f;
 	private Vector3 startPos;
 	private float time;
+
+	
+	[Space] [Header("Network")]
 	public NetworkVariable<ulong> id = new NetworkVariable<ulong>(
 		0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-
+	[SerializeField] private NetworkObject nwObj;
 	
 	[Space] [Header("Model")]
 	[SerializeField] private Transform model;
@@ -105,8 +108,10 @@ public class PlayerControls : NetworkBehaviour
 			: OwnerClientId == 2 ? new Color(1,0.5f,0.8f) : Color.blue;
 		SetModel( gm.playerModels[(int) OwnerClientId] );
 		
-		if (!IsOwner) return;
-		Debug.Log($"<color=cyan>{name} is OWNER!!</color>", gameObject);
+		if (!IsOwner) {
+			enabled = false;
+			return;
+		}
 		id.Value = OwnerClientId;
 		startPos = this.transform.position;
 		if (gm.hasStarted)
@@ -266,7 +271,6 @@ public class PlayerControls : NetworkBehaviour
 			if (currNode.nextNodes.Count > 1)
 			{
 				isAtFork = true;
-				HidePaths();
 				for (int i=0 ; i<currNode.nextNodes.Count ; i++)
 					RevealPaths(currNode.nextNodes[i].transform.position, i);
 				nextNode = currNode;
@@ -321,14 +325,22 @@ public class PlayerControls : NetworkBehaviour
 
 	void HidePaths()
 	{
-		up.gameObject.SetActive(false);
-		down.gameObject.SetActive(false);
-		left.gameObject.SetActive(false);
-		right.gameObject.SetActive(false);
-		upLeft.gameObject.SetActive(false);
-		upRight.gameObject.SetActive(false);
-		downLeft.gameObject.SetActive(false);
-		downRight.gameObject.SetActive(false);
+		if (up.gameObject.activeSelf)
+			up.gameObject.SetActive(false);
+		if (down.gameObject.activeSelf)
+			down.gameObject.SetActive(false);
+		if (left.gameObject.activeSelf)
+			left.gameObject.SetActive(false);
+		if (right.gameObject.activeSelf)
+			right.gameObject.SetActive(false);
+		if (upLeft.gameObject.activeSelf)
+			upLeft.gameObject.SetActive(false);
+		if (upRight.gameObject.activeSelf)
+			upRight.gameObject.SetActive(false);
+		if (downLeft.gameObject.activeSelf)
+			downLeft.gameObject.SetActive(false);
+		if (downRight.gameObject.activeSelf)
+			downRight.gameObject.SetActive(false);
 	}
 	void RevealPaths(Vector3 nextPos, int ind)
 	{
@@ -343,37 +355,37 @@ public class PlayerControls : NetworkBehaviour
 			up.gameObject.SetActive(true);
 			up.index = ind;
 		}
-		if (goingDown && !goingLeft && !goingRight)
+		else if (goingDown && !goingLeft && !goingRight)
 		{
 			down.gameObject.SetActive(true);
 			down.index = ind;
 		}
-		if (goingLeft && !goingUp && !goingDown)
+		else if (goingLeft && !goingUp && !goingDown)
 		{
 			left.gameObject.SetActive(true);
 			left.index = ind;
 		}
-		if (goingRight && !goingUp && !goingDown)
+		else if (goingRight && !goingUp && !goingDown)
 		{
 			right.gameObject.SetActive(true);
 			right.index = ind;
 		}
-		if (goingUp && goingLeft)
+		else if (goingUp && goingLeft)
 		{
 			upLeft.gameObject.SetActive(true);
 			upLeft.index = ind;
 		}
-		if (goingUp && goingRight)
+		else if (goingUp && goingRight)
 		{
 			upRight.gameObject.SetActive(true);
 			upRight.index = ind;
 		}
-		if (goingDown && goingLeft)
+		else if (goingDown && goingLeft)
 		{
 			downLeft.gameObject.SetActive(true);
 			downLeft.index = ind;
 		}
-		if (goingDown && goingRight)
+		else if (goingDown && goingRight)
 		{
 			downRight.gameObject.SetActive(true);
 			downRight.index = ind;

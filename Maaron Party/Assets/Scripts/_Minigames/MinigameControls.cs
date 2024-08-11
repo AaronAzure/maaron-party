@@ -1,10 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 using Rewired;
 
-public class MinigameControls : MonoBehaviour
+public class MinigameControls : NetworkBehaviour
 {
+	public static MinigameControls Instance;
+	public GameManager gm;
+	public MinigameManager mm;
 	private Player player;
 	[HideInInspector] public int playerId;
 	
@@ -22,10 +26,20 @@ public class MinigameControls : MonoBehaviour
 
 
 
+	public override void OnNetworkSpawn()
+	{
+		if (IsOwner)
+			Instance = this;
+	}
+
 	// Start is called before the first frame update
 	void Start()
 	{
 		player = ReInput.players.GetPlayer(playerId);
+		gm = GameManager.Instance;
+		mm = MinigameManager.Instance;
+		SetModel( gm.playerModels[(int) OwnerClientId] );
+		if (!IsOwner) enabled = false;
 	}
 
 	public void SetId(int id)
