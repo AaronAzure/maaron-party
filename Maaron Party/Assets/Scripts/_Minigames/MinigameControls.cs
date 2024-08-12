@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Unity.Netcode;
+using FishNet.Object;
 using Rewired;
 
 public class MinigameControls : NetworkBehaviour
@@ -26,22 +26,22 @@ public class MinigameControls : NetworkBehaviour
 
 
 
-	public override void OnNetworkSpawn()
-	{
-		if (IsOwner)
-			Instance = this;
-	}
+	//public override void OnNetworkSpawn()
+	//{
+	//	if (IsOwner)
+	//		Instance = this;
+	//}
 
 	// Start is called before the first frame update
 	void Start()
 	{
 		gm = GameManager.Instance;
-		SetModel( gm.playerModels[(int) OwnerClientId] );
+		//SetModel( gm.playerModels[(int) OwnerClientId] );
 		mm = MinigameManager.Instance;
 		transform.parent = mm.transform;
-		if (!IsOwner) enabled = false;
+		//if (!IsOwner) enabled = false;
 
-		playerId = (int) OwnerClientId;
+		//playerId = (int) OwnerClientId;
 		player = ReInput.players.GetPlayer(playerId);
 	}
 
@@ -78,14 +78,14 @@ public class MinigameControls : NetworkBehaviour
 		var rotation = Quaternion.LookRotation(lookPos);
 		model.rotation = Quaternion.Slerp(model.rotation, rotation, Time.fixedDeltaTime * rotateSpeed);
 	}
-	[ClientRpc(RequireOwnership = false)] public void DeathClientRpc(ulong targetId)
-	{
-		if (OwnerClientId == targetId)
-		{
-			this.enabled = false;
-			gameObject.SetActive(false);
-		}
-	}
+	//[ClientRpc(RequireOwnership = false)] public void DeathClientRpc(ulong targetId)
+	//{
+	//	if (OwnerClientId == targetId)
+	//	{
+	//		this.enabled = false;
+	//		gameObject.SetActive(false);
+	//	}
+	//}
 
 	private void OnTriggerEnter(Collider other) 
 	{

@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Netcode;
+using FishNet.Object;
 using UnityEngine;
 
 public class PreviewManager : NetworkBehaviour
@@ -23,10 +23,10 @@ public class PreviewManager : NetworkBehaviour
 
 	[ServerRpc(RequireOwnership=false)] public void TriggerTransitionServerRpc(bool fadeIn)
 	{
-		TriggerTransitionClientRpc(fadeIn);
+		//TriggerTransitionClientRpc(fadeIn);
 	}
-	[ClientRpc(RequireOwnership=false)] private void TriggerTransitionClientRpc(bool fadeIn)
-	{
-		anim.SetTrigger(fadeIn ? "in" : "out");
-	}
+	//[ClientRpc(RequireOwnership=false)] private void TriggerTransitionClientRpc(bool fadeIn)
+	//{
+	//	anim.SetTrigger(fadeIn ? "in" : "out");
+	//}
 }

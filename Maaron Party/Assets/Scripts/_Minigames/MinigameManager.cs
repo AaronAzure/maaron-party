@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using Unity.Netcode;
+using FishNet.Object;
 
 public class MinigameManager : NetworkBehaviour
 {
@@ -40,13 +40,13 @@ public class MinigameManager : NetworkBehaviour
 		gm = GameManager.Instance;
 		if (gm != null)
 		{
-			nPlayers = gm.nPlayers.Value;
-			if (PreviewManager.Instance == null)
-				gm.TriggerTransitionServerRpc(false);
+			//nPlayers = gm.nPlayers.Value;
+			//if (PreviewManager.Instance == null)
+			//	gm.TriggerTransitionServerRpc(false);
 		}
 		
 		// Spawn players
-		SpawnPlayerServerRpc((int) NetworkManager.Singleton.LocalClientId);
+		//SpawnPlayerServerRpc((int) NetworkManager.Singleton.LocalClientId);
 		rewards = new int[nPlayers];
 		for (int i=0 ; i<rewards.Length ; i++)
 			rewards[i] = -1;
@@ -71,19 +71,19 @@ public class MinigameManager : NetworkBehaviour
 		/* Get the spawn position */ 
 		Vector3 spawnP = spawnPos.position + spawnDir * 3; // Radius is just the distance away from the point
 
-		var networkObject = NetworkManager.SpawnManager.InstantiateAndSpawn(
-			playerToSpawn, (ulong) clientId, position:spawnP, destroyWithScene:true);
-		InitPlayerClientRpc();
+		//var networkObject = NetworkManager.SpawnManager.InstantiateAndSpawn(
+		//	playerToSpawn, (ulong) clientId, position:spawnP, destroyWithScene:true);
+		//InitPlayerClientRpc();
 
-		MinigameControls obj = networkObject.GetComponent<MinigameControls>();
+		//MinigameControls obj = networkObject.GetComponent<MinigameControls>();
 	}
-	[ClientRpc(RequireOwnership=false)] private void InitPlayerClientRpc()
-	{ 
-		_player = MinigameControls.Instance;
-		//_player.transform.LookAt(spawnPos);
-		_player.canMove = playersCanMove;
-		_player.canJump = playersCanJump;
-	}
+	//[ClientRpc(RequireOwnership=false)] private void InitPlayerClientRpc()
+	//{ 
+	//	_player = MinigameControls.Instance;
+	//	//_player.transform.LookAt(spawnPos);
+	//	_player.canMove = playersCanMove;
+	//	_player.canJump = playersCanJump;
+	//}
 
 	IEnumerator CountdownCo()
 	{
@@ -102,17 +102,17 @@ public class MinigameManager : NetworkBehaviour
 	{
 		if (id < rewards.Length)
 			rewards[id] = gm.GetPrizeValue(nOut++);
-		PlayerEliminatedClientRpc((ulong) id);
+		//PlayerEliminatedClientRpc((ulong) id);
 		if (lastManStanding && nOut == nPlayers - 1)
 		{
 			StopCoroutine( countdownCo );
 			GameOver();
 		}
 	}
-	[ClientRpc(RequireOwnership=false)] private void PlayerEliminatedClientRpc(ulong id)
-	{
-		_player.DeathClientRpc(id);
-	}
+	//[ClientRpc(RequireOwnership=false)] private void PlayerEliminatedClientRpc(ulong id)
+	//{
+	//	_player.DeathClientRpc(id);
+	//}
 	private void GameOver()
 	{
 		if (!gameFin)

@@ -4,7 +4,7 @@ using TMPro;
 using Rewired;
 using UnityEngine;
 using UnityEngine.UI;
-using Unity.Netcode;
+using FishNet.Object;
 
 public class PlayerControls : NetworkBehaviour
 {
@@ -20,8 +20,8 @@ public class PlayerControls : NetworkBehaviour
 
 	
 	[Space] [Header("Network")]
-	public NetworkVariable<ulong> id = new NetworkVariable<ulong>(
-		0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+	//public NetworkVariable<ulong> id = new NetworkVariable<ulong>(
+	//	0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 	[SerializeField] private NetworkObject nwObj;
 	
 	[Space] [Header("Model")]
@@ -51,11 +51,11 @@ public class PlayerControls : NetworkBehaviour
 	
 	
 	[Space] [Header("Stats")]
-	[SerializeField] private NetworkVariable<int> coins = new NetworkVariable<int>(
-		10, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+	//[SerializeField] private NetworkVariable<int> coins = new NetworkVariable<int>(
+	//	10, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+	//private NetworkVariable<int> coinsT = new NetworkVariable<int>(0,
+	//	NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 	//[SerializeField] private int coins=10;
-	private NetworkVariable<int> coinsT = new NetworkVariable<int>(0,
-		NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 	[SerializeField] private int stars;
 	private int starsT;
 	[SerializeField] private float currencyT;
@@ -79,14 +79,14 @@ public class PlayerControls : NetworkBehaviour
 	[Space] [Header("HACKS")]
 	[SerializeField] private int controlledRoll=-1;
 
-	public override void OnNetworkSpawn()
-	{
-		coinsT.OnValueChanged += (int prevCoins, int newCoins) => {
-			coinTxt.text = coinTxt.text = $"{newCoins}";
-		};
-		if (IsOwner)
-			Instance = this;
-	}
+	//public override void OnNetworkSpawn()
+	//{
+	//	coinsT.OnValueChanged += (int prevCoins, int newCoins) => {
+	//		coinTxt.text = coinTxt.text = $"{newCoins}";
+	//	};
+	//	if (IsOwner)
+	//		Instance = this;
+	//}
 
 	private void OnEnable() 
 	{
@@ -104,15 +104,15 @@ public class PlayerControls : NetworkBehaviour
 		gm = GameManager.Instance;
 		dataUi.SetParent(bm.GetUiLayout());
 		dataUi.localScale = Vector3.one;
-		dataImg.color = OwnerClientId == 0 ? new Color(0,1,0) : OwnerClientId == 1 ? new Color(1,0.6f,0) 
-			: OwnerClientId == 2 ? new Color(1,0.5f,0.8f) : Color.blue;
-		SetModel( gm.playerModels[(int) OwnerClientId] );
+		//dataImg.color = OwnerClientId == 0 ? new Color(0,1,0) : OwnerClientId == 1 ? new Color(1,0.6f,0) 
+		//	: OwnerClientId == 2 ? new Color(1,0.5f,0.8f) : Color.blue;
+		//SetModel( gm.playerModels[(int) OwnerClientId] );
 		
-		if (!IsOwner) {
-			enabled = false;
-			return;
-		}
-		id.Value = OwnerClientId;
+		//if (!IsOwner) {
+		//	enabled = false;
+		//	return;
+		//}
+		//id.Value = OwnerClientId;
 		startPos = this.transform.position;
 		if (gm.hasStarted)
 		{
@@ -120,10 +120,10 @@ public class PlayerControls : NetworkBehaviour
 		}
 		else
 		{
-			coinsT.Value = coins.Value;
+			//coinsT.Value = coins.Value;
 			starsT = stars;
 		}
-		coinTxt.text = $"{coins.Value}";
+		//coinTxt.text = $"{coins.Value}";
 		starTxt.text = $"{stars}";
 	}
 
@@ -134,8 +134,8 @@ public class PlayerControls : NetworkBehaviour
 
 	public void SetModel(int ind)
 	{
-		Debug.Log($"__ PLAYER {id.Value} |{ind}|__");
-		name = $"__ PLAYER {id.Value} __";
+		//Debug.Log($"__ PLAYER {id.Value} |{ind}|__");
+		//name = $"__ PLAYER {id.Value} __";
 		for (int i=0 ; i<models.Length ; i++)
 			models[i].SetActive(false);
 		if (models != null && ind >= 0 && ind < models.Length)
@@ -153,21 +153,21 @@ public class PlayerControls : NetworkBehaviour
 	void FixedUpdate()
 	{
 		if (!IsOwner) return;
-		if (coins.Value != coinsT.Value)
-		{
-			if (currencyT < 0.1f)
-			{
-				currencyT += Time.fixedDeltaTime;
-			} 
-			else
-			{
-				coinsT.Value = coinsT.Value < coins.Value ? coinsT.Value + 1 : coinsT.Value - 1;
-				coinTxt.text = $"{coinsT.Value}";
-				currencyT = 0;
-			}
-			if (coins.Value == coinsT.Value)
-				isCurrencyAsync = false;
-		}
+		//if (coins.Value != coinsT.Value)
+		//{
+		//	if (currencyT < 0.1f)
+		//	{
+		//		currencyT += Time.fixedDeltaTime;
+		//	} 
+		//	else
+		//	{
+		//		coinsT.Value = coinsT.Value < coins.Value ? coinsT.Value + 1 : coinsT.Value - 1;
+		//		coinTxt.text = $"{coinsT.Value}";
+		//		currencyT = 0;
+		//	}
+		//	if (coins.Value == coinsT.Value)
+		//		isCurrencyAsync = false;
+		//}
 		else if (stars != starsT)
 		{
 			if (currencyT < 0.1f)
@@ -253,14 +253,14 @@ public class PlayerControls : NetworkBehaviour
 	private void SaveData()
 	{
 		gm.SaveCurrNode(currNode.nodeId, playerId);
-		gm.SaveCoins(coins.Value, playerId);
+		//gm.SaveCoins(coins.Value, playerId);
 		gm.SaveStars(stars, playerId);
 	}
 	private void LoadData()
 	{
 		currNode = NodeManager.Instance.GetNode( gm.GetCurrNode(playerId) );
 		startPos = transform.position = currNode.transform.position;
-		coinsT.Value = coins.Value = gm.GetCoins(playerId);
+		//coinsT.Value = coins.Value = gm.GetCoins(playerId);
 		starsT = stars = gm.GetStars(playerId);
 	}
 
@@ -292,7 +292,7 @@ public class PlayerControls : NetworkBehaviour
 
 	public void NodeEffect(int bonus)
 	{
-		coins.Value = Mathf.Clamp(coins.Value + bonus, 0, 999);
+		//coins.Value = Mathf.Clamp(coins.Value + bonus, 0, 999);
 		isCurrencyAsync = true;
 		if (bonus > 0)
 		{
