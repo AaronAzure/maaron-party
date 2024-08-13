@@ -6,10 +6,14 @@ using FishNet.Object;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Unity.VisualScripting;
+using FishNet.Managing;
+using FishNet;
+using FishNet.Managing.Scened;
 
 public class GameManager : NetworkBehaviour
 {
 	public static GameManager Instance;
+	private NetworkManager nm;
 	//public NetworkVariable<int> nPlayers = new NetworkVariable<int>(
 	//	0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 	//public NetworkList<ulong> players;
@@ -83,10 +87,14 @@ public class GameManager : NetworkBehaviour
 		stars = new();
 		if (BoardManager.Instance == null)
 			TriggerTransition(false);
+		nm = FindObjectOfType<NetworkManager>();
 	}
 
 	public void StartHost()
 	{
+		nm.ServerManager.StartConnection();
+		nm.ClientManager.StartConnection();;
+
 		//NetworkManager.Singleton.StartHost();
 		if (buttons != null) buttons.SetActive(false);
 		if (startBtn != null)
@@ -94,13 +102,10 @@ public class GameManager : NetworkBehaviour
 	}
 	public void StartClient()
 	{
+		nm.ClientManager.StartConnection();;
 		//NetworkManager.Singleton.StartClient();
 		if (buttons != null) buttons.SetActive(false);
 	}
-	//public void StartGame()
-	//{
-	//	NetworkManager.Singleton.SceneManager.LoadScene("TestBoard", LoadSceneMode.Single);
-	//}
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~ NETWORK ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -177,7 +182,7 @@ public class GameManager : NetworkBehaviour
 	//	}
 	//}
 
-	public void StartGame()
+	public void StartGame(string sceneName="TestBoard")
 	{
 		lobbyCreated = true;
 		//for (int i=0 ; i<NetworkManager.Singleton.ConnectedClientsIds.Count ; i++)
@@ -191,12 +196,17 @@ public class GameManager : NetworkBehaviour
 		//	);
 		//}
 		startBtn.gameObject.SetActive(false);
-		StartCoroutine( StartGameCo() );
+		StartCoroutine( StartGameCo(sceneName) );
 	}
-	IEnumerator StartGameCo()
+	IEnumerator StartGameCo(string sceneName)
 	{
 		//TriggerTransitionServerRpc(true);
 		yield return new WaitForSeconds(0.5f);
+		SceneLoadData sld = new SceneLoadData(sceneName);
+		InstanceFinder.SceneManager.LoadGlobalScenes(sld);
+		
+		SceneUnloadData uld = new SceneUnloadData("_TestLobby");
+		InstanceFinder.SceneManager.UnloadGlobalScenes(uld);
 		//NetworkManager.Singleton.SceneManager.LoadScene("TestBoard", LoadSceneMode.Single);
 	}
 

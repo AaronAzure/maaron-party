@@ -456,7 +456,7 @@ namespace FishNet.Object
             if (IsGlobal && !IsSceneObject && !IsNested)
                 DontDestroyOnLoad(gameObject);
 
-            if (NetworkManager == null || (!NetworkManager.IsClientStarted && !NetworkManager.IsServerStarted))
+            if (!IsGlobal && (NetworkManager == null || (!NetworkManager.IsClientStarted && !NetworkManager.IsServerStarted)))
             {
                 //ActiveDuringEdit is only used for scene objects.
                 if (IsSceneObject)

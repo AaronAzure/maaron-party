@@ -77,6 +77,10 @@ namespace FishNet.Managing
         /// <summary>
         /// 
         /// </summary>
+        public static NetworkManager Instance;
+        /// <summary>
+        /// 
+        /// </summary>
         private static List<NetworkManager> _instances = new List<NetworkManager>();
         /// <summary>
         /// Currently initialized NetworkManagers.
@@ -268,6 +272,7 @@ namespace FishNet.Managing
             InitializeComponents();
 
             _instances.Add(this);
+			Instance = this;
             Initialized = true;
         }
 
