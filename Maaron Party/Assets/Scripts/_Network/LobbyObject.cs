@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using FishNet.Object;
 using TMPro;
+using FishNet.Object.Synchronizing;
 
 public class LobbyObject : NetworkBehaviour
 {
@@ -13,6 +14,8 @@ public class LobbyObject : NetworkBehaviour
 	[SerializeField] private TextMeshProUGUI characterTxt;
 	[SerializeField] private int maxCharacters=4;
 	[SerializeField] private Image pfp;
+	[SerializeField] private Image bg;
+	[SerializeField] private readonly SyncVar<int> characterInd = new SyncVar<int>(-1);
 	//public NetworkVariable<int> characterInd = new NetworkVariable<int>(
 	//	0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
@@ -27,12 +30,44 @@ public class LobbyObject : NetworkBehaviour
 	//{
 	//	if (gm != null && IsOwner)
 	//		gm.LeftGameServerRpc(OwnerClientId);
-	//}
+	//} 
 
-	private void ChangeName(int ind)
+	public override void OnStartClient()
 	{
-		gameObject.name = $"__ PLAYER {ind} __";
-		switch (ind)
+		base.OnStartClient();
+		characterInd.OnChange += ChangeName;
+		characterInd.Value = OwnerId;
+		//ChangeName(characterInd.Value);
+		name = $"__ PLAYER {OwnerId} __";
+		Debug.Log($"==> {name} JOINED!!");
+
+		if (IsOwner)
+		{
+			Instance = this;
+			buttons.SetActive(true);
+			bg.color = new Color(0.25f, 0.25f, 0.25f, 0.7843f);
+			StartCoroutine(ReparentUiCo());
+		}
+		else
+		{
+			gm = GameManager.Instance;
+			this.transform.SetParent(gm.spawnHolder, true);
+			this.transform.localScale = Vector3.one;
+			this.enabled = false;
+		}
+	}
+	IEnumerator ReparentUiCo()
+	{
+		yield return null;
+		gm = GameManager.Instance;
+		this.transform.SetParent(gm.spawnHolder, true);
+		this.transform.localScale = Vector3.one;
+	}
+
+	private void ChangeName(int prev, int next, bool asServer)
+	{
+		gameObject.name = $"__ PLAYER {next} __";
+		switch (next)
 		{
 			case 0: 
 				characterTxt.text = "Green";
@@ -47,26 +82,8 @@ public class LobbyObject : NetworkBehaviour
 				characterTxt.text = "Blue";
 				break;
 		}
-		pfp.color = ind == 0 ? new Color(0,1,0) : ind == 1 ? new Color(1,0.6f,0) 
-				: ind == 2 ? new Color(1,0.5f,0.8f) : Color.blue;
-	}
-
-	private void Start() 
-	{
-		gm = GameManager.Instance;
-		this.transform.SetParent(gm.spawnHolder, true);
-		this.transform.localScale = Vector3.one;
-
-		//if (IsOwner)
-		//{
-		//	Instance = this;
-		//	Debug.Log("INSTANCE CREATED " + name );
-		//	//Debug.Log($"=>  {OwnerClientId}");
-		//	buttons.SetActive(true);
-		//	gm.JoinGameServerRpc(OwnerClientId);
-		//	characterInd.Value = (int) OwnerClientId;
-		//}
-		//ChangeName(characterInd.Value);
+		pfp.color = next == 0 ? new Color(0,1,0) : next == 1 ? new Color(1,0.6f,0) 
+				: next == 2 ? new Color(1,0.5f,0.8f) : Color.blue;
 	}
 
 	[ServerRpc(RequireOwnership=false)] public void SendPlayerModelServerRpc()
@@ -77,10 +94,18 @@ public class LobbyObject : NetworkBehaviour
 
 	public void CHARACTER_IND_INC()
 	{
-		//characterInd.Value = (characterInd.Value + 1) % maxCharacters;
+		CharacterIndInc(this);
+	}
+	[ServerRpc] public void CharacterIndInc(LobbyObject script)
+	{
+		script.characterInd.Value = (characterInd.Value + 1) % maxCharacters;
 	}
 	public void CHARACTER_IND_DEC()
 	{
-		//characterInd.Value = characterInd.Value == 0 ? maxCharacters - 1 : characterInd.Value - 1;
+		CharacterIndDec(this);
+	}
+	[ServerRpc] public void CharacterIndDec(LobbyObject script)
+	{
+		script.characterInd.Value = characterInd.Value == 0 ? maxCharacters - 1 : characterInd.Value - 1;
 	}
 }

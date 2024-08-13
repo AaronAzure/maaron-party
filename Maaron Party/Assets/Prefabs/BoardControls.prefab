@@ -4537,9 +4537,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8734967698997926269}
   - component: {fileID: 6931703044922159820}
-  - component: {fileID: 2048611876850834971}
   - component: {fileID: 3325275383187896159}
-  - component: {fileID: 6848800868030178541}
+  - component: {fileID: 2245622329856303986}
   m_Layer: 0
   m_Name: BoardControls
   m_TagString: Untagged
@@ -4612,27 +4611,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &2048611876850834971
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5611867278237887193}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 4105052291
-  InScenePlacedSourceGlobalObjectIdHash: 0
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 0
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 1
-  AutoObjectParentSync: 1
 --- !u!114 &3325275383187896159
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4645,13 +4623,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04265db25225ad24ca384e17153f5cf2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _componentIndexCache: 0
+  _addedNetworkObject: {fileID: 2245622329856303986}
+  _networkObjectCache: {fileID: 0}
   currNode: {fileID: 0}
   nextNode: {fileID: 0}
   moveSpeed: 3
   rotateSpeed: 7.5
-  id:
-    m_InternalValue: 0
-  nwObj: {fileID: 2048611876850834971}
+  nwObj: {fileID: 0}
   model: {fileID: 6183082833554358603}
   models:
   - {fileID: 3019022781079674692}
@@ -4673,8 +4652,6 @@ MonoBehaviour:
   downRight: {fileID: 1204219041443950389}
   movesLeft: 0
   movesLeftTxt: {fileID: 1320651501714771416}
-  coins:
-    m_InternalValue: 10
   stars: 0
   currencyT: 0
   canvas: {fileID: 8987175816818211784}
@@ -4684,7 +4661,7 @@ MonoBehaviour:
   starTxt: {fileID: 4799556476913100222}
   isAtFork: 0
   controlledRoll: 1
---- !u!114 &6848800868030178541
+--- !u!114 &2245622329856303986
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4693,28 +4670,42 @@ MonoBehaviour:
   m_GameObject: {fileID: 5611867278237887193}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df2868252ab5c4d1da357e8f11f1b524, type: 3}
+  m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UseUnreliableDeltas: 0
-  SyncPositionX: 1
-  SyncPositionY: 0
-  SyncPositionZ: 1
-  SyncRotAngleX: 0
-  SyncRotAngleY: 0
-  SyncRotAngleZ: 0
-  SyncScaleX: 0
-  SyncScaleY: 0
-  SyncScaleZ: 0
-  PositionThreshold: 0.01
-  RotAngleThreshold: 0.01
-  ScaleThreshold: 0.01
-  UseQuaternionSynchronization: 0
-  UseQuaternionCompression: 0
-  UseHalfFloatPrecision: 0
-  InLocalSpace: 0
-  Interpolate: 1
-  SlerpPosition: 0
+  <IsNested>k__BackingField: 0
+  <ComponentIndex>k__BackingField: 0
+  <PredictedSpawn>k__BackingField: {fileID: 0}
+  _networkBehaviours: []
+  <SerializedRootNetworkBehaviour>k__BackingField: {fileID: 0}
+  <NestedRootNetworkBehaviours>k__BackingField: []
+  SerializedTransformProperties:
+    Position: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 0}
+    LocalScale: {x: 0, y: 0, z: 0}
+  _isNetworked: 1
+  _isSpawnable: 1
+  _isGlobal: 0
+  _initializeOrder: 0
+  _defaultDespawnType: 0
+  NetworkObserver: {fileID: 0}
+  _enablePrediction: 0
+  _predictionType: 0
+  _graphicalObject: {fileID: 0}
+  _detachGraphicalObject: 0
+  _enableStateForwarding: 1
+  _networkTransform: {fileID: 0}
+  _ownerInterpolation: 1
+  _ownerSmoothedProperties: 255
+  _adaptiveInterpolation: 3
+  _spectatorSmoothedProperties: 255
+  _spectatorInterpolation: 2
+  _enableTeleport: 0
+  _teleportThreshold: 1
+  <PrefabId>k__BackingField: 0
+  <SpawnableCollectionId>k__BackingField: 0
+  <SceneId>k__BackingField: 0
+  <AssetPathHash>k__BackingField: 15710917418856663815
 --- !u!1 &5904401904480554314
 GameObject:
   m_ObjectHideFlags: 0
@@ -5714,7 +5705,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6183082833554358603}
-  - component: {fileID: 2599951427070311443}
   m_Layer: 0
   m_Name: MODEL
   m_TagString: Untagged
@@ -5741,37 +5731,6 @@ Transform:
   - {fileID: 1487079599775116422}
   m_Father: {fileID: 8734967698997926269}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2599951427070311443
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8872097465781185584}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df2868252ab5c4d1da357e8f11f1b524, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  UseUnreliableDeltas: 0
-  SyncPositionX: 0
-  SyncPositionY: 0
-  SyncPositionZ: 0
-  SyncRotAngleX: 0
-  SyncRotAngleY: 1
-  SyncRotAngleZ: 0
-  SyncScaleX: 0
-  SyncScaleY: 0
-  SyncScaleZ: 0
-  PositionThreshold: 0.001
-  RotAngleThreshold: 0.01
-  ScaleThreshold: 0.01
-  UseQuaternionSynchronization: 0
-  UseQuaternionCompression: 0
-  UseHalfFloatPrecision: 0
-  InLocalSpace: 0
-  Interpolate: 1
-  SlerpPosition: 0
 --- !u!1 &8987175816818211784
 GameObject:
   m_ObjectHideFlags: 0

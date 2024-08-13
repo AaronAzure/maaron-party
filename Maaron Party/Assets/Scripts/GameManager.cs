@@ -42,15 +42,24 @@ public class GameManager : NetworkBehaviour
 			Destroy(gameObject);
 		//DontDestroyOnLoad(this);
 
-		hostBtn.onClick.AddListener(() => {
-			StartHost();
-		});	
-		clientBtn.onClick.AddListener(() => {
-			StartClient();
-		});	
-		startBtn.onClick.AddListener(() => {
-			StartGame();
-		});	
+		if (hostBtn != null)
+		{
+			hostBtn.onClick.AddListener(() => {
+				StartHost();
+			});	
+		}
+		if (clientBtn != null)
+		{
+			clientBtn.onClick.AddListener(() => {
+				StartClient();
+			});	
+		}
+		if (startBtn != null)
+		{
+			startBtn.onClick.AddListener(() => {
+				StartGame();
+			});	
+		}
 
 		//players = new NetworkList<ulong>(
 		//	default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner
