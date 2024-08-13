@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using FishNet.Object;
 using TMPro;
 using FishNet.Object.Synchronizing;
+using FishNet.Connection;
 
 public class LobbyObject : NetworkBehaviour
 {
@@ -40,22 +41,40 @@ public class LobbyObject : NetworkBehaviour
 		//ChangeName(characterInd.Value);
 		name = $"__ PLAYER {OwnerId} __";
 		Debug.Log($"==> {name} JOINED!!");
+		gm = GameManager.Instance;
 
 		if (IsOwner)
 		{
 			Instance = this;
 			buttons.SetActive(true);
 			bg.color = new Color(0.25f, 0.25f, 0.25f, 0.7843f);
+			JoinServer(OwnerId);
 			StartCoroutine(ReparentUiCo());
 		}
 		else
 		{
-			gm = GameManager.Instance;
 			this.transform.SetParent(gm.spawnHolder, true);
 			this.transform.localScale = Vector3.one;
 			this.enabled = false;
 		}
 	}
+
+	[ServerRpc(RequireOwnership = false)] private void JoinServer(int id)
+	{
+		gm.JoinGameServerRpc(id);
+	}
+	[ServerRpc(RequireOwnership = false)] private void LeaveServer(int id)
+	{
+		gm.LeftGameServerRpc(id);
+	}
+
+	public override void OnStopClient()
+	{
+		base.OnStopClient();
+		LeaveServer(OwnerId);
+		Debug.Log("<color=red>DISCONNECTED</color>");
+	}
+
 	IEnumerator ReparentUiCo()
 	{
 		yield return null;
@@ -88,6 +107,12 @@ public class LobbyObject : NetworkBehaviour
 
 	[ServerRpc(RequireOwnership=false)] public void SendPlayerModelServerRpc()
 	{
+		Debug.Log($"<color=magenta>SendPlayerModelServerRpc {OwnerId}</color>");
+		//gm.SetPlayerModelServerRpc(characterInd.Value);
+	}
+	[TargetRpc] public void SendPlayerModel(NetworkConnection conn, int newAmmo)
+	{
+		
 		//Debug.Log($"<color=blue>SendPlayerModelServerRpc</color>");
 		//gm.SetPlayerModelServerRpc(characterInd.Value);
 	}

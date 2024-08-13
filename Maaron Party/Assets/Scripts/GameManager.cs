@@ -8,7 +8,9 @@ using UnityEngine.SceneManagement;
 using Unity.VisualScripting;
 using FishNet.Managing;
 using FishNet;
+using FishNet.Object.Synchronizing;
 using FishNet.Managing.Scened;
+using FishNet.Component.Animating;
 
 public class GameManager : NetworkBehaviour
 {
@@ -18,7 +20,11 @@ public class GameManager : NetworkBehaviour
 	//	0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 	//public NetworkList<ulong> players;
 	//public NetworkList<int> playerModels;
+	public readonly SyncVar<int> nPlayers = new();
+	[SerializeField] private readonly SyncList<int> players = new();
+	[SerializeField] private readonly SyncList<int> characterModels = new();
 	private Scene m_LoadedScene;
+	public List<LobbyObject> inits = new List<LobbyObject>();
 
 
 	[Space] [Header("Lobby Manager")]
@@ -85,8 +91,9 @@ public class GameManager : NetworkBehaviour
 		currNodes = new();
 		coins = new();
 		stars = new();
-		if (BoardManager.Instance == null)
-			TriggerTransition(false);
+		anim.SetTrigger("out");
+		//if (BoardManager.Instance == null)
+		//	TriggerTransition(false);
 		nm = FindObjectOfType<NetworkManager>();
 	}
 
@@ -110,20 +117,24 @@ public class GameManager : NetworkBehaviour
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~ NETWORK ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	[ServerRpc(RequireOwnership=false)] public void JoinGameServerRpc(ulong id)
+	//[ServerRpc(RequireOwnership=false)] public void JoinGameServerRpc(int id)
+	public void JoinGameServerRpc(int id)
 	{
-		//if (!IsHost) return;
-		//nPlayers.Value++;
-		//if (!players.Contains(id))
-		//	players.Add(id);
+		//if (!IsOwner) return;
+		Debug.Log($"<color=magneta>{id} JoinGameServerRpc</color>");
+		nPlayers.Value++;
+		if (!players.Contains(id))
+			players.Add(id);
 	}
-	[ServerRpc(RequireOwnership=false)] public void LeftGameServerRpc(ulong id)
+	//[ServerRpc(RequireOwnership=false)] public void LeftGameServerRpc(int id)
+	public void LeftGameServerRpc(int id)
 	{
-		//if (!IsHost) return;
-		//if (!lobbyCreated)
-		//	nPlayers.Value--;
-		//if (players != null && players.Contains(id))
-		//	players.Remove(id);
+		//if (!IsOwner) return;
+		Debug.Log($"<color=magneta>{id} LeftGameServerRpc</color>");
+		if (!lobbyCreated)
+			nPlayers.Value--;
+		if (players.Contains(id))
+			players.Remove(id);
 	}
 
 	[ServerRpc(RequireOwnership=false)] public void SetPlayerModelServerRpc(int ind)
@@ -182,7 +193,7 @@ public class GameManager : NetworkBehaviour
 	//	}
 	//}
 
-	public void StartGame(string sceneName="TestBoard")
+	public void StartGame(string sceneName="TestMinigame")
 	{
 		lobbyCreated = true;
 		//for (int i=0 ; i<NetworkManager.Singleton.ConnectedClientsIds.Count ; i++)
@@ -195,16 +206,33 @@ public class GameManager : NetworkBehaviour
 		//		}
 		//	);
 		//}
+		string s = "<color=yellow>players: ";
+		for (int i=0 ; i<players.Count ; i++)
+		{
+			s += $"|{players[i]}| ";
+		}
+		s += "</color>";
+		Debug.Log(s);
+
+		s = "<color=cyan>characterModels: ";
+		for (int i=0 ; i<characterModels.Count ; i++)
+		{
+			s += $"|{characterModels[i]}| ";
+		}
+		s += "</color>";
+		Debug.Log(s);
+
 		startBtn.gameObject.SetActive(false);
 		StartCoroutine( StartGameCo(sceneName) );
 	}
 	IEnumerator StartGameCo(string sceneName)
 	{
+		TriggerTransition(true);
 		//TriggerTransitionServerRpc(true);
 		yield return new WaitForSeconds(0.5f);
 		SceneLoadData sld = new SceneLoadData(sceneName);
 		InstanceFinder.SceneManager.LoadGlobalScenes(sld);
-		
+
 		SceneUnloadData uld = new SceneUnloadData("_TestLobby");
 		InstanceFinder.SceneManager.UnloadGlobalScenes(uld);
 		//NetworkManager.Singleton.SceneManager.LoadScene("TestBoard", LoadSceneMode.Single);

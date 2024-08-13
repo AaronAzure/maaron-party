@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using FishNet.Object;
+using FishNet;
 
-public class LavaMonster : MonoBehaviour
+public class LavaMonster : NetworkBehaviour
 {
 	[SerializeField] private Transform[] points;
 	[SerializeField] private float moveSpeed=9;
@@ -12,6 +14,12 @@ public class LavaMonster : MonoBehaviour
 	private bool isRest;
 	float timer;
 	int prevP;
+
+	public override void OnStartClient()
+	{
+		base.OnStartClient();
+		
+	}
 
 	private void Start() 
 	{
