@@ -22,7 +22,8 @@ public class GameManager : NetworkBehaviour
 	//public NetworkList<ulong> players;
 	//public NetworkList<int> playerModels;
 	public readonly SyncVar<int> nPlayers = new();
-	[SerializeField] private readonly SyncList<int> characterModels = new();
+	//[SerializeField] private readonly SyncList<int> characterModels = new();
+	[SerializeField] private readonly SyncDictionary<int, int> characterModels = new();
 	private Scene m_LoadedScene;
 	public List<LobbyObject> inits = new List<LobbyObject>();
 
@@ -120,57 +121,6 @@ public class GameManager : NetworkBehaviour
 	{
 		//playerModels.Add(ind);
 	}
-	//[ClientRpc(RequireOwnership=false)] public void SetPlayerModelClientRpc(ClientRpcParams rpc)
-	//{
-	//	LobbyObject.Instance.SendPlayerModelServerRpc();
-	//}
-
-	//public override void OnNetworkSpawn()
-	//{
-	//	base.OnNetworkSpawn();
-	//	NetworkManager.Singleton.SceneManager.OnLoadComplete += this.OnLoadComplete;
-	//	NetworkManager.Singleton.SceneManager.OnUnloadComplete += this.OnUnloadComplete;
-	//	NetworkManager.SceneManager.OnSceneEvent += SceneManager_OnSceneEvent;
-	//}
-	//private void SceneManager_OnSceneEvent(SceneEvent sceneEvent)
-	//{
-	//	var clientOrServer = sceneEvent.ClientId == NetworkManager.ServerClientId ? "server" : "client";
-	//	switch (sceneEvent.SceneEventType)
-	//	{
-	//		case SceneEventType.LoadComplete:
-	//			{
-	//				// We want to handle this for only the server-side
-	//				if (sceneEvent.ClientId == NetworkManager.ServerClientId)
-	//				{
-	//					// *** IMPORTANT ***
-	//					// Keep track of the loaded scene, you need this to unload it
-	//					m_LoadedScene = sceneEvent.Scene;
-	//				}
-	//				Debug.Log($"Loaded the {sceneEvent.SceneName} scene on " +
-	//					$"{clientOrServer}-({sceneEvent.ClientId}).");
-	//				break;
-	//			}
-	//		case SceneEventType.UnloadComplete:
-	//			{
-	//				Debug.Log($"Unloaded the {sceneEvent.SceneName} scene on " +
-	//					$"{clientOrServer}-({sceneEvent.ClientId}).");
-	//				break;
-	//			}
-	//		case SceneEventType.LoadEventCompleted:
-	//		case SceneEventType.UnloadEventCompleted:
-	//			{
-	//				var loadUnload = sceneEvent.SceneEventType == SceneEventType.LoadEventCompleted ? "Load" : "Unload";
-	//				Debug.Log($"{loadUnload} event completed for the following client " +
-	//					$"identifiers:({sceneEvent.ClientsThatCompleted})");
-	//				if (sceneEvent.ClientsThatTimedOut.Count > 0)
-	//				{
-	//					Debug.LogWarning($"{loadUnload} event timed out for the following client " +
-	//						$"identifiers:({sceneEvent.ClientsThatTimedOut})");
-	//				}
-	//				break;
-	//			}
-	//	}
-	//}
 
 	public void StartGame(string sceneName="TestBoard")
 	{
@@ -187,11 +137,12 @@ public class GameManager : NetworkBehaviour
 		//}
 		nPlayers.Value = InstanceFinder.ClientManager.Clients.Count;
 		string s = "<color=cyan>ClientManager.Clients.Keys: ";
-		foreach (int key in InstanceFinder.ClientManager.Clients.Keys)
-			s += $"|{key}| ";
-		s += "</color>";
+		//foreach (int key in InstanceFinder.ClientManager.Clients.Keys)
+			//s += $"|{key}| ";
 		foreach (NetworkConnection conn in InstanceFinder.ClientManager.Clients.Values)
-			
+			s += $"|{conn}| ";
+		s += "</color>";
+
 		//s = "<color=cyan>characterModels: ";
 		//for (int i=0 ; i<characterModels.Count ; i++)
 		//{
