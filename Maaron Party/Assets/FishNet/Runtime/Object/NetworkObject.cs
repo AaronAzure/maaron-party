@@ -171,6 +171,13 @@ namespace FishNet.Object
         /// <summary>
         /// True if the object can be spawned at runtime; this is generally false for scene prefabs you do not spawn.
         /// </summary>
+        public bool IsActive => _isActive;
+        [Tooltip("True to prevent gameobject active")]
+        [SerializeField]
+        private bool _isActive = true;
+        /// <summary>
+        /// True if the object can be spawned at runtime; this is generally false for scene prefabs you do not spawn.
+        /// </summary>
         public bool IsSpawnable => _isSpawnable;
         [Tooltip("True if the object can be spawned at runtime; this is generally false for scene prefabs you do not spawn.")]
         [SerializeField]
@@ -456,7 +463,7 @@ namespace FishNet.Object
             if (IsGlobal && !IsSceneObject && !IsNested)
                 DontDestroyOnLoad(gameObject);
 
-            if (!IsGlobal && (NetworkManager == null || (!NetworkManager.IsClientStarted && !NetworkManager.IsServerStarted)))
+            if (NetworkManager == null || (!NetworkManager.IsClientStarted && !NetworkManager.IsServerStarted))
             {
                 //ActiveDuringEdit is only used for scene objects.
                 if (IsSceneObject)

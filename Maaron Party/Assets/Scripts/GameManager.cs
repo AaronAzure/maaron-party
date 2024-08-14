@@ -11,6 +11,7 @@ using FishNet;
 using FishNet.Object.Synchronizing;
 using FishNet.Managing.Scened;
 using FishNet.Component.Animating;
+using FishNet.Managing.Client;
 
 public class GameManager : NetworkBehaviour
 {
@@ -21,7 +22,6 @@ public class GameManager : NetworkBehaviour
 	//public NetworkList<ulong> players;
 	//public NetworkList<int> playerModels;
 	public readonly SyncVar<int> nPlayers = new();
-	[SerializeField] private readonly SyncList<int> players = new();
 	[SerializeField] private readonly SyncList<int> characterModels = new();
 	private Scene m_LoadedScene;
 	public List<LobbyObject> inits = new List<LobbyObject>();
@@ -41,7 +41,7 @@ public class GameManager : NetworkBehaviour
 	[SerializeField] private List<int> stars;
 	public bool hasStarted {get; private set;}
 	public bool lobbyCreated {get; private set;}
-	[SerializeField] Animator anim;
+	[SerializeField] NetworkAnimator anim;
 
 
 	private void Awake() 
@@ -91,9 +91,8 @@ public class GameManager : NetworkBehaviour
 		currNodes = new();
 		coins = new();
 		stars = new();
-		anim.SetTrigger("out");
-		//if (BoardManager.Instance == null)
-		//	TriggerTransition(false);
+		if (BoardManager.Instance == null)
+			TriggerTransition(false);
 		nm = FindObjectOfType<NetworkManager>();
 	}
 
@@ -116,26 +115,6 @@ public class GameManager : NetworkBehaviour
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~ NETWORK ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	//[ServerRpc(RequireOwnership=false)] public void JoinGameServerRpc(int id)
-	public void JoinGameServerRpc(int id)
-	{
-		//if (!IsOwner) return;
-		Debug.Log($"<color=magneta>{id} JoinGameServerRpc</color>");
-		nPlayers.Value++;
-		if (!players.Contains(id))
-			players.Add(id);
-	}
-	//[ServerRpc(RequireOwnership=false)] public void LeftGameServerRpc(int id)
-	public void LeftGameServerRpc(int id)
-	{
-		//if (!IsOwner) return;
-		Debug.Log($"<color=magneta>{id} LeftGameServerRpc</color>");
-		if (!lobbyCreated)
-			nPlayers.Value--;
-		if (players.Contains(id))
-			players.Remove(id);
-	}
 
 	[ServerRpc(RequireOwnership=false)] public void SetPlayerModelServerRpc(int ind)
 	{
@@ -193,7 +172,7 @@ public class GameManager : NetworkBehaviour
 	//	}
 	//}
 
-	public void StartGame(string sceneName="TestMinigame")
+	public void StartGame(string sceneName="TestBoard")
 	{
 		lobbyCreated = true;
 		//for (int i=0 ; i<NetworkManager.Singleton.ConnectedClientsIds.Count ; i++)
@@ -206,20 +185,19 @@ public class GameManager : NetworkBehaviour
 		//		}
 		//	);
 		//}
-		string s = "<color=yellow>players: ";
-		for (int i=0 ; i<players.Count ; i++)
-		{
-			s += $"|{players[i]}| ";
-		}
+		nPlayers.Value = InstanceFinder.ClientManager.Clients.Count;
+		string s = "<color=cyan>ClientManager.Clients.Keys: ";
+		foreach (int key in InstanceFinder.ClientManager.Clients.Keys)
+			s += $"|{key}| ";
 		s += "</color>";
-		Debug.Log(s);
-
-		s = "<color=cyan>characterModels: ";
-		for (int i=0 ; i<characterModels.Count ; i++)
-		{
-			s += $"|{characterModels[i]}| ";
-		}
-		s += "</color>";
+		foreach (NetworkConnection conn in InstanceFinder.ClientManager.Clients.Values)
+			
+		//s = "<color=cyan>characterModels: ";
+		//for (int i=0 ; i<characterModels.Count ; i++)
+		//{
+		//	s += $"|{characterModels[i]}| ";
+		//}
+		//s += "</color>";
 		Debug.Log(s);
 
 		startBtn.gameObject.SetActive(false);

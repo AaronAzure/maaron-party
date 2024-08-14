@@ -17,8 +17,6 @@ public class LobbyObject : NetworkBehaviour
 	[SerializeField] private Image pfp;
 	[SerializeField] private Image bg;
 	[SerializeField] private readonly SyncVar<int> characterInd = new SyncVar<int>(-1);
-	//public NetworkVariable<int> characterInd = new NetworkVariable<int>(
-	//	0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
 
 	//public override void OnNetworkSpawn()
@@ -48,7 +46,6 @@ public class LobbyObject : NetworkBehaviour
 			Instance = this;
 			buttons.SetActive(true);
 			bg.color = new Color(0.25f, 0.25f, 0.25f, 0.7843f);
-			JoinServer(OwnerId);
 			StartCoroutine(ReparentUiCo());
 		}
 		else
@@ -59,19 +56,9 @@ public class LobbyObject : NetworkBehaviour
 		}
 	}
 
-	[ServerRpc(RequireOwnership = false)] private void JoinServer(int id)
-	{
-		gm.JoinGameServerRpc(id);
-	}
-	[ServerRpc(RequireOwnership = false)] private void LeaveServer(int id)
-	{
-		gm.LeftGameServerRpc(id);
-	}
-
 	public override void OnStopClient()
 	{
 		base.OnStopClient();
-		LeaveServer(OwnerId);
 		Debug.Log("<color=red>DISCONNECTED</color>");
 	}
 
