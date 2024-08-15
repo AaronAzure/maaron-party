@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using FishNet.Object;
-using UnityEngine.Experimental.AI;
 
 public class BoardManager : NetworkBehaviour
 {
@@ -12,8 +11,6 @@ public class BoardManager : NetworkBehaviour
 	[SerializeField] private PlayerControls[] players;
 	private PlayerControls _player;
 	int nTurn;
-	//public NetworkVariable<int> nPlayerOrder = new NetworkVariable<int>(
-	//	0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 	int nPlayers;
 	GameManager gm;
 
@@ -39,11 +36,13 @@ public class BoardManager : NetworkBehaviour
 	private void Start() 
 	{
 		gm = GameManager.Instance;
+		gm.TriggerTransition(false);
 
 		//Debug.Log($"<color=magenta>===> {NetworkManager.Singleton.LocalClientId}</color>");
 		//SpawnPlayerServerRpc((int) NetworkManager.Singleton.LocalClientId);
 
 		//* only host can start game
+		if (!base.Owner.IsHost) return;
 		//if (!IsHost) return;
 		//nPlayers = gm.nPlayers.Value;
 		players = new PlayerControls[nPlayers];

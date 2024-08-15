@@ -436,6 +436,7 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 734716361451230693}
   _networkObjectCache: {fileID: 734716361451230693}
+  managerPrefab: {fileID: 4357352453857552675, guid: 8e6c6d2c05137ca408b79d8a7e2b266a, type: 3}
   buttons: {fileID: 8110475812702509920}
   characterTxt: {fileID: 8347218012990582183}
   maxCharacters: 4
@@ -461,7 +462,7 @@ MonoBehaviour:
   <SerializedRootNetworkBehaviour>k__BackingField: {fileID: 0}
   <NestedRootNetworkBehaviours>k__BackingField: []
   SerializedTransformProperties:
-    Position: {x: -404.5, y: -227.5, z: 0}
+    Position: {x: -411.5, y: -231.5, z: 0}
     Rotation: {x: 0, y: 0, z: 0, w: 1}
     LocalScale: {x: 1, y: 1, z: 1}
   _isNetworked: 1

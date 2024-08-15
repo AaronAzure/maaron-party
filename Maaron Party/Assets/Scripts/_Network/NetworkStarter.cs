@@ -8,11 +8,18 @@ using FishNet;
 
 public class NetworkStarter : NetworkBehaviour
 {
+	public static NetworkStarter Instance;
+	public Transform spawnHolder;
 	[SerializeField] private GameObject buttons;
 	[SerializeField] private Button hostBtn;
 	[SerializeField] private Button clientBtn;
 	[SerializeField] private Button startBtn;
-	[SerializeField] private GameManager gm;
+	private GameManager gm;
+
+	private void Awake() 
+	{
+		Instance = this;
+	}
 
 	private void Start() 
 	{
@@ -40,7 +47,6 @@ public class NetworkStarter : NetworkBehaviour
 	{
 		InstanceFinder.NetworkManager.ServerManager.StartConnection();
 		InstanceFinder.NetworkManager.ClientManager.StartConnection();
-		gm.gameObject.SetActive(true);
 
 		if (buttons != null) buttons.SetActive(false);
 		if (startBtn != null)
@@ -49,13 +55,16 @@ public class NetworkStarter : NetworkBehaviour
 	public void StartClient()
 	{
 		InstanceFinder.NetworkManager.ClientManager.StartConnection();
-		gm.gameObject.SetActive(true);
 		//NetworkManager.Singleton.StartClient();
 		if (buttons != null) buttons.SetActive(false);
 	}
 	public void StartGame()
 	{
-		if (startBtn != null) startBtn.gameObject.SetActive(false);
-		gm.StartGame();
+		gm = GameManager.Instance;
+		if (GameManager.Instance != null)
+		{
+			if (startBtn != null) startBtn.gameObject.SetActive(false);
+			gm.StartGame();
+		}
 	}
 }

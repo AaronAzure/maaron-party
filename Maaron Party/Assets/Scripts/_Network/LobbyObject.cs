@@ -6,11 +6,13 @@ using FishNet.Object;
 using TMPro;
 using FishNet.Object.Synchronizing;
 using FishNet.Connection;
+using FishNet;
 
 public class LobbyObject : NetworkBehaviour
 {
 	public static LobbyObject Instance;
 	private GameManager gm;
+	[SerializeField] private GameObject managerPrefab;
 	[SerializeField] private GameObject buttons;
 	[SerializeField] private TextMeshProUGUI characterTxt;
 	[SerializeField] private int maxCharacters=4;
@@ -35,13 +37,22 @@ public class LobbyObject : NetworkBehaviour
 			buttons.SetActive(true);
 			bg.color = new Color(0.25f, 0.25f, 0.25f, 0.7843f);
 			StartCoroutine(ReparentUiCo());
+			Debug.Log($"<color=yellow>{base.Owner.IsHost}</color");
+			if (base.Owner.IsHost)
+				SpawnGameManagerServerRpc();
 		}
 		else
 		{
-			this.transform.SetParent(gm.spawnHolder, true);
+			this.transform.SetParent(NetworkStarter.Instance.spawnHolder, true);
 			this.transform.localScale = Vector3.one;
 			this.enabled = false;
 		}
+	}
+
+	[ServerRpc(RequireOwnership = false)] private void SpawnGameManagerServerRpc()
+	{
+		var obj = Instantiate(managerPrefab);
+		InstanceFinder.ServerManager.Spawn(obj.gameObject, base.Owner);
 	}
 
 	public override void OnStopClient()
@@ -54,7 +65,7 @@ public class LobbyObject : NetworkBehaviour
 	{
 		yield return null;
 		gm = GameManager.Instance;
-		this.transform.SetParent(gm.spawnHolder, true);
+		this.transform.SetParent(NetworkStarter.Instance.spawnHolder, true);
 		this.transform.localScale = Vector3.one;
 	}
 
@@ -80,17 +91,6 @@ public class LobbyObject : NetworkBehaviour
 				: next == 2 ? new Color(1,0.5f,0.8f) : Color.blue;
 	}
 
-	[ServerRpc(RequireOwnership=false)] public void SendPlayerModelServerRpc()
-	{
-		Debug.Log($"<color=magenta>SendPlayerModelServerRpc {OwnerId}</color>");
-		//gm.SetPlayerModelServerRpc(characterInd.Value);
-	}
-	[TargetRpc] public void SendPlayerModel(NetworkConnection conn, int newAmmo)
-	{
-		
-		//Debug.Log($"<color=blue>SendPlayerModelServerRpc</color>");
-		//gm.SetPlayerModelServerRpc(characterInd.Value);
-	}
 
 	public int GetCharacterInd()
 	{

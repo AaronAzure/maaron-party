@@ -20,14 +20,9 @@ public class GameManager : NetworkBehaviour
 	//public NetworkList<ulong> players;
 	//public NetworkList<int> playerModels;
 	public readonly SyncVar<int> nPlayers = new();
-	//[SerializeField] private readonly SyncList<int> characterModels = new();
 	[SerializeField] private readonly SyncDictionary<NetworkConnection, int> characterModels = new();
 	private Scene m_LoadedScene;
 	public List<LobbyObject> inits = new List<LobbyObject>();
-
-
-	[Space] [Header("Lobby Manager")]
-	public Transform spawnHolder;
 
 
 	[Space] [Header("In game references")]
@@ -45,7 +40,6 @@ public class GameManager : NetworkBehaviour
 			Instance = this;
 		else
 			Destroy(gameObject);
-		//DontDestroyOnLoad(this);
 	}
 
 	private void Start() 
@@ -53,9 +47,10 @@ public class GameManager : NetworkBehaviour
 		currNodes = new();
 		coins = new();
 		stars = new();
-		if (BoardManager.Instance == null)
-			TriggerTransition(false);
-		nm = FindObjectOfType<NetworkManager>();
+		//if (BoardManager.Instance == null)
+		//	TriggerTransition(false);
+		nm = InstanceFinder.NetworkManager;
+		transform.parent = nm.transform;
 	}
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -79,35 +74,13 @@ public class GameManager : NetworkBehaviour
 		else
 			characterModels[conn] = ind;
 	}
-	//private void Update() {
-	//	if (Input.GetKeyDown(KeyCode.A))
-	//	{
-	//		Debug.Log("---------");
-	//		TestServerRpc("hello");
-	//	}
-	//}
 
 	public void StartGame(string sceneName="TestBoard")
 	{
 		lobbyCreated = true;
 		nPlayers.Value = InstanceFinder.ClientManager.Clients.Count;
-		//string s = "<color=cyan>ClientManager.Clients.Keys: ";
-		//TestServerRpc("hello");
-		//foreach (int key in InstanceFinder.ClientManager.Clients.Keys)
-			//s += $"|{key}| ";
-		//foreach (NetworkConnection conn in InstanceFinder.ClientManager.Clients.Values)
-		//	s += $"|{conn}| ";
-		//s += "</color>";
 
-		//s = "<color=cyan>characterModels: ";
-		//for (int i=0 ; i<characterModels.Count ; i++)
-		//{
-		//	s += $"|{characterModels[i]}| ";
-		//}
-		//s += "</color>";
-		//Debug.Log(s);
 		TestServerRpc();
-
 		StartCoroutine( StartGameCo(sceneName) );
 	}
 	IEnumerator StartGameCo(string sceneName)
@@ -115,7 +88,7 @@ public class GameManager : NetworkBehaviour
 		TriggerTransition(true);
 
 		//TriggerTransitionServerRpc(true);
-		yield return new WaitForSeconds(0.5f);
+		yield return new WaitForSeconds(1f);
 		string s = "<color=magenta>characterModels: ";
 		foreach (int val in characterModels.Values)
 			s += $"|{val}| ";
@@ -127,6 +100,18 @@ public class GameManager : NetworkBehaviour
 		SceneUnloadData uld = new SceneUnloadData("_TestLobby");
 		InstanceFinder.SceneManager.UnloadGlobalScenes(uld);
 		//NetworkManager.Singleton.SceneManager.LoadScene("TestBoard", LoadSceneMode.Single);
+	}
+
+
+
+	public void SpawnBoardControls()
+	{
+		//SpawnBoardControlsServerRpc();
+	}
+	[ServerRpc(RequireOwnership=false)] public void SpawnBoardControlsServerRpc(NetworkConnection conn)
+	{
+		//GameObject go = Instantiate(sas);
+		//InstanceFinder.ServerManager.Spawn(go, conn);
 	}
 
 	//[ServerRpc(RequireOwnership=false)] public void NextPlayerTurnServerRpc(ulong id)
@@ -153,15 +138,6 @@ public class GameManager : NetworkBehaviour
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~ NETWORK ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-	//public void IncreaseNumPlayers()
-	//{
-	//	nPlayers.Value++;
-	//}
-	//public void DecreaseNumPlayers()
-	//{
-	//	nPlayers.Value--;
-	//}
 
 	//* --------------------
 	//* ------- save -------
@@ -210,14 +186,6 @@ public class GameManager : NetworkBehaviour
 	{
 		anim.SetTrigger(fadeIn ? "in" : "out");
 	}
-	//[ServerRpc(RequireOwnership=false)] public void TriggerTransitionServerRpc(bool fadeIn) // broadcast
-	//{
-	//	TriggerTransitionClientRpc(fadeIn);
-	//}
-	//[ClientRpc(RequireOwnership=false)] private void TriggerTransitionClientRpc(bool fadeIn)
-	//{
-	//	anim.SetTrigger(fadeIn ? "in" : "out");
-	//}
 
 	string minigameName;
 	bool previewLoaded;
