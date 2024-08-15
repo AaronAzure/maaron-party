@@ -37,7 +37,7 @@ public class LobbyObject : NetworkBehaviour
 			buttons.SetActive(true);
 			bg.color = new Color(0.25f, 0.25f, 0.25f, 0.7843f);
 			StartCoroutine(ReparentUiCo());
-			Debug.Log($"<color=yellow>{base.Owner.IsHost}</color");
+			Debug.Log($"<color=yellow>{base.Owner.IsHost}</color>");
 			if (base.Owner.IsHost)
 				SpawnGameManagerServerRpc();
 		}

@@ -25,6 +25,11 @@ public class GameManager : NetworkBehaviour
 	public List<LobbyObject> inits = new List<LobbyObject>();
 
 
+	[Space] [Header("Board Manager")]
+	[SerializeField] private NetworkObject boardControls;
+
+
+
 	[Space] [Header("In game references")]
 	[SerializeField] private List<ushort> currNodes;
 	[SerializeField] private List<int> coins;
@@ -104,14 +109,15 @@ public class GameManager : NetworkBehaviour
 
 
 
-	public void SpawnBoardControls()
+	public void SpawnBoardControls(NetworkConnection conn, Vector3 pos)
 	{
-		//SpawnBoardControlsServerRpc();
+		SpawnBoardControlsServerRpc(conn, pos);
 	}
-	[ServerRpc(RequireOwnership=false)] public void SpawnBoardControlsServerRpc(NetworkConnection conn)
+	[ServerRpc(RequireOwnership=false)] public void SpawnBoardControlsServerRpc(NetworkConnection conn, Vector3 pos)
 	{
-		//GameObject go = Instantiate(sas);
-		//InstanceFinder.ServerManager.Spawn(go, conn);
+		Debug.Log("<color=yellow>SpawnBoardControlsServerRpc</color>");
+		var obj = Instantiate(boardControls, pos, Quaternion.identity);
+		InstanceFinder.ServerManager.Spawn(obj.gameObject, conn);
 	}
 
 	//[ServerRpc(RequireOwnership=false)] public void NextPlayerTurnServerRpc(ulong id)

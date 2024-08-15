@@ -281,6 +281,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 6819908136190633104}
   _networkObjectCache: {fileID: 6819908136190633104}
   inits: []
+  boardControls: {fileID: 2245622329856303986, guid: 8a9d11e354baf9d48b9000cbafda63eb, type: 3}
   currNodes: 
   coins: 
   stars: 

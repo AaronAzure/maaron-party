@@ -2905,6 +2905,7 @@ GameObject:
   - component: {fileID: 602978721}
   - component: {fileID: 602978722}
   - component: {fileID: 602978723}
+  - component: {fileID: 602978724}
   m_Layer: 0
   m_Name: '>> GAME MANAGER'
   m_TagString: Untagged
@@ -2942,13 +2943,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ed6375247d6c234196202042d3fb26a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nPlayers:
-    m_InternalValue: 0
-  spawnHolder: {fileID: 0}
-  buttons: {fileID: 0}
-  hostBtn: {fileID: 0}
-  clientBtn: {fileID: 0}
-  startBtn: {fileID: 0}
+  _componentIndexCache: 0
+  _addedNetworkObject: {fileID: 602978724}
+  _networkObjectCache: {fileID: 602978724}
+  inits: []
   currNodes: 
   coins: 
   stars: 
@@ -3025,6 +3023,52 @@ MonoBehaviour:
     PacketDelayMS: 0
     PacketJitterMS: 0
     PacketDropRate: 0
+--- !u!114 &602978724
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 602978717}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <IsNested>k__BackingField: 0
+  <ComponentIndex>k__BackingField: 0
+  <PredictedSpawn>k__BackingField: {fileID: 0}
+  _networkBehaviours:
+  - {fileID: 602978720}
+  <SerializedRootNetworkBehaviour>k__BackingField: {fileID: 0}
+  <NestedRootNetworkBehaviours>k__BackingField: []
+  SerializedTransformProperties:
+    Position: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 1}
+    LocalScale: {x: 1, y: 1, z: 1}
+  _isNetworked: 1
+  _isSpawnable: 1
+  _isGlobal: 0
+  _initializeOrder: 0
+  _defaultDespawnType: 0
+  NetworkObserver: {fileID: 0}
+  _enablePrediction: 0
+  _predictionType: 0
+  _graphicalObject: {fileID: 0}
+  _detachGraphicalObject: 0
+  _enableStateForwarding: 1
+  _networkTransform: {fileID: 0}
+  _ownerInterpolation: 1
+  _ownerSmoothedProperties: 255
+  _adaptiveInterpolation: 3
+  _spectatorSmoothedProperties: 255
+  _spectatorInterpolation: 2
+  _enableTeleport: 0
+  _teleportThreshold: 1
+  <PrefabId>k__BackingField: 0
+  <SpawnableCollectionId>k__BackingField: 0
+  <SceneId>k__BackingField: 4009719998
+  <AssetPathHash>k__BackingField: 0
 --- !u!43 &606454611
 Mesh:
   m_ObjectHideFlags: 0
@@ -5608,6 +5652,10 @@ PrefabInstance:
     - target: {fileID: 2048611876850834971, guid: 8a9d11e354baf9d48b9000cbafda63eb, type: 3}
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
       value: 4105052291
+      objectReference: {fileID: 0}
+    - target: {fileID: 2245622329856303986, guid: 8a9d11e354baf9d48b9000cbafda63eb, type: 3}
+      propertyPath: <SceneId>k__BackingField
+      value: 3940537322
       objectReference: {fileID: 0}
     - target: {fileID: 2599324674926314435, guid: 8a9d11e354baf9d48b9000cbafda63eb, type: 3}
       propertyPath: m_Mesh
@@ -8306,6 +8354,10 @@ PrefabInstance:
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
       value: 4105052291
       objectReference: {fileID: 0}
+    - target: {fileID: 2245622329856303986, guid: 8a9d11e354baf9d48b9000cbafda63eb, type: 3}
+      propertyPath: <SceneId>k__BackingField
+      value: 3942552026
+      objectReference: {fileID: 0}
     - target: {fileID: 2599324674926314435, guid: 8a9d11e354baf9d48b9000cbafda63eb, type: 3}
       propertyPath: m_Mesh
       value: 
@@ -9604,6 +9656,10 @@ PrefabInstance:
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
       value: 4105052291
       objectReference: {fileID: 0}
+    - target: {fileID: 2245622329856303986, guid: 8a9d11e354baf9d48b9000cbafda63eb, type: 3}
+      propertyPath: <SceneId>k__BackingField
+      value: 3940505995
+      objectReference: {fileID: 0}
     - target: {fileID: 2599324674926314435, guid: 8a9d11e354baf9d48b9000cbafda63eb, type: 3}
       propertyPath: m_Mesh
       value: 
@@ -9934,6 +9990,10 @@ PrefabInstance:
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
       value: 4105052291
       objectReference: {fileID: 0}
+    - target: {fileID: 2245622329856303986, guid: 8a9d11e354baf9d48b9000cbafda63eb, type: 3}
+      propertyPath: <SceneId>k__BackingField
+      value: 3942553850
+      objectReference: {fileID: 0}
     - target: {fileID: 2599324674926314435, guid: 8a9d11e354baf9d48b9000cbafda63eb, type: 3}
       propertyPath: m_Mesh
       value: 
@@ -10082,6 +10142,10 @@ PrefabInstance:
     - target: {fileID: 4536398911521027332, guid: cb3e16d45230cbf4293d68b3b28cdb4a, type: 3}
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
       value: 3902918758
+      objectReference: {fileID: 0}
+    - target: {fileID: 6374637990015491827, guid: cb3e16d45230cbf4293d68b3b28cdb4a, type: 3}
+      propertyPath: <SceneId>k__BackingField
+      value: 3957265627
       objectReference: {fileID: 0}
     - target: {fileID: 8433219930874235559, guid: cb3e16d45230cbf4293d68b3b28cdb4a, type: 3}
       propertyPath: startNode

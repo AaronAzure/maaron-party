@@ -2,11 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using FishNet.Object;
+using FishNet;
+using FishNet.Connection;
 
 public class BoardManager : NetworkBehaviour
 {
 	public static BoardManager Instance;
-	[SerializeField] private NetworkObject playerToSpawn;
+	private NetworkConnection conn;
+	//[SerializeField] private NetworkObject playerToSpawn;
 	[SerializeField] private Transform spawnPos;
 	[SerializeField] private PlayerControls[] players;
 	private PlayerControls _player;
@@ -37,20 +40,24 @@ public class BoardManager : NetworkBehaviour
 	{
 		gm = GameManager.Instance;
 		gm.TriggerTransition(false);
+		conn = InstanceFinder.ClientManager.Connection;
 
-		//Debug.Log($"<color=magenta>===> {NetworkManager.Singleton.LocalClientId}</color>");
 		//SpawnPlayerServerRpc((int) NetworkManager.Singleton.LocalClientId);
+		//SpawnPlayerServerRpc(InstanceFinder.ClientManager.Connection);
+		gm.SpawnBoardControls(conn, spawnPos.position + new Vector3(-2 + 2*conn.ClientId,0,0));
 
 		//* only host can start game
-		if (!base.Owner.IsHost) return;
+		if (!InstanceFinder.ClientManager.Connection.IsHost) return;
 		//if (!IsHost) return;
 		//nPlayers = gm.nPlayers.Value;
 		players = new PlayerControls[nPlayers];
 		StartCoroutine( StartGameCo() );
 	}
 
-	[ServerRpc(RequireOwnership=false)] public void SpawnPlayerServerRpc(int clientId)
+	//[ServerRpc(RequireOwnership=false)] public void SpawnPlayerServerRpc(int clientId)
+	[ServerRpc(RequireOwnership=false)] public void SpawnPlayerServerRpc(NetworkConnection conn)
 	{
+		Debug.Log("<color=yellow>SpawnPlayerServerRpc</color>");
 		//var networkObject = NetworkManager.SpawnManager.InstantiateAndSpawn(
 		//	playerToSpawn, (ulong) clientId, position:spawnPos.position + new Vector3(-2 + 2*clientId,0,0), destroyWithScene:true);
 		//var p = networkObject.GetComponent<PlayerControls>();
