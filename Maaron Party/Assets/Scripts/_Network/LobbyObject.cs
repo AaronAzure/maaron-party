@@ -19,18 +19,6 @@ public class LobbyObject : NetworkBehaviour
 	[SerializeField] private readonly SyncVar<int> characterInd = new SyncVar<int>(-1);
 
 
-	//public override void OnNetworkSpawn()
-	//{
-	//	characterInd.OnValueChanged += (int prevInd, int newInd) => {
-	//		ChangeName(newInd);
-	//	};
-	//}
-	//public override void OnNetworkDespawn()
-	//{
-	//	if (gm != null && IsOwner)
-	//		gm.LeftGameServerRpc(OwnerClientId);
-	//} 
-
 	public override void OnStartClient()
 	{
 		base.OnStartClient();

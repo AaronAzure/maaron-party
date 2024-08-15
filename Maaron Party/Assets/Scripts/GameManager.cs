@@ -5,13 +5,11 @@ using FishNet.Connection;
 using FishNet.Object;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using Unity.VisualScripting;
 using FishNet.Managing;
 using FishNet;
 using FishNet.Object.Synchronizing;
 using FishNet.Managing.Scened;
 using FishNet.Component.Animating;
-using FishNet.Managing.Client;
 
 public class GameManager : NetworkBehaviour
 {
@@ -23,7 +21,7 @@ public class GameManager : NetworkBehaviour
 	//public NetworkList<int> playerModels;
 	public readonly SyncVar<int> nPlayers = new();
 	//[SerializeField] private readonly SyncList<int> characterModels = new();
-	[SerializeField] private readonly SyncDictionary<int, int> characterModels = new();
+	[SerializeField] private readonly SyncDictionary<NetworkConnection, int> characterModels = new();
 	private Scene m_LoadedScene;
 	public List<LobbyObject> inits = new List<LobbyObject>();
 
@@ -80,13 +78,6 @@ public class GameManager : NetworkBehaviour
 		//);
 	}
 
-	//public override void OnDestroy() 
-	//{
-	//	base.OnDestroy();
-	//	players.Dispose();
-	//	playerModels.Dispose();
-	//}
-
 	private void Start() 
 	{
 		currNodes = new();
@@ -117,26 +108,38 @@ public class GameManager : NetworkBehaviour
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~ NETWORK ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	[ServerRpc(RequireOwnership=false)] public void SetPlayerModelServerRpc(int ind)
+	[ServerRpc(RequireOwnership=false)] public void SetPlayerModelServerRpc(NetworkConnection conn, int ind)
 	{
-		//playerModels.Add(ind);
+		// new addition
+		if (!characterModels.ContainsKey(conn))
+			characterModels.Add(conn, ind);
+		// rewrite existing
+		else
+			characterModels[conn] = ind;
+	}
+	[ServerRpc(RequireOwnership=false)] public void TestServer(string msg)
+	{
+		Debug.Log($"<color=magenta>To Server {msg}</color>");
+		TestObserver();
+	}
+	[ObserversRpc] public void TestObserver()
+	{
+		Debug.Log("<color=magenta>To Observer</color>");
+	}
+	private void Update() {
+		if (Input.GetKeyDown(KeyCode.A))
+		{
+			Debug.Log("---------");
+			TestServer("hello");
+		}
 	}
 
 	public void StartGame(string sceneName="TestBoard")
 	{
 		lobbyCreated = true;
-		//for (int i=0 ; i<NetworkManager.Singleton.ConnectedClientsIds.Count ; i++)
-		//{
-		//	SetPlayerModelClientRpc(
-		//		new ClientRpcParams { 
-		//			Send = new ClientRpcSendParams { 
-		//				TargetClientIds = new List<ulong> {NetworkManager.Singleton.ConnectedClientsIds[i]}
-		//			}
-		//		}
-		//	);
-		//}
 		nPlayers.Value = InstanceFinder.ClientManager.Clients.Count;
 		string s = "<color=cyan>ClientManager.Clients.Keys: ";
+		TestServer("hello");
 		//foreach (int key in InstanceFinder.ClientManager.Clients.Keys)
 			//s += $"|{key}| ";
 		foreach (NetworkConnection conn in InstanceFinder.ClientManager.Clients.Values)
