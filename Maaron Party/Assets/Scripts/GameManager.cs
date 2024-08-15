@@ -28,10 +28,6 @@ public class GameManager : NetworkBehaviour
 
 	[Space] [Header("Lobby Manager")]
 	public Transform spawnHolder;
-	[SerializeField] private GameObject buttons;
-	[SerializeField] private Button hostBtn;
-	[SerializeField] private Button clientBtn;
-	[SerializeField] private Button startBtn;
 
 
 	[Space] [Header("In game references")]
@@ -50,32 +46,6 @@ public class GameManager : NetworkBehaviour
 		else
 			Destroy(gameObject);
 		//DontDestroyOnLoad(this);
-
-		if (hostBtn != null)
-		{
-			hostBtn.onClick.AddListener(() => {
-				StartHost();
-			});	
-		}
-		if (clientBtn != null)
-		{
-			clientBtn.onClick.AddListener(() => {
-				StartClient();
-			});	
-		}
-		if (startBtn != null)
-		{
-			startBtn.onClick.AddListener(() => {
-				StartGame();
-			});	
-		}
-
-		//players = new NetworkList<ulong>(
-		//	default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner
-		//);
-		//playerModels = new NetworkList<int>(
-		//	default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner
-		//);
 	}
 
 	private void Start() 
@@ -88,28 +58,20 @@ public class GameManager : NetworkBehaviour
 		nm = FindObjectOfType<NetworkManager>();
 	}
 
-	public void StartHost()
-	{
-		nm.ServerManager.StartConnection();
-		nm.ClientManager.StartConnection();;
-
-		//NetworkManager.Singleton.StartHost();
-		if (buttons != null) buttons.SetActive(false);
-		if (startBtn != null)
-			startBtn.gameObject.SetActive(true);
-	}
-	public void StartClient()
-	{
-		nm.ClientManager.StartConnection();;
-		//NetworkManager.Singleton.StartClient();
-		if (buttons != null) buttons.SetActive(false);
-	}
-
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~ NETWORK ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+	[ServerRpc(RequireOwnership=false)] public void TestServerRpc()
+	{
+		TestObserverRpc();
+	}
+	[ObserversRpc] public void TestObserverRpc()
+	{
+		SetPlayerModelServerRpc(InstanceFinder.ClientManager.Connection, LobbyObject.Instance.GetCharacterInd());
+	}
 	[ServerRpc(RequireOwnership=false)] public void SetPlayerModelServerRpc(NetworkConnection conn, int ind)
 	{
+		Debug.Log($"<color=cyan>conn = {conn} => |{ind}|</color>");
 		// new addition
 		if (!characterModels.ContainsKey(conn))
 			characterModels.Add(conn, ind);
@@ -117,34 +79,25 @@ public class GameManager : NetworkBehaviour
 		else
 			characterModels[conn] = ind;
 	}
-	[ServerRpc(RequireOwnership=false)] public void TestServer(string msg)
-	{
-		Debug.Log($"<color=magenta>To Server {msg}</color>");
-		TestObserver();
-	}
-	[ObserversRpc] public void TestObserver()
-	{
-		Debug.Log("<color=magenta>To Observer</color>");
-	}
-	private void Update() {
-		if (Input.GetKeyDown(KeyCode.A))
-		{
-			Debug.Log("---------");
-			TestServer("hello");
-		}
-	}
+	//private void Update() {
+	//	if (Input.GetKeyDown(KeyCode.A))
+	//	{
+	//		Debug.Log("---------");
+	//		TestServerRpc("hello");
+	//	}
+	//}
 
 	public void StartGame(string sceneName="TestBoard")
 	{
 		lobbyCreated = true;
 		nPlayers.Value = InstanceFinder.ClientManager.Clients.Count;
-		string s = "<color=cyan>ClientManager.Clients.Keys: ";
-		TestServer("hello");
+		//string s = "<color=cyan>ClientManager.Clients.Keys: ";
+		//TestServerRpc("hello");
 		//foreach (int key in InstanceFinder.ClientManager.Clients.Keys)
 			//s += $"|{key}| ";
-		foreach (NetworkConnection conn in InstanceFinder.ClientManager.Clients.Values)
-			s += $"|{conn}| ";
-		s += "</color>";
+		//foreach (NetworkConnection conn in InstanceFinder.ClientManager.Clients.Values)
+		//	s += $"|{conn}| ";
+		//s += "</color>";
 
 		//s = "<color=cyan>characterModels: ";
 		//for (int i=0 ; i<characterModels.Count ; i++)
@@ -152,16 +105,22 @@ public class GameManager : NetworkBehaviour
 		//	s += $"|{characterModels[i]}| ";
 		//}
 		//s += "</color>";
-		Debug.Log(s);
+		//Debug.Log(s);
+		TestServerRpc();
 
-		startBtn.gameObject.SetActive(false);
 		StartCoroutine( StartGameCo(sceneName) );
 	}
 	IEnumerator StartGameCo(string sceneName)
 	{
 		TriggerTransition(true);
+
 		//TriggerTransitionServerRpc(true);
 		yield return new WaitForSeconds(0.5f);
+		string s = "<color=magenta>characterModels: ";
+		foreach (int val in characterModels.Values)
+			s += $"|{val}| ";
+		s += "</color>";
+		Debug.Log(s);
 		SceneLoadData sld = new SceneLoadData(sceneName);
 		InstanceFinder.SceneManager.LoadGlobalScenes(sld);
 

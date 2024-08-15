@@ -92,6 +92,10 @@ public class LobbyObject : NetworkBehaviour
 		//gm.SetPlayerModelServerRpc(characterInd.Value);
 	}
 
+	public int GetCharacterInd()
+	{
+		return characterInd.Value;
+	}
 	public void CHARACTER_IND_INC()
 	{
 		CharacterIndInc(this);

@@ -171,13 +171,6 @@ namespace FishNet.Object
         /// <summary>
         /// True if the object can be spawned at runtime; this is generally false for scene prefabs you do not spawn.
         /// </summary>
-        public bool IsActive => _isActive;
-        [Tooltip("True to prevent gameobject active")]
-        [SerializeField]
-        private bool _isActive = true;
-        /// <summary>
-        /// True if the object can be spawned at runtime; this is generally false for scene prefabs you do not spawn.
-        /// </summary>
         public bool IsSpawnable => _isSpawnable;
         [Tooltip("True if the object can be spawned at runtime; this is generally false for scene prefabs you do not spawn.")]
         [SerializeField]
