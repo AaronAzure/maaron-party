@@ -15,12 +15,9 @@ public class GameManager : NetworkBehaviour
 {
 	public static GameManager Instance;
 	private NetworkManager nm;
-	//public NetworkVariable<int> nPlayers = new NetworkVariable<int>(
-	//	0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-	//public NetworkList<ulong> players;
-	//public NetworkList<int> playerModels;
 	public readonly SyncVar<int> nPlayers = new();
-	[SerializeField] private readonly SyncDictionary<NetworkConnection, int> characterModels = new();
+	public readonly SyncList<int> _playerIds = new();
+	[SerializeField] private readonly SyncDictionary<NetworkConnection, int> _characterModels = new();
 	private Scene m_LoadedScene;
 	public List<LobbyObject> inits = new List<LobbyObject>();
 
@@ -73,17 +70,19 @@ public class GameManager : NetworkBehaviour
 	{
 		Debug.Log($"<color=cyan>conn = {conn} => |{ind}|</color>");
 		// new addition
-		if (!characterModels.ContainsKey(conn))
-			characterModels.Add(conn, ind);
+		if (!_characterModels.ContainsKey(conn))
+			_characterModels.Add(conn, ind);
 		// rewrite existing
 		else
-			characterModels[conn] = ind;
+			_characterModels[conn] = ind;
 	}
 
 	public void StartGame(string sceneName="TestBoard")
 	{
 		lobbyCreated = true;
 		nPlayers.Value = InstanceFinder.ClientManager.Clients.Count;
+		foreach (int key in InstanceFinder.ClientManager.Clients.Keys)
+			_playerIds.Add(key);
 
 		TestServerRpc();
 		StartCoroutine( StartGameCo(sceneName) );
@@ -94,8 +93,8 @@ public class GameManager : NetworkBehaviour
 
 		//TriggerTransitionServerRpc(true);
 		yield return new WaitForSeconds(1f);
-		string s = "<color=magenta>characterModels: ";
-		foreach (int val in characterModels.Values)
+		string s = "<color=magenta>_characterModels: ";
+		foreach (int val in _characterModels.Values)
 			s += $"|{val}| ";
 		s += "</color>";
 		Debug.Log(s);
@@ -118,18 +117,43 @@ public class GameManager : NetworkBehaviour
 		Debug.Log("<color=yellow>SpawnBoardControlsServerRpc</color>");
 		var obj = Instantiate(boardControls, pos, Quaternion.identity);
 		InstanceFinder.ServerManager.Spawn(obj.gameObject, conn);
+		obj.transform.position = pos;
+	}
+	public int GetCharacterModel(NetworkConnection conn)
+	{
+		if (_characterModels.ContainsKey(conn))
+			return _characterModels[conn];
+		Debug.LogError($"{conn} does not exist!");
+		return 0;
 	}
 
-	//[ServerRpc(RequireOwnership=false)] public void NextPlayerTurnServerRpc(ulong id)
-	//{
-	//	BoardManager.Instance.NextPlayerTurnClientRpc(
-	//		new ClientRpcParams { 
-	//			Send = new ClientRpcSendParams { 
-	//				TargetClientIds = new List<ulong> {id}
-	//			}
-	//		}
-	//	);
-	//}
+
+
+	int nPlayerTurn;
+	public void NextPlayerTurn()
+	{
+		//BoardManager.Instance.NextPlayerTurnClientRpc(
+		//	new ClientRpcParams { 
+		//		Send = new ClientRpcSendParams { 
+		//			TargetClientIds = new List<ulong> {id}
+		//		}
+		//	}
+		//);
+		//InstanceFinder.ClientManager.Clients.
+		if (nPlayerTurn < nPlayers.Value)
+			NextPlayerTurnServerRpc(InstanceFinder.ClientManager.Clients[_playerIds[nPlayerTurn++]].ClientId);
+	}
+	[ServerRpc(RequireOwnership=false)] public void NextPlayerTurnServerRpc(int id)
+	{
+		NextPlayerTurnObserverRpc(id);
+		//BoardManager.Instance.NextPlayerTurn(InstanceFinder.ClientManager.Clients[id]);
+	}
+	[ObserversRpc] public void NextPlayerTurnObserverRpc(int id)
+	{
+		Debug.Log($"base.LocalConnection.ClientId:{base.LocalConnection.ClientId} = base.OwnerId:{base.OwnerId}");
+		if (id == base.LocalConnection.ClientId)
+			BoardManager.Instance.NextPlayerTurn();
+	}
 	//[ServerRpc(RequireOwnership=false)] public void LoadMinigameServerRpc()
 	//{
 	//	StartCoroutine(LoadMinigameCo());

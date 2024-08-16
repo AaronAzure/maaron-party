@@ -5,10 +5,14 @@ using Rewired;
 using UnityEngine;
 using UnityEngine.UI;
 using FishNet.Object;
+using FishNet.Connection;
+using FishNet;
+using FishNet.Object.Synchronizing;
 
 public class PlayerControls : NetworkBehaviour
 {
 	public static PlayerControls Instance;
+	private NetworkConnection conn;
 	private Player player;
 	private int playerId;
 	[SerializeField] private Node currNode;
@@ -20,9 +24,11 @@ public class PlayerControls : NetworkBehaviour
 
 	
 	[Space] [Header("Network")]
+	private readonly SyncVar<int> _characterInd = new SyncVar<int>(-1);
 	//public NetworkVariable<ulong> id = new NetworkVariable<ulong>(
 	//	0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 	[SerializeField] private NetworkObject nwObj;
+	
 	
 	[Space] [Header("Model")]
 	[SerializeField] private Transform model;
@@ -79,20 +85,23 @@ public class PlayerControls : NetworkBehaviour
 	[Space] [Header("HACKS")]
 	[SerializeField] private int controlledRoll=-1;
 
-	//public override void OnNetworkSpawn()
-	//{
-	//	coinsT.OnValueChanged += (int prevCoins, int newCoins) => {
-	//		coinTxt.text = coinTxt.text = $"{newCoins}";
-	//	};
-	//	if (IsOwner)
-	//		Instance = this;
-	//}
+	public override void OnStartClient()
+	{
+		base.OnStartClient();
+		//coinsT.OnValueChanged += (int prevCoins, int newCoins) => {
+		//	coinTxt.text = coinTxt.text = $"{newCoins}";
+		//};
+		_characterInd.OnChange += SetModel;
+	}
+
+	public override void OnStopClient()
+	{
+		base.OnStopClient();
+		Debug.Log($"<color=red>DISCONNECTED {base.LocalConnection.ClientId}</color>");
+	}
 
 	private void OnEnable() 
 	{
-		//if (nextNode == null)
-		//	this.enabled = false;
-		//startPos = this.transform.position;
 		HidePaths();
 	}
 
@@ -104,14 +113,20 @@ public class PlayerControls : NetworkBehaviour
 		gm = GameManager.Instance;
 		dataUi.SetParent(bm.GetUiLayout());
 		dataUi.localScale = Vector3.one;
+		_characterInd.Value = gm.GetCharacterModel(base.Owner);
+		conn = InstanceFinder.ClientManager.Connection;
 		//dataImg.color = OwnerClientId == 0 ? new Color(0,1,0) : OwnerClientId == 1 ? new Color(1,0.6f,0) 
 		//	: OwnerClientId == 2 ? new Color(1,0.5f,0.8f) : Color.blue;
-		//SetModel( gm.playerModels[(int) OwnerClientId] );
+		//SetModelServerRpc( gm.GetCharacterModel(conn) );\
+		Debug.Log($"<color=cyan>{name} = {base.Owner.IsLocalClient}</color>");
 		
-		//if (!IsOwner) {
-		//	enabled = false;
-		//	return;
-		//}
+		if (base.Owner.IsLocalClient)
+			Instance = this;
+		else
+		{
+			this.enabled = false;
+			return;
+		}
 		//id.Value = OwnerClientId;
 		startPos = this.transform.position;
 		if (gm.hasStarted)
@@ -132,16 +147,30 @@ public class PlayerControls : NetworkBehaviour
 		playerId = id;
 	}
 
-	public void SetModel(int ind)
+	private void SetModel(int prev, int next, bool asServer)
+	{
+		for (int i=0 ; i<models.Length ; i++)
+			models[i].SetActive(false);
+		if (models != null && next >= 0 && next < models.Length)
+			models[next].SetActive(true);
+		dataImg.color = next == 0 ? new Color(0,1,0) : next == 1 ? new Color(1,0.6f,0) 
+			: next == 2 ? new Color(1,0.5f,0.8f) : Color.blue;
+	}
+
+	[ServerRpc(RequireOwnership=false)] public void SetModelServerRpc(int next)
+	{
+		SetModelObserverRpc(next);
+	}
+	[ObserversRpc] public void SetModelObserverRpc(int next)
 	{
 		//Debug.Log($"__ PLAYER {id.Value} |{ind}|__");
 		//name = $"__ PLAYER {id.Value} __";
 		for (int i=0 ; i<models.Length ; i++)
 			models[i].SetActive(false);
-		if (models != null && ind >= 0 && ind < models.Length)
-			models[ind].SetActive(true);
-		dataImg.color = ind == 0 ? new Color(0,1,0) : ind == 1 ? new Color(1,0.6f,0) 
-			: ind == 2 ? new Color(1,0.5f,0.8f) : Color.blue;
+		if (models != null && next >= 0 && next < models.Length)
+			models[next].SetActive(true);
+		dataImg.color = next == 0 ? new Color(0,1,0) : next == 1 ? new Color(1,0.6f,0) 
+			: next == 2 ? new Color(1,0.5f,0.8f) : Color.blue;
 	}
 
 	public void SetStartNode(Node startNode)
