@@ -2,14 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using Unity.Netcode;
+using Mirror;
 
 public class MinigameManager : NetworkBehaviour
 {
 	public static MinigameManager Instance;
 	private GameManager gm;
 	private MinigameControls _player;
-	[SerializeField] private NetworkObject playerToSpawn;
+	//[SerializeField] private NetworkObject playerToSpawn;
 	[SerializeField] private Transform spawnHolder;
 	[SerializeField] private Transform spawnPos;
 	[SerializeField] private TextMeshProUGUI timerTxt;
@@ -40,13 +40,13 @@ public class MinigameManager : NetworkBehaviour
 		gm = GameManager.Instance;
 		if (gm != null)
 		{
-			nPlayers = gm.nPlayers.Value;
-			if (PreviewManager.Instance == null)
-				gm.TriggerTransitionServerRpc(false);
+			//nPlayers = gm.nPlayers.Value;
+			//if (PreviewManager.Instance == null)
+			//	gm.TriggerTransitionServerRpc(false);
 		}
 		
 		// Spawn players
-		SpawnPlayerServerRpc((int) NetworkManager.Singleton.LocalClientId);
+		//SpawnPlayerServerRpc((int) NetworkManager.Singleton.LocalClientId);
 		rewards = new int[nPlayers];
 		for (int i=0 ; i<rewards.Length ; i++)
 			rewards[i] = -1;
@@ -54,10 +54,10 @@ public class MinigameManager : NetworkBehaviour
 		timerTxt.text = $"{timer}";
 		countdownCo = StartCoroutine( CountdownCo() );
 		if (PreviewManager.Instance != null)
-			PreviewManager.Instance.TriggerTransitionServerRpc(false);
+			PreviewManager.Instance.CmdTriggerTransition(false);
 	}
 
-	[ServerRpc(RequireOwnership=false)] public void SpawnPlayerServerRpc(int clientId)
+	[Command(requiresAuthority=false)] public void CmdSpawnPlayer(int clientId)
 	{
 		/* Distance around the circle */  
 		float radians = 180 + (2 * Mathf.PI / nPlayers * clientId);
@@ -71,13 +71,13 @@ public class MinigameManager : NetworkBehaviour
 		/* Get the spawn position */ 
 		Vector3 spawnP = spawnPos.position + spawnDir * 3; // Radius is just the distance away from the point
 
-		var networkObject = NetworkManager.SpawnManager.InstantiateAndSpawn(
-			playerToSpawn, (ulong) clientId, position:spawnP, destroyWithScene:true);
-		InitPlayerClientRpc();
+		//var networkObject = NetworkManager.SpawnManager.InstantiateAndSpawn(
+		//	playerToSpawn, (ulong) clientId, position:spawnP, destroyWithScene:true);
+		RpcInitPlayer();
 
-		MinigameControls obj = networkObject.GetComponent<MinigameControls>();
+		//MinigameControls obj = networkObject.GetComponent<MinigameControls>();
 	}
-	[ClientRpc(RequireOwnership=false)] private void InitPlayerClientRpc()
+	[ClientRpc] private void RpcInitPlayer()
 	{ 
 		_player = MinigameControls.Instance;
 		//_player.transform.LookAt(spawnPos);
@@ -98,20 +98,20 @@ public class MinigameManager : NetworkBehaviour
 	} 
 
 	bool gameFin;
-	[ServerRpc(RequireOwnership=false)] public void PlayerEliminatedServerRpc(int id)
+	[Command(requiresAuthority=false)] public void CmdPlayerEliminated(int id)
 	{
 		if (id < rewards.Length)
 			rewards[id] = gm.GetPrizeValue(nOut++);
-		PlayerEliminatedClientRpc((ulong) id);
+		RpcPlayerEliminated((ulong) id);
 		if (lastManStanding && nOut == nPlayers - 1)
 		{
 			StopCoroutine( countdownCo );
 			GameOver();
 		}
 	}
-	[ClientRpc(RequireOwnership=false)] private void PlayerEliminatedClientRpc(ulong id)
+	[ClientRpc] private void RpcPlayerEliminated(ulong id)
 	{
-		_player.DeathClientRpc(id);
+		_player.RpcDeath(id);
 	}
 	private void GameOver()
 	{
@@ -127,10 +127,10 @@ public class MinigameManager : NetworkBehaviour
 		if (PreviewManager.Instance != null)
 		{
 			yield return new WaitForSeconds(0.5f);
-			PreviewManager.Instance.TriggerTransitionServerRpc(true);
+			PreviewManager.Instance.CmdTriggerTransition(true);
 
 			yield return new WaitForSeconds(0.5f);
-			gm.ReloadPreviewMinigameServerRpc();
+			gm.CmdReloadPreviewMinigame();
 		}
 		// real
 		else

@@ -1,19 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Unity.Netcode;
+using Mirror;
 using UnityEngine.Experimental.AI;
 
 public class BoardManager : NetworkBehaviour
 {
 	public static BoardManager Instance;
-	[SerializeField] private NetworkObject playerToSpawn;
+	//[SerializeField] private NetworkObject playerToSpawn;
 	[SerializeField] private Transform spawnPos;
 	[SerializeField] private PlayerControls[] players;
 	private PlayerControls _player;
 	int nTurn;
-	public NetworkVariable<int> nPlayerOrder = new NetworkVariable<int>(
-		0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+	//public NetworkVariable<int> nPlayerOrder = new NetworkVariable<int>(
+	//	0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 	int nPlayers;
 	GameManager gm;
 
@@ -40,27 +40,27 @@ public class BoardManager : NetworkBehaviour
 	{
 		gm = GameManager.Instance;
 
-		Debug.Log($"<color=magenta>===> {NetworkManager.Singleton.LocalClientId}</color>");
-		SpawnPlayerServerRpc((int) NetworkManager.Singleton.LocalClientId);
+		//Debug.Log($"<color=magenta>===> {NetworkManager.Singleton.LocalClientId}</color>");
+		//CmdSpawnPlayer((int) NetworkManager.Singleton.LocalClientId);
 
-		// only host can start game
-		if (!IsHost) return;
-		nPlayers = gm.nPlayers.Value;
+		/* only host can start game */
+		//if (!IsHost) return;
+		//nPlayers = gm.nPlayers.Value;
 		players = new PlayerControls[nPlayers];
 		StartCoroutine( StartGameCo() );
 	}
 
-	[ServerRpc(RequireOwnership=false)] public void SpawnPlayerServerRpc(int clientId)
+	[Command(requiresAuthority=false)] public void CmdCmdSpawnPlayer(int clientId)
 	{
-		var networkObject = NetworkManager.SpawnManager.InstantiateAndSpawn(
-			playerToSpawn, (ulong) clientId, position:spawnPos.position + new Vector3(-2 + 2*clientId,0,0), destroyWithScene:true);
-		var p = networkObject.GetComponent<PlayerControls>();
+		//var networkObject = NetworkManager.SpawnManager.InstantiateAndSpawn(
+		//	playerToSpawn, (ulong) clientId, position:spawnPos.position + new Vector3(-2 + 2*clientId,0,0), destroyWithScene:true);
+		//var p = networkObject.GetComponent<PlayerControls>();
 		if (!gm.hasStarted)
-			SpawnPlayerClientRpc(clientId);
+			RpcSpawnPlayer(clientId);
 			//p.SetStartNode(startNode);
-		Debug.Log($"{p.name} Joined");
+		//Debug.Log($"{p.name} Joined");
 	}
-	[ClientRpc(RequireOwnership=false)] private void SpawnPlayerClientRpc(int clientId)
+	[ClientRpc] private void RpcSpawnPlayer(int clientId)
 	{ 
 		_player = PlayerControls.Instance;
 		_player.SetStartNode(startNode);
@@ -69,16 +69,16 @@ public class BoardManager : NetworkBehaviour
 	IEnumerator StartGameCo()
 	{
 		yield return new WaitForSeconds(0.5f);
-		gm.TriggerTransitionServerRpc(false);
+		gm.CmdTriggerTransition(false);
 		
 		yield return new WaitForSeconds(1);
-		gm.NextPlayerTurnServerRpc(0);
+		gm.CmdNextPlayerTurn(0);
 		//NextPlayerTurn(true);
 	}
 
-	[ClientRpc(RequireOwnership=false)] public void NextPlayerTurnClientRpc(ClientRpcParams crp)
+	[ClientRpc] public void RpcNextPlayerTurn()
 	{
-		Debug.Log($"<color=magenta>-- PLAYER {NetworkManager.Singleton.LocalClientId}'s TURN</color>");
+		//Debug.Log($"<color=magenta>-- PLAYER {NetworkManager.Singleton.LocalClientId}'s TURN</color>");
 		if (_player == null)
 			_player = PlayerControls.Instance;
 		else
@@ -91,14 +91,14 @@ public class BoardManager : NetworkBehaviour
 		//	nPlayerOrder = ++nPlayerOrder;
 		//	//nPlayerOrder = ++nPlayerOrder % nPlayers;
 		//	players[nPlayerOrder].YourTurn();
-		if (nPlayerOrder.Value >= 0 && nPlayerOrder.Value < players.Length)
-			gm.NextPlayerTurnServerRpc((ulong) ++nPlayerOrder.Value);
-		else if (nPlayerOrder.Value >= nPlayers)
-		{
-			//DisablePlayerServerRpc();
-			gm.LoadPreviewMinigameServerRpc("TestMinigame");
-		}
-			//gm.LoadMinigameServerRpc();
+		//if (nPlayerOrder.Value >= 0 && nPlayerOrder.Value < players.Length)
+		//	gm.CmdNextPlayerTurn((ulong) ++nPlayerOrder.Value);
+		//else if (nPlayerOrder.Value >= nPlayers)
+		//{
+		//	//CmdDisablePlayer();
+		//	gm.CmdLoadPreviewMinigame("TestMinigame");
+		//}
+			//gm.CmdLoadMinigame();
 			//LoadMinigame("TestMinigame");
 	}
 

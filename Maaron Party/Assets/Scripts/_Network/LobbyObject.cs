@@ -2,32 +2,34 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Unity.Netcode;
+using Mirror;
 using TMPro;
 
 public class LobbyObject : NetworkBehaviour
 {
+	#region Variables
 	public static LobbyObject Instance;
 	private GameManager gm;
 	[SerializeField] private GameObject buttons;
 	[SerializeField] private TextMeshProUGUI characterTxt;
 	[SerializeField] private int maxCharacters=4;
 	[SerializeField] private Image pfp;
-	public NetworkVariable<int> characterInd = new NetworkVariable<int>(
-		0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+	//public NetworkVariable<int> characterInd = new NetworkVariable<int>(
+	//	0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+	#endregion
 
 
-	public override void OnNetworkSpawn()
-	{
-		characterInd.OnValueChanged += (int prevInd, int newInd) => {
-			ChangeName(newInd);
-		};
-	}
-	public override void OnNetworkDespawn()
-	{
-		if (gm != null && IsOwner)
-			gm.LeftGameServerRpc(OwnerClientId);
-	}
+	//public override void OnNetworkSpawn()
+	//{
+	//	characterInd.OnValueChanged += (int prevInd, int newInd) => {
+	//		ChangeName(newInd);
+	//	};
+	//}
+	//public override void OnNetworkDespawn()
+	//{
+	//	if (gm != null && IsOwner)
+	//		gm.LeftGameServerRpc(OwnerClientId);
+	//}
 
 	private void ChangeName(int ind)
 	{
@@ -57,30 +59,30 @@ public class LobbyObject : NetworkBehaviour
 		transform.SetParent(gm.spawnHolder, true);
 		transform.localScale = Vector3.one;
 
-		if (IsOwner)
-		{
-			Instance = this;
-			Debug.Log("INSTANCE CREATED " + name );
-			//Debug.Log($"=>  {OwnerClientId}");
-			buttons.SetActive(true);
-			gm.JoinGameServerRpc(OwnerClientId);
-			characterInd.Value = (int) OwnerClientId;
-		}
-		ChangeName(characterInd.Value);
+		//if (IsOwner)
+		//{
+		//	Instance = this;
+		//	Debug.Log("INSTANCE CREATED " + name );
+		//	//Debug.Log($"=>  {OwnerClientId}");
+		//	buttons.SetActive(true);
+		//	gm.JoinGameServerRpc(OwnerClientId);
+		//	characterInd.Value = (int) OwnerClientId;
+		//}
+		//ChangeName(characterInd.Value);
 	}
 
-	[ServerRpc(RequireOwnership=false)] public void SendPlayerModelServerRpc()
+	[Command(requiresAuthority=false)] public void CmdSendPlayerModel()
 	{
 		//Debug.Log($"<color=blue>SendPlayerModelServerRpc</color>");
-		gm.SetPlayerModelServerRpc(characterInd.Value);
+		//gm.SetPlayerModelServerRpc(characterInd.Value);
 	}
 
 	public void CHARACTER_IND_INC()
 	{
-		characterInd.Value = (characterInd.Value + 1) % maxCharacters;
+		//characterInd.Value = (characterInd.Value + 1) % maxCharacters;
 	}
 	public void CHARACTER_IND_DEC()
 	{
-		characterInd.Value = characterInd.Value == 0 ? maxCharacters - 1 : characterInd.Value - 1;
+		//characterInd.Value = characterInd.Value == 0 ? maxCharacters - 1 : characterInd.Value - 1;
 	}
 }

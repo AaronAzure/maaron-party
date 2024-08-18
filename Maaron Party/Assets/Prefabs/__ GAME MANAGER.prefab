@@ -87,6 +87,7 @@ GameObject:
   - component: {fileID: 3634250872829894572}
   - component: {fileID: 3120356282450522442}
   - component: {fileID: 7288775949962906796}
+  - component: {fileID: 6969228504031060560}
   m_Layer: 5
   m_Name: TRANSITION Canvas
   m_TagString: Untagged
@@ -181,6 +182,23 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &6969228504031060560
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3851289919231256873}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f6f3bf89aa97405989c802ba270f815, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  clientAuthority: 0
+  animator: {fileID: 7288775949962906796}
 --- !u!1 &4357352453857552675
 GameObject:
   m_ObjectHideFlags: 0
@@ -191,8 +209,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2298832409760039847}
   - component: {fileID: 7063794103719922717}
-  - component: {fileID: 7586016776309784228}
   - component: {fileID: 1394956670957801121}
+  - component: {fileID: 5151234886908247087}
   m_Layer: 0
   m_Name: __ GAME MANAGER
   m_TagString: Untagged
@@ -226,27 +244,6 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4357352453857552675}
   m_Enabled: 1
---- !u!114 &7586016776309784228
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4357352453857552675}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 87497745
-  InScenePlacedSourceGlobalObjectIdHash: 0
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
 --- !u!114 &1394956670957801121
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -259,8 +256,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ed6375247d6c234196202042d3fb26a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nPlayers:
-    m_InternalValue: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   spawnHolder: {fileID: 0}
   buttons: {fileID: 0}
   hostBtn: {fileID: 0}
@@ -270,6 +268,23 @@ MonoBehaviour:
   coins: 
   stars: 
   anim: {fileID: 7288775949962906796}
+--- !u!114 &5151234886908247087
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4357352453857552675}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 309589065
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
 --- !u!1 &5695075454774481832
 GameObject:
   m_ObjectHideFlags: 0

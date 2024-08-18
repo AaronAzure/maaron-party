@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Unity.Netcode;
+using Mirror;
 using Rewired;
 
 public class MinigameControls : NetworkBehaviour
 {
+	#region Variables
+
 	public static MinigameControls Instance;
 	public GameManager gm;
 	public MinigameManager mm;
@@ -24,24 +26,24 @@ public class MinigameControls : NetworkBehaviour
 	[SerializeField] private GameObject[] models;
 	[SerializeField] private Rigidbody rb;
 
+	#endregion
 
-
-	public override void OnNetworkSpawn()
-	{
-		if (IsOwner)
-			Instance = this;
-	}
+	//public override void OnNetworkSpawn()
+	//{
+	//	if (IsOwner)
+	//		Instance = this;
+	//}
 
 	// Start is called before the first frame update
 	void Start()
 	{
 		gm = GameManager.Instance;
-		SetModel( gm.playerModels[(int) OwnerClientId] );
+		//SetModel( gm.playerModels[(int) OwnerClientId] );
 		mm = MinigameManager.Instance;
-		transform.parent = mm.transform;
-		if (!IsOwner) enabled = false;
+		//transform.parent = mm.transform;
+		//if (!IsOwner) enabled = false;
 
-		playerId = (int) OwnerClientId;
+		//playerId = (int) OwnerClientId;
 		player = ReInput.players.GetPlayer(playerId);
 	}
 
@@ -55,7 +57,7 @@ public class MinigameControls : NetworkBehaviour
 
 	private void FixedUpdate() 
 	{
-		if (!IsOwner) return;
+		//if (!IsOwner) return;
 		if (canMove)
 			Move();
 	}
@@ -78,22 +80,22 @@ public class MinigameControls : NetworkBehaviour
 		var rotation = Quaternion.LookRotation(lookPos);
 		model.rotation = Quaternion.Slerp(model.rotation, rotation, Time.fixedDeltaTime * rotateSpeed);
 	}
-	[ClientRpc(RequireOwnership = false)] public void DeathClientRpc(ulong targetId)
+	[ClientRpc] public void RpcDeath(ulong targetId)
 	{
-		if (OwnerClientId == targetId)
-		{
-			this.enabled = false;
-			gameObject.SetActive(false);
-		}
+		//if (OwnerClientId == targetId)
+		//{
+		//	this.enabled = false;
+		//	gameObject.SetActive(false);
+		//}
 	}
 
 	private void OnTriggerEnter(Collider other) 
 	{
-		if (IsOwner && enabled && other.gameObject.CompareTag("Death"))
-		{
-			MinigameManager.Instance.PlayerEliminatedServerRpc(playerId);
-			this.enabled = false;
-			gameObject.SetActive(false);
-		}
+		//if (IsOwner && enabled && other.gameObject.CompareTag("Death"))
+		//{
+		//	MinigameManager.Instance.PlayerEliminatedServerRpc(playerId);
+		//	this.enabled = false;
+		//	gameObject.SetActive(false);
+		//}
 	}
 }

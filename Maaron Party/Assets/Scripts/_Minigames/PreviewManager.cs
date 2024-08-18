@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Netcode;
+using Mirror;
 using UnityEngine;
 
 public class PreviewManager : NetworkBehaviour
@@ -18,14 +18,14 @@ public class PreviewManager : NetworkBehaviour
 	void Start()
 	{
 		gm = GameManager.Instance;
-		gm.TriggerTransition(false);
+		gm.CmdTriggerTransition(false);
 	}
 
-	[ServerRpc(RequireOwnership=false)] public void TriggerTransitionServerRpc(bool fadeIn)
+	[Command(requiresAuthority=false)] public void CmdTriggerTransition(bool fadeIn)
 	{
-		TriggerTransitionClientRpc(fadeIn);
+		RpcTriggerTransition(fadeIn);
 	}
-	[ClientRpc(RequireOwnership=false)] private void TriggerTransitionClientRpc(bool fadeIn)
+	[ClientRpc] private void RpcTriggerTransition(bool fadeIn)
 	{
 		anim.SetTrigger(fadeIn ? "in" : "out");
 	}

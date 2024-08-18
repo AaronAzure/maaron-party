@@ -818,8 +818,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8502263668208071987}
-  - component: {fileID: 4536398911521027332}
   - component: {fileID: 8433219930874235559}
+  - component: {fileID: 1144782064657783664}
   m_Layer: 0
   m_Name: BOARD MANAGER
   m_TagString: Untagged
@@ -845,27 +845,6 @@ Transform:
   - {fileID: 4865184552239938852}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4536398911521027332
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8562829062702930815}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3902918758
-  InScenePlacedSourceGlobalObjectIdHash: 0
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
 --- !u!114 &8433219930874235559
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -878,11 +857,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 956e432250ee82349a3709219c9892a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerToSpawn: {fileID: 2048611876850834971, guid: 8a9d11e354baf9d48b9000cbafda63eb, type: 3}
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   spawnPos: {fileID: 4865184552239938852}
   players: []
   dataUi: {fileID: 2541591487585698009}
   startNode: {fileID: 0}
+--- !u!114 &1144782064657783664
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8562829062702930815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 4185519487
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
 --- !u!1 &8669936138722764656
 GameObject:
   m_ObjectHideFlags: 0
