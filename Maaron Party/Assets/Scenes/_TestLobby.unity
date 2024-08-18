@@ -213,13 +213,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 0
+    m_Left: 200
     m_Right: 0
     m_Top: 0
     m_Bottom: 0
-  m_ChildAlignment: 4
-  m_Spacing: 0
-  m_ChildForceExpandWidth: 1
+  m_ChildAlignment: 3
+  m_Spacing: 50
+  m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
   m_ChildControlHeight: 0
@@ -238,30 +238,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2227343787
-  PrefabGlobalObjectIdHash: 0
-  InScenePlacedSourceGlobalObjectIdHash: 0
-  NetworkManagerOwner: {fileID: 0}
-  <NetworkObjectId>k__BackingField: 0
-  <OwnerClientId>k__BackingField: 0
-  AlwaysReplicateAsRoot: 0
-  <IsPlayerObject>k__BackingField: 0
-  SynchronizeTransform: 1
-  <IsSpawned>k__BackingField: 0
-  <DestroyWithScene>k__BackingField: 0
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
-  m_CachedNameForMetrics: 
-  SceneOriginHandle: 0
-  NetworkSceneHandle: 0
-  m_SceneOrigin:
-    m_Handle: 0
-  m_CachedParent: {fileID: 0}
-  m_CachedWorldPositionStays: 1
-  m_ChildNetworkBehaviours: []
 --- !u!1 &193865295
 GameObject:
   m_ObjectHideFlags: 0
@@ -273,6 +249,7 @@ GameObject:
   - component: {fileID: 193865297}
   - component: {fileID: 193865296}
   - component: {fileID: 193865298}
+  - component: {fileID: 193865299}
   m_Layer: 0
   m_Name: '>> NETWORK MANAGER'
   m_TagString: Untagged
@@ -307,7 +284,7 @@ MonoBehaviour:
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60
   authenticator: {fileID: 0}
-  playerPrefab: {fileID: 0}
+  playerPrefab: {fileID: 6432613922619178981, guid: a8be1d7671adca64ea71e7d4a57fbdf0, type: 3}
   autoCreatePlayer: 1
   playerSpawnMethod: 0
   spawnPrefabs: []
@@ -326,7 +303,13 @@ MonoBehaviour:
   evaluationMethod: 0
   evaluationInterval: 3
   timeInterpolationGui: 0
-  spawnHolder: {fileID: 0}
+  spawnHolder: {fileID: 101067035}
+  buttons: {fileID: 1300736597}
+  hostBtn: {fileID: 552371406}
+  clientBtn: {fileID: 2092168800}
+  startBtn: {fileID: 1516030785}
+  lobbyScene: Assets/Scenes/_TestLobby.unity
+  boardScene: Assets/Scenes/TestBoard.unity
 --- !u!4 &193865297
 Transform:
   m_ObjectHideFlags: 0
@@ -371,6 +354,20 @@ MonoBehaviour:
   debugLog: 0
   statisticsGUI: 0
   statisticsLog: 0
+--- !u!114 &193865299
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 193865295}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6442dc8070ceb41f094e44de0bf87274, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  offsetX: 0
+  offsetY: 0
 --- !u!1 &235304053
 GameObject:
   m_ObjectHideFlags: 0

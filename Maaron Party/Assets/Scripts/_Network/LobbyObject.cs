@@ -14,24 +14,50 @@ public class LobbyObject : NetworkBehaviour
 	[SerializeField] private TextMeshProUGUI characterTxt;
 	[SerializeField] private int maxCharacters=4;
 	[SerializeField] private Image pfp;
+	[SerializeField] private Image bg;
+	[SyncVar] public int characterInd=-1;
 	//public NetworkVariable<int> characterInd = new NetworkVariable<int>(
 	//	0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 	#endregion
 
 
-	//public override void OnNetworkSpawn()
-	//{
-	//	characterInd.OnValueChanged += (int prevInd, int newInd) => {
-	//		ChangeName(newInd);
-	//	};
-	//}
-	//public override void OnNetworkDespawn()
-	//{
-	//	if (gm != null && IsOwner)
-	//		gm.LeftGameServerRpc(OwnerClientId);
-	//}
 
-	private void ChangeName(int ind)
+	#region Methods
+	public override void OnStartClient()
+	{
+		Debug.Log($"{name} Joined");
+	}
+	public override void OnStopClient()
+	{
+		//base.OnStopClient();
+		Debug.Log($"{name} Left");
+	}
+
+	private void Start() 
+	{
+		gm = GameManager.Instance;
+		transform.SetParent(gm.spawnHolder, true);
+		transform.localScale = Vector3.one;
+		
+		if (isLocalPlayer)
+		{
+			Instance = this;
+			Debug.Log($"<color=cyan>INSTANCE CREATED {name} |{netId}|</color>");
+			bg.color = new Color(0.25f, 0.25f, 0.25f, 0.7843f);
+			//Debug.Log($"=>  {OwnerClientId}");
+			buttons.SetActive(true);
+			//gm.JoinGameServerRpc(OwnerClientId);
+			characterInd = (int) netId;
+		}
+		CmdUpdateUi(characterInd);
+	}
+
+	[Command(requiresAuthority=false)] public void CmdUpdateUi(int ind)
+	{
+		RpcUpdateUi(ind);
+	}
+
+	[ClientRpc] public void RpcUpdateUi(int ind)
 	{
 		gameObject.name = $"__ PLAYER {ind} __";
 		switch (ind)
@@ -53,24 +79,6 @@ public class LobbyObject : NetworkBehaviour
 				: ind == 2 ? new Color(1,0.5f,0.8f) : Color.blue;
 	}
 
-	private void Start() 
-	{
-		gm = GameManager.Instance;
-		transform.SetParent(gm.spawnHolder, true);
-		transform.localScale = Vector3.one;
-
-		//if (IsOwner)
-		//{
-		//	Instance = this;
-		//	Debug.Log("INSTANCE CREATED " + name );
-		//	//Debug.Log($"=>  {OwnerClientId}");
-		//	buttons.SetActive(true);
-		//	gm.JoinGameServerRpc(OwnerClientId);
-		//	characterInd.Value = (int) OwnerClientId;
-		//}
-		//ChangeName(characterInd.Value);
-	}
-
 	[Command(requiresAuthority=false)] public void CmdSendPlayerModel()
 	{
 		//Debug.Log($"<color=blue>SendPlayerModelServerRpc</color>");
@@ -79,10 +87,13 @@ public class LobbyObject : NetworkBehaviour
 
 	public void CHARACTER_IND_INC()
 	{
-		//characterInd.Value = (characterInd.Value + 1) % maxCharacters;
+		characterInd = (characterInd + 1) % maxCharacters;
+		CmdUpdateUi((characterInd + 1) % maxCharacters);
 	}
 	public void CHARACTER_IND_DEC()
 	{
-		//characterInd.Value = characterInd.Value == 0 ? maxCharacters - 1 : characterInd.Value - 1;
+		characterInd = characterInd == 0 ? maxCharacters - 1 : characterInd - 1;
+		CmdUpdateUi(characterInd == 0 ? maxCharacters - 1 : characterInd - 1);
 	}
+	#endregion
 }

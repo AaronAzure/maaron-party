@@ -16,15 +16,12 @@ public class GameManager : NetworkBehaviour
 	//	0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 	//public NetworkList<ulong> players;
 	//public NetworkList<int> playerModels;
+	[SyncVar] public int nPlayers;
 	private Scene m_LoadedScene;
 
 
 	[Space] [Header("Lobby Manager")]
 	public Transform spawnHolder;
-	[SerializeField] private GameObject buttons;
-	[SerializeField] private Button hostBtn;
-	[SerializeField] private Button clientBtn;
-	[SerializeField] private Button startBtn;
 
 
 	[Space] [Header("In game references")]
@@ -41,46 +38,21 @@ public class GameManager : NetworkBehaviour
 	#region Methods
 	public void Awake() 
 	{
-		Awake();
 		if (Instance == null)
 			Instance = this;
 		else
 			Destroy(gameObject);
 		DontDestroyOnLoad(this);
-
-		hostBtn.onClick.AddListener(() => {
-			StartHost();
-		});	
-		clientBtn.onClick.AddListener(() => {
-			StartClient();
-		});	
-		startBtn.onClick.AddListener(() => {
-			StartGame();
-		});	
-
-		//players = new NetworkList<ulong>(
-		//	default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner
-		//);
-		//playerModels = new NetworkList<int>(
-		//	default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner
-		//);
 	}
 
-	//public override void OnDestroy() 
-	//{
-	//	base.OnDestroy();
-	//	//players.Dispose();
-	//	//playerModels.Dispose();
-	//}
-
-	//public override void Start() 
-	//{
-	//	currNodes = new();
-	//	coins = new();
-	//	stars = new();
-	//	if (BoardManager.Instance == null)
-	//		CmdTriggerTransition(false);
-	//}
+	public void Start() 
+	{
+		currNodes = new();
+		coins = new();
+		stars = new();
+		if (BoardManager.Instance == null)
+			TriggerTransition(false);
+	}
 
 	public void StartHost()
 	{
@@ -179,6 +151,7 @@ public class GameManager : NetworkBehaviour
 	public void StartGame()
 	{
 		lobbyCreated = true;
+		//npla
 		//for (int i=0 ; i<NetworkManager.Singleton.ConnectedClientsIds.Count ; i++)
 		//{
 		//	SetPlayerModelClientRpc(
@@ -194,13 +167,21 @@ public class GameManager : NetworkBehaviour
 		//foreach (ulong x in NetworkManager.Singleton.ConnectedClientsIds)
 		//	s += $"|{x}| ";
 		//Debug.Log(s + "</color>");
-		startBtn.gameObject.SetActive(false);
+		//startBtn.gameObject.SetActive(false);
 		StartCoroutine( StartGameCo() );
 	}
+	
 	IEnumerator StartGameCo()
 	{
 		CmdTriggerTransition(true);
+		
 		yield return new WaitForSeconds(0.5f);
+		GameNetworkManager.Instance.ServerChangeScene("TestBoard");
+		
+		//while (NetworkServer.isLoadingScene)
+		//	yield return null;
+		//CmdTriggerTransition(false);
+		//SceneManager.LoadScene("TestBoard", LoadSceneMode.Single);
 		//NetworkManager.Singleton.SceneManager.LoadScene("TestBoard", LoadSceneMode.Single);
 	}
 
@@ -282,6 +263,10 @@ public class GameManager : NetworkBehaviour
 	//* ------- save -------
 	//* --------------------
 
+	public void TriggerTransition(bool fadeIn)
+	{
+		anim.SetTrigger(fadeIn ? "in" : "out");
+	}
 	[Command(requiresAuthority=false)] public void CmdTriggerTransition(bool fadeIn)
 	{
 		anim.SetTrigger(fadeIn ? "in" : "out");
