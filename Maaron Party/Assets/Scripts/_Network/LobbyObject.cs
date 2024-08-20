@@ -31,6 +31,7 @@ public class LobbyObject : NetworkBehaviour
 	}
 	public override void OnStartClient()
 	{
+		//DontDestroyOnLoad(this);
 		//Debug.Log($"{name} Joined");
 		nm.AddConnection(this);
 	}

@@ -87,6 +87,15 @@ public class PlayerControls : NetworkBehaviour
 	//	if (IsOwner)
 	//		Instance = this;
 	//}
+	private void Awake() 
+	{
+		DontDestroyOnLoad(this);		
+		//Debug.Log($"<color=magenta>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</color>");
+	}
+	public override void OnStartClient()
+	{
+		base.OnStartClient();
+	}
 
 	private void OnEnable() 
 	{
@@ -96,14 +105,17 @@ public class PlayerControls : NetworkBehaviour
 		HidePaths();
 	}
 
-	private void Start() 
+	public void RemoteStart() 
 	{
 		if (vCam != null)
 			vCam.parent = null;
 		bm = BoardManager.Instance;
 		gm = GameManager.Instance;
+
 		dataUi.SetParent(bm.GetUiLayout());
 		dataUi.localScale = Vector3.one;
+
+		
 		//dataImg.color = OwnerClientId == 0 ? new Color(0,1,0) : OwnerClientId == 1 ? new Color(1,0.6f,0) 
 		//	: OwnerClientId == 2 ? new Color(1,0.5f,0.8f) : Color.blue;
 		//SetModel( gm.playerModels[(int) OwnerClientId] );

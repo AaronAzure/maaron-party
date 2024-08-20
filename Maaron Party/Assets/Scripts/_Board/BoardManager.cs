@@ -36,13 +36,17 @@ public class BoardManager : NetworkBehaviour
 		return dataUi;
 	}
 
+
 	private void Start() 
 	{
 		gm = GameManager.Instance;
 
 		//Debug.Log($"<color=magenta>===> {NetworkManager.Singleton.LocalClientId}</color>");
-		Debug.Log($"<color=magenta>===> BoardManager.Start()</color>");
-		CmdSpawnPlayer(connectionToClient);
+		//Debug.Log($"<color=magenta>===> BoardManager.Start()</color>");
+		//CmdSpawnPlayer(connectionToClient);
+
+		if (isServer)
+			GameNetworkManager.Instance.BoardManagerStart();
 
 		/* only host can start game */
 		//if (!IsHost) return;

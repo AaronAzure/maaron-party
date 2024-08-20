@@ -26,6 +26,7 @@ public class GameNetworkManager : NetworkManager
 	#region Variables
 	public static GameNetworkManager Instance;
 	public Transform spawnHolder;
+	private GameManager gm;
 	//GameObject ball;
 	int nPlayers;
 	[SerializeField] private GameObject buttons;
@@ -34,6 +35,10 @@ public class GameNetworkManager : NetworkManager
 	[SerializeField] private Button startBtn;
 
 	[Scene] [SerializeField] private Animator anim;
+
+	
+	[Space] [Header("Network")]
+	[SerializeField] private List<NetworkConnectionToClient> conns = new();
 
 
 	[Space] [Header("Scenes")]
@@ -82,6 +87,7 @@ public class GameNetworkManager : NetworkManager
 	{
 		base.OnStopServer();
 		lobbyPlayers.Clear();
+		conns.Clear();
 	}
 
 	public void AddConnection(LobbyObject lo)
@@ -107,6 +113,7 @@ public class GameNetworkManager : NetworkManager
 	}
 	public void StartGame()
 	{
+		gm = GameManager.Instance;
 		StartBoardGame();
 		nPlayers = NetworkServer.connections.Count;
 		Debug.Log($"<color=magenta>NetworkServer.connections.Count = {NetworkServer.connections.Count}</color>");
@@ -114,24 +121,18 @@ public class GameNetworkManager : NetworkManager
 		startBtn.gameObject.SetActive(false);
 	}
 
-	//private void DestroyLobbyPlayers()
-	//{
-	//	foreach (LobbyObject lo in lobbyPlayers)
-	//	{
-	//		NetworkServer.Destroy(lo.connectionToClient.identity.gameObject);
-	//	}
-	//}
-	//public override void SpawnBoardPlayers()
 	public override void ServerChangeScene(string newSceneName)
 	{
-		if (SceneManager.GetActiveScene().name == lobbyScene)
+		if (lobbyScene.Contains(SceneManager.GetActiveScene().name))
 		{
-			foreach (LobbyObject lo in lobbyPlayers)
+			for (int i = lobbyPlayers.Count - 1; i >= 0; i--)
 			{
-				NetworkServer.Destroy(lo.connectionToClient.identity.gameObject);
-			
-				//GameObject player = Instantiate(boardPlayerPrefab);
-				//NetworkServer.ReplacePlayerForConnection(lo.connectionToClient, player);
+				var conn = lobbyPlayers[i].connectionToClient;
+				//var gameplayerInstance = Instantiate(gamePlayerPrefab);
+				//gameplayerInstance.SetDisplayName(RoomPlayers[i].DisplayName);
+				GameObject player = Instantiate(boardPlayerPrefab);
+
+				NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
 			}
 		}
 		base.ServerChangeScene(newSceneName);
@@ -145,7 +146,7 @@ public class GameNetworkManager : NetworkManager
 	
 	IEnumerator StartBoardGameCo()
 	{
-		GameManager.Instance.CmdTriggerTransition(true);
+		gm.CmdTriggerTransition(true);
 		
 		yield return new WaitForSeconds(0.5f);
 		ServerChangeScene("TestBoard");
@@ -155,6 +156,17 @@ public class GameNetworkManager : NetworkManager
 		//CmdTriggerTransition(false);
 		//SceneManager.LoadScene("TestBoard", LoadSceneMode.Single);
 		//NetworkManager.Singleton.SceneManager.LoadScene("TestBoard", LoadSceneMode.Single);
+	}
+
+	public override void OnServerSceneChanged(string sceneName)
+	{
+		base.OnServerSceneChanged(sceneName);
+		Debug.Log($"==> Scene Loaded = {sceneName}");
+		gm.TriggerTransition(false);
+	}
+	public void BoardManagerStart()
+	{
+		//BoardManager.Instance.Test();
 	}
 
 
@@ -191,6 +203,8 @@ public class GameNetworkManager : NetworkManager
 			NetworkServer.AddPlayerForConnection(conn, player);
 		}
 		//player.name = $"__PLAYER {nPlayers++}";
+		if (!conns.Contains(conn))
+			conns.Add(conn);
 
 		// spawn ball if two players
 		//if (numPlayers == 2)
@@ -208,6 +222,8 @@ public class GameNetworkManager : NetworkManager
 
 		// call base functionality (actually destroys the player)
 		base.OnServerDisconnect(conn);
+		if (conns.Contains(conn))
+			conns.Remove(conn);
 	}
 	#endregion
 }

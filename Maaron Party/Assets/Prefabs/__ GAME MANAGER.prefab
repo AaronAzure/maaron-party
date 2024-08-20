@@ -197,7 +197,7 @@ MonoBehaviour:
   syncDirection: 1
   syncMode: 0
   syncInterval: 0
-  clientAuthority: 0
+  clientAuthority: 1
   animator: {fileID: 7288775949962906796}
 --- !u!1 &4357352453857552675
 GameObject:
