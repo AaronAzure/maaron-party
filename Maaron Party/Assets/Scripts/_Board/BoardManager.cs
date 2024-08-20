@@ -7,7 +7,7 @@ using UnityEngine.Experimental.AI;
 public class BoardManager : NetworkBehaviour
 {
 	public static BoardManager Instance;
-	//[SerializeField] private NetworkObject playerToSpawn;
+	[SerializeField] private PlayerControls playerPrefab;
 	[SerializeField] private Transform spawnPos;
 	[SerializeField] private PlayerControls[] players;
 	private PlayerControls _player;
@@ -41,22 +41,38 @@ public class BoardManager : NetworkBehaviour
 		gm = GameManager.Instance;
 
 		//Debug.Log($"<color=magenta>===> {NetworkManager.Singleton.LocalClientId}</color>");
-		//CmdSpawnPlayer((int) NetworkManager.Singleton.LocalClientId);
+		Debug.Log($"<color=magenta>===> BoardManager.Start()</color>");
+		CmdSpawnPlayer(connectionToClient);
 
 		/* only host can start game */
 		//if (!IsHost) return;
 		//nPlayers = gm.nPlayers.Value;
-		players = new PlayerControls[nPlayers];
-		StartCoroutine( StartGameCo() );
+		
+		//players = new PlayerControls[nPlayers];
+		//StartCoroutine( StartGameCo() );
 	}
 
-	[Command(requiresAuthority=false)] public void CmdCmdSpawnPlayer(int clientId)
+	[Command(requiresAuthority=false)] public void CmdSpawnPlayer(NetworkConnectionToClient conn)
 	{
+		Debug.Log($"<color=white>{conn.connectionId} = CmdSpawnPlayer()</color>");
+		PlayerControls player = Instantiate(playerPrefab);
+
+        // Apply data from the message however appropriate for your game
+        // Typically Player would be a component you write with syncvars or properties
+        //player.hairColor = message.hairColor;
+        //player.eyeColor = message.eyeColor;
+        //player.name = message.name;
+        //player.race = message.race;
+
+        // call this to use this gameobject as the primary controller
+        NetworkServer.AddPlayerForConnection(conn, player.gameObject);
+
+
 		//var networkObject = NetworkManager.SpawnManager.InstantiateAndSpawn(
 		//	playerToSpawn, (ulong) clientId, position:spawnPos.position + new Vector3(-2 + 2*clientId,0,0), destroyWithScene:true);
 		//var p = networkObject.GetComponent<PlayerControls>();
-		if (!gm.hasStarted)
-			RpcSpawnPlayer(clientId);
+		//if (!gm.hasStarted)
+		//	RpcSpawnPlayer(clientId);
 			//p.SetStartNode(startNode);
 		//Debug.Log($"{p.name} Joined");
 	}

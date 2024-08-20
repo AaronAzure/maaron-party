@@ -9,28 +9,36 @@ public class LobbyObject : NetworkBehaviour
 {
 	#region Variables
 	public static LobbyObject Instance;
+	private GameNetworkManager nm;
 	private GameManager gm;
 	[SerializeField] private GameObject buttons;
 	[SerializeField] private TextMeshProUGUI characterTxt;
 	[SerializeField] private int maxCharacters=4;
 	[SerializeField] private Image pfp;
 	[SerializeField] private Image bg;
+	[SerializeField] private GameObject readyUi;
+	[SerializeField] private Button readyBtn;
 	[SyncVar] public int characterInd=-1;
-	//public NetworkVariable<int> characterInd = new NetworkVariable<int>(
-	//	0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+	[SyncVar] public bool _isReady=false;
 	#endregion
 
 
 
 	#region Methods
+	private void Awake() 
+	{
+		nm = GameNetworkManager.Instance;
+	}
 	public override void OnStartClient()
 	{
-		Debug.Log($"{name} Joined");
+		//Debug.Log($"{name} Joined");
+		nm.AddConnection(this);
 	}
 	public override void OnStopClient()
 	{
-		//base.OnStopClient();
-		Debug.Log($"{name} Left");
+		base.OnStopClient();
+		nm.RemoveConnection(this);
+		//Debug.Log($"{name} Left");
 	}
 
 	private void Start() 
@@ -39,6 +47,7 @@ public class LobbyObject : NetworkBehaviour
 		transform.SetParent(gm.spawnHolder, true);
 		transform.localScale = Vector3.one;
 		
+		readyBtn.interactable = isLocalPlayer;
 		if (isLocalPlayer)
 		{
 			Instance = this;
@@ -46,8 +55,14 @@ public class LobbyObject : NetworkBehaviour
 			bg.color = new Color(0.25f, 0.25f, 0.25f, 0.7843f);
 			//Debug.Log($"=>  {OwnerClientId}");
 			buttons.SetActive(true);
+			readyBtn.onClick.AddListener(() => {
+				_isReady = !_isReady;
+				CmdUpdateDisplay(_isReady);
+			});
+			readyBtn.gameObject.SetActive(true);
+			
 			//gm.JoinGameServerRpc(OwnerClientId);
-			characterInd = (int) netId;
+			characterInd = (int) netId % maxCharacters;
 		}
 		CmdUpdateUi(characterInd);
 	}
@@ -59,7 +74,7 @@ public class LobbyObject : NetworkBehaviour
 
 	[ClientRpc] public void RpcUpdateUi(int ind)
 	{
-		gameObject.name = $"__ PLAYER {ind} __";
+		//gameObject.name = $"__ PLAYER {ind} __";
 		switch (ind)
 		{
 			case 0: 
@@ -95,5 +110,18 @@ public class LobbyObject : NetworkBehaviour
 		characterInd = characterInd == 0 ? maxCharacters - 1 : characterInd - 1;
 		CmdUpdateUi(characterInd == 0 ? maxCharacters - 1 : characterInd - 1);
 	}
+
+	[Command(requiresAuthority = false)] public void CmdUpdateDisplay(bool next)
+	{
+		readyUi.SetActive(next);
+		RpcUpdateDisplay(next);
+		//Debug.Log("<color=green>HERE!!</color>");
+	}
+	[ClientRpc] private void RpcUpdateDisplay(bool next)
+	{
+		//Debug.Log("<color=green>UPDATED!!</color>");
+		readyUi.SetActive(next);
+	}
+
 	#endregion
 }

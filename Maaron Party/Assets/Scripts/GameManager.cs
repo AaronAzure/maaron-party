@@ -176,7 +176,7 @@ public class GameManager : NetworkBehaviour
 		CmdTriggerTransition(true);
 		
 		yield return new WaitForSeconds(0.5f);
-		GameNetworkManager.Instance.ServerChangeScene("TestBoard");
+		//GameNetworkManager.Instance.ServerChangeScene("TestBoard");
 		
 		//while (NetworkServer.isLoadingScene)
 		//	yield return null;

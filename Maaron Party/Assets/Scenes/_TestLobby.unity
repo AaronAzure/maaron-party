@@ -287,7 +287,8 @@ MonoBehaviour:
   playerPrefab: {fileID: 6432613922619178981, guid: a8be1d7671adca64ea71e7d4a57fbdf0, type: 3}
   autoCreatePlayer: 1
   playerSpawnMethod: 0
-  spawnPrefabs: []
+  spawnPrefabs:
+  - {fileID: 5611867278237887193, guid: 8a9d11e354baf9d48b9000cbafda63eb, type: 3}
   exceptionsDisconnect: 1
   snapshotSettings:
     bufferTimeMultiplier: 2
@@ -308,8 +309,14 @@ MonoBehaviour:
   hostBtn: {fileID: 552371406}
   clientBtn: {fileID: 2092168800}
   startBtn: {fileID: 1516030785}
+  anim: {fileID: 0}
+  minPlayers: 2
   lobbyScene: Assets/Scenes/_TestLobby.unity
   boardScene: Assets/Scenes/TestBoard.unity
+  lobbyPlayerPrefab: {fileID: 0}
+  lobbyPlayers: []
+  boardPlayerPrefab: {fileID: 0}
+  gamePlayerPrefab: {fileID: 0}
 --- !u!4 &193865297
 Transform:
   m_ObjectHideFlags: 0

@@ -860,6 +860,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  playerPrefab: {fileID: 3325275383187896159, guid: 8a9d11e354baf9d48b9000cbafda63eb, type: 3}
   spawnPos: {fileID: 4865184552239938852}
   players: []
   dataUi: {fileID: 2541591487585698009}
@@ -879,7 +880,7 @@ MonoBehaviour:
   sceneId: 0
   _assetId: 4185519487
   serverOnly: 0
-  visibility: 0
+  visibility: 2
   hasSpawned: 0
 --- !u!1 &8669936138722764656
 GameObject:
