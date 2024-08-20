@@ -50,7 +50,7 @@ public class GameNetworkManager : NetworkManager
 	[SerializeField] private List<LobbyObject> lobbyPlayers = new();
 	//private Dictionary<NetworkConnection, GameObject> lobbyPlayers = new();
 	
-	[Space] [SerializeField] private GameObject boardPlayerPrefab;
+	[Space] [SerializeField] private PlayerControls boardPlayerPrefab;
 
 	[Space] [SerializeField] private MinigameControls gamePlayerPrefab;
 
@@ -130,7 +130,9 @@ public class GameNetworkManager : NetworkManager
 				var conn = lobbyPlayers[i].connectionToClient;
 				//var gameplayerInstance = Instantiate(gamePlayerPrefab);
 				//gameplayerInstance.SetDisplayName(RoomPlayers[i].DisplayName);
-				GameObject player = Instantiate(boardPlayerPrefab);
+				PlayerControls player = Instantiate(boardPlayerPrefab);
+				player.characterInd = i;
+				player.name = $"__ Player {i} __";
 
 				NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
 			}
@@ -191,7 +193,7 @@ public class GameNetworkManager : NetworkManager
     }
 	public override void OnServerAddPlayer(NetworkConnectionToClient conn)
 	{
-		Debug.Log($"<color=yellow>OnServerAddPlayer</color>");
+		//Debug.Log($"<color=yellow>OnServerAddPlayer</color>");
 		//base.OnServerAddPlayer(conn);
 		
 		// add player at correct spawn position

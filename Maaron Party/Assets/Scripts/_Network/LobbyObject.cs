@@ -52,7 +52,6 @@ public class LobbyObject : NetworkBehaviour
 		if (isLocalPlayer)
 		{
 			Instance = this;
-			Debug.Log($"<color=cyan>INSTANCE CREATED {name} |{netId}|</color>");
 			bg.color = new Color(0.25f, 0.25f, 0.25f, 0.7843f);
 			//Debug.Log($"=>  {OwnerClientId}");
 			buttons.SetActive(true);

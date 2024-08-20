@@ -4631,6 +4631,7 @@ MonoBehaviour:
   nextNode: {fileID: 0}
   moveSpeed: 3
   rotateSpeed: 7.5
+  characterInd: -1
   model: {fileID: 6183082833554358603}
   models:
   - {fileID: 3019022781079674692}

@@ -20,6 +20,7 @@ public class BoardManager : NetworkBehaviour
 
 	[Space] [Header("Universal")]
 	[SerializeField] private Transform dataUi;
+	[SyncVar] public int n;
 
 
 	[Space] [Header("MUST REFERENCE PER BOARD")]
@@ -31,9 +32,14 @@ public class BoardManager : NetworkBehaviour
 		Instance = this;		
 	}
 
-	public Transform GetUiLayout()
+	public void SetUiLayout(Transform ui)
 	{
-		return dataUi;
+		if (ui != null)
+		{
+			ui.parent = dataUi;
+			ui.localScale = Vector3.one;
+		}
+		//return dataUi;
 	}
 
 
@@ -41,12 +47,21 @@ public class BoardManager : NetworkBehaviour
 	{
 		gm = GameManager.Instance;
 
-		//Debug.Log($"<color=magenta>===> {NetworkManager.Singleton.LocalClientId}</color>");
-		//Debug.Log($"<color=magenta>===> BoardManager.Start()</color>");
+		//!Debug.Log($"<color=magenta>===> {NetworkManager.Singleton.LocalClientId}</color>");
+		//!Debug.Log($"<color=magenta>===> BoardManager.Start()</color>");
 		//CmdSpawnPlayer(connectionToClient);
 
 		if (isServer)
 			GameNetworkManager.Instance.BoardManagerStart();
+
+		//!Debug.Log($"<color=cyan>isOwned = {isOwned} | isLocalPlayer={isLocalPlayer} | isClient = {isClient}</color>");
+		if (isClient)
+		{
+			//!Debug.Log($"<color=cyan>PlayerControls.Instance = {PlayerControls.Instance}</color>");
+			_player = PlayerControls.Instance;
+			_player.SetStartNode(startNode);
+			_player.RemoteStart(spawnPos);
+		}
 
 		/* only host can start game */
 		//if (!IsHost) return;
@@ -80,12 +95,6 @@ public class BoardManager : NetworkBehaviour
 			//p.SetStartNode(startNode);
 		//Debug.Log($"{p.name} Joined");
 	}
-	[ClientRpc] private void RpcSpawnPlayer(int clientId)
-	{ 
-		_player = PlayerControls.Instance;
-		_player.SetStartNode(startNode);
-	}
-
 	IEnumerator StartGameCo()
 	{
 		yield return new WaitForSeconds(0.5f);

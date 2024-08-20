@@ -17,6 +17,7 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private float rotateSpeed=5f;
 	private Vector3 startPos;
 	private float time;
+	[SyncVar] public int characterInd=-1;
 
 	
 	//[Space] [Header("Network")]
@@ -67,7 +68,22 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private Image dataImg;
 	[SerializeField] private TextMeshProUGUI coinTxt;
 	[SerializeField] private TextMeshProUGUI starTxt;
-	private BoardManager bm;
+	private BoardManager bm
+	{
+		get 
+		{
+			//if (bm != null) return bm;
+			return BoardManager.Instance;
+		}
+	}
+	private GameNetworkManager nm
+	{
+		get 
+		{
+			if (nm != null) return nm;
+			return GameNetworkManager.Instance;
+		}
+	}
 	private GameManager gm;
 
 
@@ -79,51 +95,42 @@ public class PlayerControls : NetworkBehaviour
 	[Space] [Header("HACKS")]
 	[SerializeField] private int controlledRoll=-1;
 
-	//public override void OnNetworkSpawn()
-	//{
-	//	coinsT.OnValueChanged += (int prevCoins, int newCoins) => {
-	//		coinTxt.text = coinTxt.text = $"{newCoins}";
-	//	};
-	//	if (IsOwner)
-	//		Instance = this;
-	//}
+
 	private void Awake() 
 	{
-		DontDestroyOnLoad(this);		
-		//Debug.Log($"<color=magenta>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</color>");
+		DontDestroyOnLoad(this);	
 	}
 	public override void OnStartClient()
 	{
 		base.OnStartClient();
+
+		//!Debug.Log($"<color=yellow>{name}==> isOwned={isOwned} | isClient={isClient} | isLocalPlayer={isLocalPlayer}</color>");
+		if (isOwned)
+		{
+			//!Debug.Log($"<color=magenta>CLIENT HERE {name}</color>");
+			Instance = this;	
+		}
 	}
 
 	private void OnEnable() 
 	{
-		//if (nextNode == null)
-		//	this.enabled = false;
-		//startPos = this.transform.position;
 		HidePaths();
 	}
 
-	public void RemoteStart() 
+	public void RemoteStart(Transform spawnPos) 
 	{
+		//name = $"__ PLAYER {characterInd} __";
 		if (vCam != null)
 			vCam.parent = null;
-		bm = BoardManager.Instance;
 		gm = GameManager.Instance;
-
-		dataUi.SetParent(bm.GetUiLayout());
-		dataUi.localScale = Vector3.one;
-
 		
-		//dataImg.color = OwnerClientId == 0 ? new Color(0,1,0) : OwnerClientId == 1 ? new Color(1,0.6f,0) 
-		//	: OwnerClientId == 2 ? new Color(1,0.5f,0.8f) : Color.blue;
-		//SetModel( gm.playerModels[(int) OwnerClientId] );
+		CmdSetModel(characterInd);
+		transform.position = spawnPos.position + new Vector3(-2 + 2*bm.n++,0,0);
 		
-		//if (!IsOwner) {
-		//	enabled = false;
-		//	return;
-		//}
+		if (!isClient) {
+			enabled = false;
+			return;
+		}
 		//id.Value = OwnerClientId;
 		startPos = this.transform.position;
 		if (gm.hasStarted)
@@ -139,19 +146,24 @@ public class PlayerControls : NetworkBehaviour
 		starTxt.text = $"{stars}";
 	}
 
-	public void SetId(int id)
+	[Command(requiresAuthority = false)] public void CmdSetModel(int ind)
 	{
-		playerId = id;
+		RpcSetModel(ind);
 	}
 
-	public void SetModel(int ind)
+	[ClientRpc] public void RpcSetModel(int ind)
 	{
-		//Debug.Log($"__ PLAYER {id.Value} |{ind}|__");
-		//name = $"__ PLAYER {id.Value} __";
+		name = $"__ PLAYER {ind} __";
 		for (int i=0 ; i<models.Length ; i++)
 			models[i].SetActive(false);
 		if (models != null && ind >= 0 && ind < models.Length)
 			models[ind].SetActive(true);
+
+		//dataUi.SetParent(bm.GetUiLayout());
+		Debug.Log($"<color=yellow>[{name}]dataUi={dataUi!=null} | bm={bm!=null}</color>");
+		if (bm != null)
+			bm.SetUiLayout(dataUi);
+		dataUi.gameObject.SetActive(true);
 		dataImg.color = ind == 0 ? new Color(0,1,0) : ind == 1 ? new Color(1,0.6f,0) 
 			: ind == 2 ? new Color(1,0.5f,0.8f) : Color.blue;
 	}
