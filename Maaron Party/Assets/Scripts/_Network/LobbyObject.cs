@@ -31,15 +31,12 @@ public class LobbyObject : NetworkBehaviour
 	}
 	public override void OnStartClient()
 	{
-		//DontDestroyOnLoad(this);
-		//Debug.Log($"{name} Joined");
 		nm.AddConnection(this);
 	}
 	public override void OnStopClient()
 	{
 		base.OnStopClient();
 		nm.RemoveConnection(this);
-		//Debug.Log($"{name} Left");
 	}
 
 	private void Start() 
@@ -53,7 +50,6 @@ public class LobbyObject : NetworkBehaviour
 		{
 			Instance = this;
 			bg.color = new Color(0.25f, 0.25f, 0.25f, 0.7843f);
-			//Debug.Log($"=>  {OwnerClientId}");
 			buttons.SetActive(true);
 			readyBtn.onClick.AddListener(() => {
 				_isReady = !_isReady;
@@ -103,23 +99,21 @@ public class LobbyObject : NetworkBehaviour
 	public void CHARACTER_IND_INC()
 	{
 		characterInd = (characterInd + 1) % maxCharacters;
-		CmdUpdateUi((characterInd + 1) % maxCharacters);
+		CmdUpdateUi(characterInd);
 	}
 	public void CHARACTER_IND_DEC()
 	{
 		characterInd = characterInd == 0 ? maxCharacters - 1 : characterInd - 1;
-		CmdUpdateUi(characterInd == 0 ? maxCharacters - 1 : characterInd - 1);
+		CmdUpdateUi(characterInd);
 	}
 
 	[Command(requiresAuthority = false)] public void CmdUpdateDisplay(bool next)
 	{
 		readyUi.SetActive(next);
 		RpcUpdateDisplay(next);
-		//Debug.Log("<color=green>HERE!!</color>");
 	}
 	[ClientRpc] private void RpcUpdateDisplay(bool next)
 	{
-		//Debug.Log("<color=green>UPDATED!!</color>");
 		readyUi.SetActive(next);
 	}
 

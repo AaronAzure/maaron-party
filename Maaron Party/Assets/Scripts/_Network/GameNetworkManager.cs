@@ -48,7 +48,7 @@ public class GameNetworkManager : NetworkManager
 
 	[Space] [SerializeField] private LobbyObject lobbyPlayerPrefab;
 	[SerializeField] private List<LobbyObject> lobbyPlayers = new();
-	//private Dictionary<NetworkConnection, GameObject> lobbyPlayers = new();
+	[SerializeField] private List<PlayerControls> boardControls = new();
 	
 	[Space] [SerializeField] private PlayerControls boardPlayerPrefab;
 
@@ -59,7 +59,7 @@ public class GameNetworkManager : NetworkManager
 
 
 
-	#region Methods
+	#region Network Methods
 	public override void Awake() 
 	{
 		base.Awake();
@@ -87,18 +87,32 @@ public class GameNetworkManager : NetworkManager
 	{
 		base.OnStopServer();
 		lobbyPlayers.Clear();
+		boardControls.Clear();
 		conns.Clear();
 	}
 
 	public void AddConnection(LobbyObject lo)
 	{
-		lobbyPlayers.Add(lo);
+		if (!lobbyPlayers.Contains(lo))
+			lobbyPlayers.Add(lo);
 	}
 	public void RemoveConnection(LobbyObject lo)
 	{
 		if (lobbyPlayers.Contains(lo))
 			lobbyPlayers.Remove(lo);
 	}
+	public void AddBoardConnection(PlayerControls pc)
+	{
+		if (!boardControls.Contains(pc))
+			boardControls.Add(pc);
+	}
+	public void RemoveBoardConnection(PlayerControls pc)
+	{
+		if (boardControls.Contains(pc))
+			boardControls.Remove(pc);
+	}
+
+	#endregion
 
 	public void _START_HOST()
 	{
@@ -131,8 +145,7 @@ public class GameNetworkManager : NetworkManager
 				//var gameplayerInstance = Instantiate(gamePlayerPrefab);
 				//gameplayerInstance.SetDisplayName(RoomPlayers[i].DisplayName);
 				PlayerControls player = Instantiate(boardPlayerPrefab);
-				player.characterInd = i;
-				player.name = $"__ Player {i} __";
+				player.characterInd = lobbyPlayers[i].characterInd;
 
 				NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
 			}
@@ -140,6 +153,9 @@ public class GameNetworkManager : NetworkManager
 		base.ServerChangeScene(newSceneName);
 	}
 
+
+
+	#region Board Methods
 
 	public void StartBoardGame()
 	{
@@ -160,6 +176,19 @@ public class GameNetworkManager : NetworkManager
 		//NetworkManager.Singleton.SceneManager.LoadScene("TestBoard", LoadSceneMode.Single);
 	}
 
+	int nPlayerOrder; 
+	int nTurn; 
+	public void NextBoardPlayerTurn()
+	{
+		Debug.Log($"<color=white>NextBoardPlayerTurn() = {nPlayerOrder} < {boardControls.Count}</color>");
+		if (nPlayerOrder < boardControls.Count)
+			boardControls[nPlayerOrder++].YourTurn();
+		else
+		{
+			Debug.Log("<color=red>EVERYONE DONE!!</color>");
+		}
+	}
+
 	public override void OnServerSceneChanged(string sceneName)
 	{
 		base.OnServerSceneChanged(sceneName);
@@ -169,8 +198,8 @@ public class GameNetworkManager : NetworkManager
 	public void BoardManagerStart()
 	{
 		//BoardManager.Instance.Test();
+		//Debug.Log($"<color=cyan>BoardManagerStart(  {nBmReady}  )</color>");
 	}
-
 
 
 

@@ -72,7 +72,6 @@ public class PlayerControls : NetworkBehaviour
 	{
 		get 
 		{
-			//if (bm != null) return bm;
 			return BoardManager.Instance;
 		}
 	}
@@ -80,11 +79,16 @@ public class PlayerControls : NetworkBehaviour
 	{
 		get 
 		{
-			if (nm != null) return nm;
 			return GameNetworkManager.Instance;
 		}
 	}
-	private GameManager gm;
+	private GameManager gm
+	{
+		get 
+		{
+			return GameManager.Instance;
+		}
+	}
 
 
 	[Space] [Header("States")]
@@ -104,12 +108,15 @@ public class PlayerControls : NetworkBehaviour
 	{
 		base.OnStartClient();
 
-		//!Debug.Log($"<color=yellow>{name}==> isOwned={isOwned} | isClient={isClient} | isLocalPlayer={isLocalPlayer}</color>");
 		if (isOwned)
-		{
-			//!Debug.Log($"<color=magenta>CLIENT HERE {name}</color>");
 			Instance = this;	
-		}
+		nm.AddBoardConnection(this);
+	}
+	public override void OnStopClient()
+	{
+		base.OnStopClient();
+		if (isOwned)
+			nm.RemoveBoardConnection(this);
 	}
 
 	private void OnEnable() 
@@ -122,12 +129,11 @@ public class PlayerControls : NetworkBehaviour
 		//name = $"__ PLAYER {characterInd} __";
 		if (vCam != null)
 			vCam.parent = null;
-		gm = GameManager.Instance;
 		
 		CmdSetModel(characterInd);
-		transform.position = spawnPos.position + new Vector3(-2 + 2*bm.n++,0,0);
+		transform.position = spawnPos.position + new Vector3(-4 + 2*bm.GetNth(),0,0);
 		
-		if (!isClient) {
+		if (!isOwned) {
 			enabled = false;
 			return;
 		}
@@ -159,8 +165,7 @@ public class PlayerControls : NetworkBehaviour
 		if (models != null && ind >= 0 && ind < models.Length)
 			models[ind].SetActive(true);
 
-		//dataUi.SetParent(bm.GetUiLayout());
-		Debug.Log($"<color=yellow>[{name}]dataUi={dataUi!=null} | bm={bm!=null}</color>");
+		//!Debug.Log($"<color=yellow>[{name}]dataUi={dataUi!=null} | bm={bm!=null}</color>");
 		if (bm != null)
 			bm.SetUiLayout(dataUi);
 		dataUi.gameObject.SetActive(true);
@@ -260,6 +265,16 @@ public class PlayerControls : NetworkBehaviour
 
 	public void YourTurn()
 	{
+		//vCam.gameObject.SetActive(true);
+		//if (canvas != null)
+		//	canvas.SetActive(true);
+		//this.enabled = true;
+		Debug.Log($"<color=yellow>TURN STARTED</color>");
+		TargetYourTurn(netIdentity.connectionToClient);
+	}
+	[TargetRpc] public void TargetYourTurn(NetworkConnectionToClient target)
+	{
+		Debug.Log($"<color=yellow>target</color>");
 		vCam.gameObject.SetActive(true);
 		if (canvas != null)
 			canvas.SetActive(true);
@@ -272,6 +287,7 @@ public class PlayerControls : NetworkBehaviour
 			canvas.SetActive(false);
 		this.enabled = false;
 		SaveData();
+		Debug.Log($"<color=yellow>TURN ENDED</color>");
 	}
 
 	private void SaveData()
@@ -317,7 +333,7 @@ public class PlayerControls : NetworkBehaviour
 	public void NodeEffect(int bonus)
 	{
 		//coins.Value = Mathf.Clamp(coins.Value + bonus, 0, 999);
-		isCurrencyAsync = true;
+		//isCurrencyAsync = true;
 		if (bonus > 0)
 		{
 			bonusObj.SetActive(false);
