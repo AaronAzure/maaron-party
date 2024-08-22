@@ -26,7 +26,7 @@ public class GameNetworkManager : NetworkManager
 	#region Variables
 	public static GameNetworkManager Instance;
 	public Transform spawnHolder;
-	private GameManager gm;
+	private GameManager gm {get{return GameManager.Instance;}}
 	//GameObject ball;
 	[SerializeField] private GameObject buttons;
 	[SerializeField] private Button hostBtn;
@@ -140,7 +140,6 @@ public class GameNetworkManager : NetworkManager
 	}
 	public void StartGame()
 	{
-		gm = GameManager.Instance;
 		StartBoardGame();
 		//nPlayers = NetworkServer.connections.Count;
 		Debug.Log($"<color=magenta>NetworkServer.connections.Count = {NetworkServer.connections.Count}</color>");
@@ -230,14 +229,24 @@ public class GameNetworkManager : NetworkManager
 		yield return new WaitForSeconds(0.5f);
 		ServerChangeScene(practiceScene);
 		
-		while (NetworkServer.isLoadingScene)
-			yield return null;
-		gm.StartMinigame(minigameScene);
-		//AsyncOperation async = SceneManager.LoadSceneAsync(minigameScene, LoadSceneMode.Additive);
-
-		//while (!async.isDone)
+		//while (NetworkServer.isLoadingScene)
 		//	yield return null;
+
 		//gm.CmdTriggerTransition(false);
+	}
+	public void LoadPreviewMinigame()
+	{
+		StartCoroutine(LoadPreviewMinigameCo());
+	}
+	private IEnumerator LoadPreviewMinigameCo()
+	{
+		AsyncOperation async = SceneManager.LoadSceneAsync(minigameScene, LoadSceneMode.Additive);
+		while (!async.isDone)
+		{
+			Debug.Log("<color=red>?</color>");
+			yield return null;
+		}
+		gm.StartMinigame(minigameScene);
 	}
 
 	void OnCreateCharacter(NetworkConnectionToClient conn, CreateMMOCharacterMessage message)

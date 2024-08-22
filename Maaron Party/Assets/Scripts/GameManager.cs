@@ -320,11 +320,16 @@ public class GameManager : NetworkBehaviour
 
 
 	#region minigame
-	public void StartMinigame(string minigameName) => RpcStartMinigame(minigameName);
+	public void StartMinigame(string minigameName) 
+	{
+		Debug.Log("<color=green>StartMinigame</color>");
+		RpcStartMinigame(minigameName);
+	}
 	[ClientRpc] private void RpcStartMinigame(string minigameName) 
 	{
-		Debug.Log("<color=green>StartMiniGameCo</color>");
-		StartCoroutine(StartMiniGameCo(minigameName));
+		Debug.Log($"<color=green>isClientOnly={isClientOnly} | isServer={isServer}</color>");
+		if (isClientOnly)
+			StartCoroutine(StartMiniGameCo(minigameName));
 	} 
 	IEnumerator StartMiniGameCo(string minigameName)
 	{
@@ -337,17 +342,6 @@ public class GameManager : NetworkBehaviour
 	}
 
 	#endregion
-	
-	private void OnLoadComplete(ulong clientId, string sceneName, LoadSceneMode loadSceneMode)
-	{
-		Debug.Log("OnLoadComplete clientId: " + clientId + " scene: " + sceneName + " mode: " + loadSceneMode);
-		previewLoaded = true;
-	}
-	private void OnUnloadComplete(ulong clientId, string sceneName)
-	{
-		Debug.Log("OnLoadComplete clientId: " + clientId + " scene: " + sceneName);
-		unloaded = true;
-	}
 
 	public int GetPrizeValue(int place)
 	{

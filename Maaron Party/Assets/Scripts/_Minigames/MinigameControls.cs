@@ -55,6 +55,10 @@ public class MinigameControls : NetworkBehaviour
 		SetModel( characterInd );
 		//transform.parent = mm.transform;
 		//if (!IsOwner) enabled = false;
+		if (!isOwned) {
+			enabled = false;
+			return;
+		}
 
 		//playerId = (int) OwnerClientId;
 		player = ReInput.players.GetPlayer(playerId);
@@ -62,6 +66,7 @@ public class MinigameControls : NetworkBehaviour
 
 	public void SetSpawn()
 	{
+		rb.velocity = Vector3.zero;
 		transform.position = mm.GetPlayerSpawn(id);
 	}
 

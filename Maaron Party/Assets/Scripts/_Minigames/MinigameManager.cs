@@ -64,7 +64,10 @@ public class MinigameManager : NetworkBehaviour
 		++nBmReady;
 		Debug.Log($"<color=white>{nBmReady} >= {nm.numPlayers}</color>");
 		if (nBmReady >= nm.numPlayers)
+		{
+			gm.CmdTriggerTransition(false);
 			RpcSetUpPlayer();
+		}
 	} 
 	[ClientRpc] private void RpcSetUpPlayer()
 	{
