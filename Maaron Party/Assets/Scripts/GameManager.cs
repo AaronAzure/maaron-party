@@ -272,26 +272,7 @@ public class GameManager : NetworkBehaviour
 		anim.SetTrigger(fadeIn ? "in" : "out");
 	}
 
-	string minigameName;
-	bool previewLoaded;
-	bool unloaded;
-	[Command(requiresAuthority=false)] public void CmdLoadPreviewMinigame(string minigameName)
-	{
-		hasStarted = true;
-		StartCoroutine( LoadPreviewMinigameCo(minigameName) );
-	}
-	IEnumerator LoadPreviewMinigameCo(string minigameName)
-	{
-		yield return new WaitForSeconds(1.5f);
-		CmdTriggerTransition(true);
-
-		yield return new WaitForSeconds(0.5f);
-		previewLoaded = false;
-		this.minigameName = minigameName;
-		
-		while (!previewLoaded)
-			yield return null;
-	}
+	[SyncVar] public string minigameName;
 
 	[Command(requiresAuthority=false)] public void CmdReloadPreviewMinigame()
 	{
@@ -299,39 +280,46 @@ public class GameManager : NetworkBehaviour
 		//NetworkManager.Singleton.SceneManager.LoadScene("TestMinigame", LoadSceneMode.Additive);
 		//SceneManager.UnloadSceneAsync(minigameName);
 		//SceneManager.LoadSceneAsync(minigameName, LoadSceneMode.Additive);
+		//CmdTriggerTransition(true);
+		RpcReloadPreviewMinigame();
+	}
+	[ClientRpc] private void RpcReloadPreviewMinigame()
+	{
 		StartCoroutine( ReloadPreviewMinigameCo() );
 	}
 	IEnumerator ReloadPreviewMinigameCo()
 	{
-		//CmdTriggerTransition(true);
+		// fade in
 		yield return new WaitForSeconds(0.5f);
-		unloaded = false;
-		//NetworkManager.Singleton.SceneManager.UnloadScene(m_LoadedScene);
-		//NetworkManager.Singleton.SceneManager.LoadScene("TestPreview", LoadSceneMode.Single);
+		AsyncOperation unloadAsync = SceneManager.UnloadSceneAsync(minigameName);
 		
-		while (!unloaded)
+		while (!unloadAsync.isDone)
 			yield return null;
-		//NetworkManager.Singleton.SceneManager.LoadScene(minigameName, LoadSceneMode.Additive);
+		
+		yield return new WaitForSeconds(0.5f);
+		AsyncOperation loadAsync = SceneManager.LoadSceneAsync(minigameName, LoadSceneMode.Additive);
 
-		//SceneManager.LoadScene(1);
-		//SceneManager.LoadSceneAsync(minigameName, LoadSceneMode.Additive);
+		while (!loadAsync.isDone)
+			yield return null;
+		//if (isServer)
+		//	CmdTriggerTransition(false);
 	}
 
 
 	#region minigame
-	public void StartMinigame(string minigameName) 
+	public void StartMinigame(string minigameName) // host side
 	{
-		Debug.Log("<color=green>StartMinigame</color>");
 		RpcStartMinigame(minigameName);
 	}
 	[ClientRpc] private void RpcStartMinigame(string minigameName) 
 	{
-		Debug.Log($"<color=green>isClientOnly={isClientOnly} | isServer={isServer}</color>");
-		//if (isClientOnly)
-			StartCoroutine(StartMiniGameCo(minigameName));
+		StartCoroutine(StartMiniGameCo(minigameName));
 	} 
 	IEnumerator StartMiniGameCo(string minigameName)
 	{
+		if (isServer)
+			this.minigameName = minigameName;
+
 		AsyncOperation async = SceneManager.LoadSceneAsync(minigameName, LoadSceneMode.Additive);
 
 		while (!async.isDone)

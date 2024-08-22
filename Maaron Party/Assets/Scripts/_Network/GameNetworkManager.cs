@@ -161,6 +161,7 @@ public class GameNetworkManager : NetworkManager
 
 				NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
 			}
+			lobbyPlayers.Clear();
 		}
 		// transitioning from board to minigame
 		else if (SceneManager.GetActiveScene().name.Contains("Board"))
@@ -175,12 +176,13 @@ public class GameNetworkManager : NetworkManager
 
 				NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
 			}
+			boardControls.Clear();
 		}
 		base.ServerChangeScene(newSceneName);
 	}
 
 
-	#region Board Methods
+	#region Board
 
 	public void StartBoardGame()
 	{
@@ -219,9 +221,14 @@ public class GameNetworkManager : NetworkManager
 		//BoardManager.Instance.Test();
 		//Debug.Log($"<color=cyan>BoardManagerStart(  {nBmReady}  )</color>");
 	}
+	#endregion
 
 
-
+	#region Minigame
+	public int GetNumPlayers()
+	{
+		return minigameControls.Count;
+	}
 	IEnumerator StartMiniGameCo()
 	{
 		gm.CmdTriggerTransition(true);
