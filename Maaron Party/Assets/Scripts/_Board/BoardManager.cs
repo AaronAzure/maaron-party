@@ -58,6 +58,11 @@ public class BoardManager : NetworkBehaviour
 	private void Start() 
 	{
 		CmdReadyUp();
+		//string s = $"<color=#FF8D07>";
+		//s += $"NetworkServer.connections.Count = {NetworkServer.connections.Count} | ";
+		//s += $"GameNetworkManager.Instance.numPlayers = {GameNetworkManager.Instance.numPlayers} | ";
+		//s += "</color>";
+		//Debug.Log(s);
 	}
 
 	[Command(requiresAuthority=false)] public void CmdReadyUp()

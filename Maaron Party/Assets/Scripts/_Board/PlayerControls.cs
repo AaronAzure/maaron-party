@@ -18,6 +18,7 @@ public class PlayerControls : NetworkBehaviour
 	private Vector3 startPos;
 	private float time;
 	[SyncVar] public int characterInd=-1;
+	[SyncVar] public int id=-1;
 
 	
 	//[Space] [Header("Network")]
@@ -130,7 +131,7 @@ public class PlayerControls : NetworkBehaviour
 			vCam.parent = null;
 		
 		CmdSetModel(characterInd);
-		transform.position = spawnPos.position + new Vector3(-4 + 2*bm.GetNth(),0,0);
+		transform.position = spawnPos.position + new Vector3(-4 + 2*id,0,0);
 		
 		if (!isOwned) {
 			enabled = false;
@@ -159,6 +160,7 @@ public class PlayerControls : NetworkBehaviour
 	[ClientRpc] public void RpcSetModel(int ind)
 	{
 		name = $"__ PLAYER {ind} __";
+		transform.parent = bm.transform;
 		for (int i=0 ; i<models.Length ; i++)
 			models[i].SetActive(false);
 		if (models != null && ind >= 0 && ind < models.Length)

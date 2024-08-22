@@ -7,13 +7,14 @@ using Mirror;
 public class MinigameManager : NetworkBehaviour
 {
 	public static MinigameManager Instance;
-	private GameManager gm;
-	private MinigameControls _player;
+	private GameNetworkManager nm {get {return GameNetworkManager.Instance;}}
+	private GameManager gm {get {return GameManager.Instance;}}
+	private MinigameControls _player {get {return MinigameControls.Instance;}}
 	//[SerializeField] private NetworkObject playerToSpawn;
+	[SyncVar] public int nBmReady; 
 	[SerializeField] private Transform spawnHolder;
 	[SerializeField] private Transform spawnPos;
 	[SerializeField] private TextMeshProUGUI timerTxt;
-	private int nPlayers;
 
 	
 	[Space] [Header("Specific Rules")]
@@ -27,6 +28,7 @@ public class MinigameManager : NetworkBehaviour
 	[Space] [Header("Results")]
 	[SerializeField] private int[] rewards;
 	int nOut;
+	int nPlayers=4;
 
 
 
@@ -37,7 +39,6 @@ public class MinigameManager : NetworkBehaviour
 
 	private void Start() 
 	{
-		gm = GameManager.Instance;
 		if (gm != null)
 		{
 			//nPlayers = gm.nPlayers.Value;
@@ -55,8 +56,43 @@ public class MinigameManager : NetworkBehaviour
 		countdownCo = StartCoroutine( CountdownCo() );
 		if (PreviewManager.Instance != null)
 			PreviewManager.Instance.CmdTriggerTransition(false);
+		CmdReadyUp();
 	}
 
+	[Command(requiresAuthority=false)] public void CmdReadyUp()
+	{
+		++nBmReady;
+		Debug.Log($"<color=white>{nBmReady} >= {nm.numPlayers}</color>");
+		if (nBmReady >= nm.numPlayers)
+			RpcSetUpPlayer();
+	} 
+	[ClientRpc] private void RpcSetUpPlayer()
+	{
+		Debug.Log($"<color=white>Setting Up</color>");
+		_player.SetSpawn();
+		//if (isServer)
+		//	StartCoroutine( StartGameCo() );
+	}
+
+	public Vector3 GetPlayerSpawn(int id)
+	{
+		/* Distance around the circle */  
+		float radians = Mathf.PI + (2 * Mathf.PI / nPlayers * id);
+		
+		/* Get the vector direction */ 
+		float vertical = Mathf.Sin(radians);
+		float horizontal = Mathf.Cos(radians); 
+		
+		Vector3 spawnDir = new Vector3 (horizontal, 0, vertical);
+		
+		/* Get the spawn position */ 
+		Vector3 spawnP = spawnPos.position + spawnDir * 3; // Radius is just the distance away from the point
+		return spawnP;
+
+		//var networkObject = NetworkManager.SpawnManager.InstantiateAndSpawn(
+		//	playerToSpawn, (ulong) clientId, position:spawnP, destroyWithScene:true);
+		
+	}
 	[Command(requiresAuthority=false)] public void CmdSpawnPlayer(int clientId)
 	{
 		/* Distance around the circle */  
@@ -79,7 +115,6 @@ public class MinigameManager : NetworkBehaviour
 	}
 	[ClientRpc] private void RpcInitPlayer()
 	{ 
-		_player = MinigameControls.Instance;
 		//_player.transform.LookAt(spawnPos);
 		_player.canMove = playersCanMove;
 		_player.canJump = playersCanJump;

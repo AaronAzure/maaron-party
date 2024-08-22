@@ -25,12 +25,16 @@ public class MinigameControls : NetworkBehaviour
 	[Space] [Header("Model")]
 	[SerializeField] private Transform model;
 	[SyncVar] public int characterInd;
+	[SyncVar] public int id;
 	[SerializeField] private GameObject[] models;
 	[SerializeField] private Rigidbody rb;
 
 	#endregion
 
-
+	private void Awake() 
+	{
+		DontDestroyOnLoad(this);	
+	}
 	public override void OnStartClient()
 	{
 		base.OnStartClient();
@@ -54,6 +58,11 @@ public class MinigameControls : NetworkBehaviour
 
 		//playerId = (int) OwnerClientId;
 		player = ReInput.players.GetPlayer(playerId);
+	}
+
+	public void SetSpawn()
+	{
+		transform.position = mm.GetPlayerSpawn(id);
 	}
 
 	public void SetModel(int ind)

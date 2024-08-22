@@ -951,8 +951,6 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  gm: {fileID: 0}
-  mm: {fileID: 0}
   playerId: 0
   moveSpeed: 8
   maxSpeed: 5
@@ -960,6 +958,8 @@ MonoBehaviour:
   canMove: 0
   canJump: 0
   model: {fileID: 6183082833554358603}
+  characterInd: 0
+  id: 0
   models:
   - {fileID: 3019022781079674692}
   - {fileID: 820062849727143695}

@@ -28,7 +28,6 @@ public class GameNetworkManager : NetworkManager
 	public Transform spawnHolder;
 	private GameManager gm;
 	//GameObject ball;
-	int nPlayers;
 	[SerializeField] private GameObject buttons;
 	[SerializeField] private Button hostBtn;
 	[SerializeField] private Button clientBtn;
@@ -143,43 +142,43 @@ public class GameNetworkManager : NetworkManager
 	{
 		gm = GameManager.Instance;
 		StartBoardGame();
-		nPlayers = NetworkServer.connections.Count;
+		//nPlayers = NetworkServer.connections.Count;
 		Debug.Log($"<color=magenta>NetworkServer.connections.Count = {NetworkServer.connections.Count}</color>");
-		//if (GameManager.Instance != null)
 		startBtn.gameObject.SetActive(false);
 	}
 
+
 	public override void ServerChangeScene(string newSceneName)
 	{
+		// transitioning from lobby to board
 		if (lobbyScene.Contains(SceneManager.GetActiveScene().name))
 		{
 			for (int i = lobbyPlayers.Count - 1; i >= 0; i--)
 			{
 				var conn = lobbyPlayers[i].connectionToClient;
-				//var gameplayerInstance = Instantiate(gamePlayerPrefab);
-				//gameplayerInstance.SetDisplayName(RoomPlayers[i].DisplayName);
 				PlayerControls player = Instantiate(boardPlayerPrefab);
 				player.characterInd = lobbyPlayers[i].characterInd;
+				player.id = i;
 
 				NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
 			}
 		}
+		// transitioning from board to minigame
 		else if (SceneManager.GetActiveScene().name.Contains("Board"))
 		{
+			Debug.Log($"<color=yellow>STARTING MINIGAME</color>");
 			for (int i = boardControls.Count - 1; i >= 0; i--)
 			{
 				var conn = boardControls[i].connectionToClient;
-				//var gameplayerInstance = Instantiate(gamePlayerPrefab);
-				//gameplayerInstance.SetDisplayName(RoomPlayers[i].DisplayName);
 				MinigameControls player = Instantiate(gamePlayerPrefab);
 				player.characterInd = boardControls[i].characterInd;
+				player.id = i;
 
 				NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
 			}
 		}
 		base.ServerChangeScene(newSceneName);
 	}
-
 
 
 	#region Board Methods
@@ -233,8 +232,12 @@ public class GameNetworkManager : NetworkManager
 		
 		while (NetworkServer.isLoadingScene)
 			yield return null;
-		SceneManager.LoadScene(minigameScene, LoadSceneMode.Additive);
-		gm.CmdTriggerTransition(false);
+		gm.StartMinigame(minigameScene);
+		//AsyncOperation async = SceneManager.LoadSceneAsync(minigameScene, LoadSceneMode.Additive);
+
+		//while (!async.isDone)
+		//	yield return null;
+		//gm.CmdTriggerTransition(false);
 	}
 
 	void OnCreateCharacter(NetworkConnectionToClient conn, CreateMMOCharacterMessage message)

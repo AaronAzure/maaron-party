@@ -292,10 +292,6 @@ public class GameManager : NetworkBehaviour
 		
 		while (!previewLoaded)
 			yield return null;
-		//NetworkManager.Singleton.SceneManager.LoadScene(minigameName, LoadSceneMode.Additive);
-
-		//SceneManager.LoadScene(1);
-		//SceneManager.LoadSceneAsync(minigameName, LoadSceneMode.Additive);
 	}
 
 	[Command(requiresAuthority=false)] public void CmdReloadPreviewMinigame()
@@ -322,6 +318,25 @@ public class GameManager : NetworkBehaviour
 		//SceneManager.LoadSceneAsync(minigameName, LoadSceneMode.Additive);
 	}
 
+
+	#region minigame
+	public void StartMinigame(string minigameName) => RpcStartMinigame(minigameName);
+	[ClientRpc] private void RpcStartMinigame(string minigameName) 
+	{
+		Debug.Log("<color=green>StartMiniGameCo</color>");
+		StartCoroutine(StartMiniGameCo(minigameName));
+	} 
+	IEnumerator StartMiniGameCo(string minigameName)
+	{
+		AsyncOperation async = SceneManager.LoadSceneAsync(minigameName, LoadSceneMode.Additive);
+
+		while (!async.isDone)
+			yield return null;
+		if (isServer)
+			CmdTriggerTransition(false);
+	}
+
+	#endregion
 	
 	private void OnLoadComplete(ulong clientId, string sceneName, LoadSceneMode loadSceneMode)
 	{
