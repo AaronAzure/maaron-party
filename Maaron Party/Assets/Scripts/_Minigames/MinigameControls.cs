@@ -53,7 +53,7 @@ public class MinigameControls : NetworkBehaviour
 	// Start is called before the first frame update
 	void Start()
 	{
-		SetModel( characterInd );
+		//SetModel( characterInd );
 		//transform.parent = mm.transform;
 		//if (!IsOwner) enabled = false;
 		if (!isOwned) {
@@ -63,9 +63,23 @@ public class MinigameControls : NetworkBehaviour
 
 		player = ReInput.players.GetPlayer(0);
 	}
+	[Command(requiresAuthority = false)] public void CmdSetModel()
+	{
+		RpcSetModel();
+	}
+	[ClientRpc] public void RpcSetModel()
+	{
+		name = $"__ PLAYER {id} __";
+		transform.parent = mm.transform;
+		for (int i=0 ; i<models.Length ; i++)
+			models[i].SetActive(false);
+		if (models != null && characterInd >= 0 && characterInd < models.Length)
+			models[characterInd].SetActive(true);
+	}
 
 	public void SetSpawn()
 	{
+		CmdSetModel();
 		rb.velocity = Vector3.zero;
 		transform.position = mm.GetPlayerSpawn(id);
 		CmdReactivate();

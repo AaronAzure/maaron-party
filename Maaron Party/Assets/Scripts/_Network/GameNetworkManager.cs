@@ -253,6 +253,25 @@ public class GameNetworkManager : NetworkManager
 			yield return null;
 		gm.StartMinigame(minigameScene);
 	}
+	public void ReloadPreviewMinigame()
+	{
+		Debug.Log($"<color=yellow>STARTING MINIGAME</color>");
+		for (int i = minigameControls.Count - 1; i >= 0; i--)
+		{
+			var conn = minigameControls[i].connectionToClient;
+			int temp = minigameControls[i].characterInd;
+			minigameControls.Remove(minigameControls[i]);
+
+			MinigameControls player = Instantiate(gamePlayerPrefab);
+			player.characterInd = temp;
+			player.id = i;
+
+			NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
+		}
+		//gm.StartMinigame(minigameScene);
+		gm.CmdReloadPreviewMinigame();
+		//StartCoroutine(LoadPreviewMinigameCo());
+	}
 
 	void OnCreateCharacter(NetworkConnectionToClient conn, CreateMMOCharacterMessage message)
     {

@@ -156,10 +156,9 @@ public class PlayerControls : NetworkBehaviour
 	{
 		RpcSetModel(ind);
 	}
-
 	[ClientRpc] public void RpcSetModel(int ind)
 	{
-		name = $"__ PLAYER {ind} __";
+		name = $"__ PLAYER {id} __";
 		transform.parent = bm.transform;
 		for (int i=0 ; i<models.Length ; i++)
 			models[i].SetActive(false);

@@ -139,7 +139,8 @@ public class MinigameManager : NetworkBehaviour
 			pm.CmdTriggerTransition(true);
 
 			yield return new WaitForSeconds(0.5f);
-			gm.CmdReloadPreviewMinigame();
+			//gm.CmdReloadPreviewMinigame();
+			nm.ReloadPreviewMinigame();
 		}
 		// real
 		else if (isServer)
