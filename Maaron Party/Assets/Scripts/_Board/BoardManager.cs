@@ -88,8 +88,6 @@ public class BoardManager : NetworkBehaviour
 		
 		yield return new WaitForSeconds(1);
 		nm.NextBoardPlayerTurn();
-		//gm.CmdNextPlayerTurn(0);
-		//NextPlayerTurn(true);
 	}
 
 	[ClientRpc] public void RpcNextPlayerTurn()

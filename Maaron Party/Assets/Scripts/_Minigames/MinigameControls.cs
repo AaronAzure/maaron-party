@@ -9,8 +9,9 @@ public class MinigameControls : NetworkBehaviour
 	#region Variables
 
 	public static MinigameControls Instance;
-	public GameManager gm;
-	public MinigameManager mm;
+	private GameManager gm { get { return GameManager.Instance; } }
+	private GameNetworkManager nm { get { return GameNetworkManager.Instance; } }
+	private MinigameManager mm { get { return MinigameManager.Instance; } }
 	private Player player;
 	[HideInInspector] public int playerId;
 	
@@ -23,23 +24,31 @@ public class MinigameControls : NetworkBehaviour
 	
 	[Space] [Header("Model")]
 	[SerializeField] private Transform model;
+	[SyncVar] public int characterInd;
 	[SerializeField] private GameObject[] models;
 	[SerializeField] private Rigidbody rb;
 
 	#endregion
 
-	//public override void OnNetworkSpawn()
-	//{
-	//	if (IsOwner)
-	//		Instance = this;
-	//}
+
+	public override void OnStartClient()
+	{
+		base.OnStartClient();
+		if (isOwned)
+			Instance = this;	
+		nm.AddMinigameConnection(this);
+	}
+	public override void OnStopClient()
+	{
+		base.OnStopClient();
+		if (isOwned)
+			nm.RemoveMinigameConnection(this);
+	}
 
 	// Start is called before the first frame update
 	void Start()
 	{
-		gm = GameManager.Instance;
-		//SetModel( gm.playerModels[(int) OwnerClientId] );
-		mm = MinigameManager.Instance;
+		SetModel( characterInd );
 		//transform.parent = mm.transform;
 		//if (!IsOwner) enabled = false;
 

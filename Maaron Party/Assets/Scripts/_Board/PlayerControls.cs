@@ -107,7 +107,6 @@ public class PlayerControls : NetworkBehaviour
 	public override void OnStartClient()
 	{
 		base.OnStartClient();
-
 		if (isOwned)
 			Instance = this;	
 		nm.AddBoardConnection(this);
@@ -165,7 +164,6 @@ public class PlayerControls : NetworkBehaviour
 		if (models != null && ind >= 0 && ind < models.Length)
 			models[ind].SetActive(true);
 
-		//!Debug.Log($"<color=yellow>[{name}]dataUi={dataUi!=null} | bm={bm!=null}</color>");
 		if (bm != null)
 			bm.SetUiLayout(dataUi);
 		dataUi.gameObject.SetActive(true);
@@ -265,16 +263,11 @@ public class PlayerControls : NetworkBehaviour
 
 	public void YourTurn()
 	{
-		//vCam.gameObject.SetActive(true);
-		//if (canvas != null)
-		//	canvas.SetActive(true);
-		//this.enabled = true;
-		Debug.Log($"<color=yellow>TURN STARTED</color>");
 		TargetYourTurn(netIdentity.connectionToClient);
 	}
 	[TargetRpc] public void TargetYourTurn(NetworkConnectionToClient target)
 	{
-		Debug.Log($"<color=yellow>target</color>");
+		//!Debug.Log($"<color=yellow>target</color>");
 		vCam.gameObject.SetActive(true);
 		if (canvas != null)
 			canvas.SetActive(true);
@@ -287,7 +280,7 @@ public class PlayerControls : NetworkBehaviour
 			canvas.SetActive(false);
 		this.enabled = false;
 		SaveData();
-		Debug.Log($"<color=yellow>TURN ENDED</color>");
+		//!Debug.Log($"<color=yellow>TURN ENDED</color>");
 	}
 
 	private void SaveData()

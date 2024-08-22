@@ -45,14 +45,17 @@ public class GameNetworkManager : NetworkManager
 	[SerializeField] private int minPlayers=2;
 	[Scene] [SerializeField] private string lobbyScene;
 	[Scene] [SerializeField] private string boardScene;
+	[Scene] [SerializeField] private string practiceScene;
+	[Scene] [SerializeField] private string minigameScene;
 
 	[Space] [SerializeField] private LobbyObject lobbyPlayerPrefab;
-	[SerializeField] private List<LobbyObject> lobbyPlayers = new();
-	[SerializeField] private List<PlayerControls> boardControls = new();
-	
-	[Space] [SerializeField] private PlayerControls boardPlayerPrefab;
+	[SerializeField] private PlayerControls boardPlayerPrefab;
+	[SerializeField] private MinigameControls gamePlayerPrefab;
 
-	[Space] [SerializeField] private MinigameControls gamePlayerPrefab;
+	[Space] [SerializeField] private List<LobbyObject> lobbyPlayers = new();
+	[SerializeField] private List<PlayerControls> boardControls = new();
+	[SerializeField] private List<MinigameControls> minigameControls = new();
+	//bool isLoadingScene
 
 
 	#endregion
@@ -88,6 +91,7 @@ public class GameNetworkManager : NetworkManager
 		base.OnStopServer();
 		lobbyPlayers.Clear();
 		boardControls.Clear();
+		minigameControls.Clear();
 		conns.Clear();
 	}
 
@@ -110,6 +114,16 @@ public class GameNetworkManager : NetworkManager
 	{
 		if (boardControls.Contains(pc))
 			boardControls.Remove(pc);
+	}
+	public void AddMinigameConnection(MinigameControls mc)
+	{
+		if (!minigameControls.Contains(mc))
+			minigameControls.Add(mc);
+	}
+	public void RemoveMinigameConnection(MinigameControls mc)
+	{
+		if (minigameControls.Contains(mc))
+			minigameControls.Remove(mc);
 	}
 
 	#endregion
@@ -150,6 +164,19 @@ public class GameNetworkManager : NetworkManager
 				NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
 			}
 		}
+		else if (SceneManager.GetActiveScene().name.Contains("Board"))
+		{
+			for (int i = boardControls.Count - 1; i >= 0; i--)
+			{
+				var conn = boardControls[i].connectionToClient;
+				//var gameplayerInstance = Instantiate(gamePlayerPrefab);
+				//gameplayerInstance.SetDisplayName(RoomPlayers[i].DisplayName);
+				MinigameControls player = Instantiate(gamePlayerPrefab);
+				player.characterInd = boardControls[i].characterInd;
+
+				NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
+			}
+		}
 		base.ServerChangeScene(newSceneName);
 	}
 
@@ -168,10 +195,6 @@ public class GameNetworkManager : NetworkManager
 		
 		yield return new WaitForSeconds(0.5f);
 		ServerChangeScene("TestBoard");
-		
-		//while (NetworkServer.isLoadingScene)
-		//	yield return null;
-		//CmdTriggerTransition(false);
 		//SceneManager.LoadScene("TestBoard", LoadSceneMode.Single);
 		//NetworkManager.Singleton.SceneManager.LoadScene("TestBoard", LoadSceneMode.Single);
 	}
@@ -184,9 +207,7 @@ public class GameNetworkManager : NetworkManager
 		if (nPlayerOrder < boardControls.Count)
 			boardControls[nPlayerOrder++].YourTurn();
 		else
-		{
-			Debug.Log("<color=red>EVERYONE DONE!!</color>");
-		}
+			StartCoroutine(StartMiniGameCo());
 	}
 
 	public override void OnServerSceneChanged(string sceneName)
@@ -202,6 +223,19 @@ public class GameNetworkManager : NetworkManager
 	}
 
 
+
+	IEnumerator StartMiniGameCo()
+	{
+		gm.CmdTriggerTransition(true);
+		
+		yield return new WaitForSeconds(0.5f);
+		ServerChangeScene(practiceScene);
+		
+		while (NetworkServer.isLoadingScene)
+			yield return null;
+		SceneManager.LoadScene(minigameScene, LoadSceneMode.Additive);
+		gm.CmdTriggerTransition(false);
+	}
 
 	void OnCreateCharacter(NetworkConnectionToClient conn, CreateMMOCharacterMessage message)
     {
