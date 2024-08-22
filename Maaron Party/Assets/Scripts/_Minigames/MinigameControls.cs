@@ -60,8 +60,7 @@ public class MinigameControls : NetworkBehaviour
 			return;
 		}
 
-		//playerId = (int) OwnerClientId;
-		player = ReInput.players.GetPlayer(playerId);
+		player = ReInput.players.GetPlayer(0);
 	}
 
 	public void SetSpawn()
@@ -80,7 +79,7 @@ public class MinigameControls : NetworkBehaviour
 
 	private void FixedUpdate() 
 	{
-		//if (!IsOwner) return;
+		if (!isOwned) return;
 		if (canMove)
 			Move();
 	}

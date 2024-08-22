@@ -288,7 +288,6 @@ public class GameManager : NetworkBehaviour
 		yield return new WaitForSeconds(0.5f);
 		previewLoaded = false;
 		this.minigameName = minigameName;
-		//SceneEventProgressStatus status = NetworkManager.Singleton.SceneManager.LoadScene("TestPreview", LoadSceneMode.Single);
 		
 		while (!previewLoaded)
 			yield return null;
@@ -328,7 +327,7 @@ public class GameManager : NetworkBehaviour
 	[ClientRpc] private void RpcStartMinigame(string minigameName) 
 	{
 		Debug.Log($"<color=green>isClientOnly={isClientOnly} | isServer={isServer}</color>");
-		if (isClientOnly)
+		//if (isClientOnly)
 			StartCoroutine(StartMiniGameCo(minigameName));
 	} 
 	IEnumerator StartMiniGameCo(string minigameName)

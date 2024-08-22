@@ -18,6 +18,7 @@ public class MinigameManager : NetworkBehaviour
 
 	
 	[Space] [Header("Specific Rules")]
+	[SerializeField] private MinigameController ctr;
 	[SerializeField] private int timer=30;
 	Coroutine countdownCo;
 	[SerializeField] private bool lastManStanding=true;
@@ -46,8 +47,6 @@ public class MinigameManager : NetworkBehaviour
 			//	gm.TriggerTransitionServerRpc(false);
 		}
 		
-		// Spawn players
-		//SpawnPlayerServerRpc((int) NetworkManager.Singleton.LocalClientId);
 		rewards = new int[nPlayers];
 		for (int i=0 ; i<rewards.Length ; i++)
 			rewards[i] = -1;
@@ -67,12 +66,15 @@ public class MinigameManager : NetworkBehaviour
 		{
 			gm.CmdTriggerTransition(false);
 			RpcSetUpPlayer();
+			ctr.enabled = true;
 		}
 	} 
 	[ClientRpc] private void RpcSetUpPlayer()
 	{
 		Debug.Log($"<color=white>Setting Up</color>");
 		_player.SetSpawn();
+		_player.canMove = playersCanMove;
+		_player.canJump = playersCanJump;
 		//if (isServer)
 		//	StartCoroutine( StartGameCo() );
 	}
@@ -91,36 +93,7 @@ public class MinigameManager : NetworkBehaviour
 		/* Get the spawn position */ 
 		Vector3 spawnP = spawnPos.position + spawnDir * 3; // Radius is just the distance away from the point
 		return spawnP;
-
-		//var networkObject = NetworkManager.SpawnManager.InstantiateAndSpawn(
-		//	playerToSpawn, (ulong) clientId, position:spawnP, destroyWithScene:true);
 		
-	}
-	[Command(requiresAuthority=false)] public void CmdSpawnPlayer(int clientId)
-	{
-		/* Distance around the circle */  
-		float radians = 180 + (2 * Mathf.PI / nPlayers * clientId);
-		
-		/* Get the vector direction */ 
-		float vertical = Mathf.Sin(radians);
-		float horizontal = Mathf.Cos(radians); 
-		
-		Vector3 spawnDir = new Vector3 (horizontal, 0, vertical);
-		
-		/* Get the spawn position */ 
-		Vector3 spawnP = spawnPos.position + spawnDir * 3; // Radius is just the distance away from the point
-
-		//var networkObject = NetworkManager.SpawnManager.InstantiateAndSpawn(
-		//	playerToSpawn, (ulong) clientId, position:spawnP, destroyWithScene:true);
-		RpcInitPlayer();
-
-		//MinigameControls obj = networkObject.GetComponent<MinigameControls>();
-	}
-	[ClientRpc] private void RpcInitPlayer()
-	{ 
-		//_player.transform.LookAt(spawnPos);
-		_player.canMove = playersCanMove;
-		_player.canJump = playersCanJump;
 	}
 
 	IEnumerator CountdownCo()

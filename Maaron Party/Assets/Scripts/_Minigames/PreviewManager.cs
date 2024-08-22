@@ -19,14 +19,12 @@ public class PreviewManager : NetworkBehaviour
 	// Start is called before the first frame update
 	void Start()
 	{
-		//gm.CmdTriggerTransition(false);
 		CmdReadyUp();
 	}
 
 	[Command(requiresAuthority=false)] public void CmdReadyUp()
 	{
 		++nManagerReady;
-		Debug.Log($"<color=white>{nManagerReady} >= {nm.numPlayers}</color>");
 		if (nManagerReady >= nm.numPlayers)
 		{
 			nm.LoadPreviewMinigame();

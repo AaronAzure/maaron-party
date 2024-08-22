@@ -236,16 +236,14 @@ public class GameNetworkManager : NetworkManager
 	}
 	public void LoadPreviewMinigame()
 	{
-		StartCoroutine(LoadPreviewMinigameCo());
+		gm.StartMinigame(minigameScene);
+		//StartCoroutine(LoadPreviewMinigameCo());
 	}
 	private IEnumerator LoadPreviewMinigameCo()
 	{
 		AsyncOperation async = SceneManager.LoadSceneAsync(minigameScene, LoadSceneMode.Additive);
 		while (!async.isDone)
-		{
-			Debug.Log("<color=red>?</color>");
 			yield return null;
-		}
 		gm.StartMinigame(minigameScene);
 	}
 
