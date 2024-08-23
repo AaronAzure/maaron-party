@@ -123,28 +123,21 @@ public class GameManager : NetworkBehaviour
 
 	#region preview
 	[SyncVar] public string minigameName;
+	//[SyncVar] public int nLoaded;
 	[SyncVar] public int nUnloaded;
 
-	[Command(requiresAuthority=false)] public void CmdReloadPreviewMinigame()
+	[Command(requiresAuthority=false)] public void CmdReloadPreviewMinigameUnload()
 	{
 		nUnloaded = 0;
 		RpcUnloadPreviewMinigame(false);
-		//RpcReloadPreviewMinigame();
-		//StartCoroutine( ReloadPreviewMinigameCo() );
 	}
 	[Command(requiresAuthority=false)] public void CmdClientUnloaded()
 	{
 		nUnloaded++;
 		if (nUnloaded >= nm.GetNumPlayers() - 1)
 			RpcUnloadPreviewMinigame(true);
-		//RpcReloadPreviewMinigame();
-		//StartCoroutine( ReloadPreviewMinigameCo() );
 	}
-	//[ClientRpc] private void RpcReloadPreviewMinigame()
-	//{
-	//	//if (!isServer)
-	//		StartCoroutine( ReloadPreviewMinigameCo() );
-	//}
+
 	[ClientRpc] private void RpcUnloadPreviewMinigame(bool serverOnly)
 	{
 		Debug.Log($"<color=#D79722>isServer={isServer}</color>");
@@ -153,32 +146,32 @@ public class GameManager : NetworkBehaviour
 		else if (!isServer)
 			StartCoroutine( UnloadPreviewMinigameCo() );
 	}
-	//IEnumerator ReloadPreviewMinigameCo()
-	//{
-	//	// fade in
-	//	yield return new WaitForSeconds(0.5f);
-	//	AsyncOperation unloadAsync = SceneManager.UnloadSceneAsync(minigameName);
-		
-	//	while (!unloadAsync.isDone)
-	//		yield return null;
-		
-	//	yield return new WaitForSeconds(0.5f);
-	//	AsyncOperation loadAsync = SceneManager.LoadSceneAsync(minigameName, LoadSceneMode.Additive);
-
-	//	while (!loadAsync.isDone)
-	//		yield return null;
-	//	//if (isServer)
-	//	//	RpcReloadPreviewMinigame();
-	//	if (isServer)
-	//		CmdTriggerTransition(false);
-	//}
-
 	IEnumerator UnloadPreviewMinigameCo()
 	{
 		yield return new WaitForSeconds(0.5f);
 
 		yield return SceneManager.UnloadSceneAsync(minigameName);
-		CmdClientUnloaded();
+		if (!isServer)
+			CmdClientUnloaded();
+		else
+			CmdReloadPreviewMinigameload();
+	}
+
+	[Command(requiresAuthority=false)] public void CmdReloadPreviewMinigameload()
+	{
+		StartCoroutine( LoadPreviewMinigameCo() );
+	}
+
+	[ClientRpc] private void RpcLoadPreviewMinigame()
+	{
+		if (!isServer)
+			StartCoroutine( LoadPreviewMinigameCo() );
+	}
+	IEnumerator LoadPreviewMinigameCo()
+	{
+		yield return SceneManager.LoadSceneAsync(minigameName, LoadSceneMode.Additive);
+		if (isServer)
+			RpcLoadPreviewMinigame();
 	}
 
 	#endregion

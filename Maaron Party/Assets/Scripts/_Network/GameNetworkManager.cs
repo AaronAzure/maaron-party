@@ -266,7 +266,7 @@ public class GameNetworkManager : NetworkManager
 			NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
 		}
 		//gm.StartMinigame(minigameScene);
-		gm.CmdReloadPreviewMinigame();
+		gm.CmdReloadPreviewMinigameUnload();
 		//StartCoroutine(LoadPreviewMinigameCo());
 	}
 
