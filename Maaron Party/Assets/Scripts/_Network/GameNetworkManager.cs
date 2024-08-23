@@ -38,6 +38,7 @@ public class GameNetworkManager : NetworkManager
 	
 	[Space] [Header("Network")]
 	[SerializeField] private List<NetworkConnectionToClient> conns = new();
+	bool isInTransition;
 
 
 	[Space] [Header("Scenes")]
@@ -241,16 +242,12 @@ public class GameNetworkManager : NetworkManager
 
 		//gm.CmdTriggerTransition(false);
 	}
+
+	/// <summary>
+	/// Called when all preview (on all clients) have loaded
+	/// </summary>
 	public void LoadPreviewMinigame()
 	{
-		gm.StartMinigame(minigameScene);
-		//StartCoroutine(LoadPreviewMinigameCo());
-	}
-	private IEnumerator LoadPreviewMinigameCo()
-	{
-		AsyncOperation async = SceneManager.LoadSceneAsync(minigameScene, LoadSceneMode.Additive);
-		while (!async.isDone)
-			yield return null;
 		gm.StartMinigame(minigameScene);
 	}
 	public void ReloadPreviewMinigame()
@@ -272,6 +269,7 @@ public class GameNetworkManager : NetworkManager
 		gm.CmdReloadPreviewMinigame();
 		//StartCoroutine(LoadPreviewMinigameCo());
 	}
+
 
 	void OnCreateCharacter(NetworkConnectionToClient conn, CreateMMOCharacterMessage message)
     {
