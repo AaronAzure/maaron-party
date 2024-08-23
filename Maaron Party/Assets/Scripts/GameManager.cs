@@ -187,8 +187,7 @@ public class GameManager : NetworkBehaviour
 	} 
 	IEnumerator StartMiniGameCo(string minigameName)
 	{
-		if (isServer)
-			this.minigameName = minigameName;
+		this.minigameName = minigameName;
 
 		AsyncOperation async = SceneManager.LoadSceneAsync(minigameName, LoadSceneMode.Additive);
 
