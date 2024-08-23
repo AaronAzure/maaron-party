@@ -316,6 +316,7 @@ MonoBehaviour:
   boardScene: Assets/Scenes/TestBoard.unity
   practiceScene: Assets/Scenes/TestPreview.unity
   minigameScene: Assets/Scenes/TestMinigame.unity
+  previewObj: {fileID: 0}
   lobbyPlayerPrefab: {fileID: 1037466775356406029, guid: a8be1d7671adca64ea71e7d4a57fbdf0, type: 3}
   boardPlayerPrefab: {fileID: 3325275383187896159, guid: 8a9d11e354baf9d48b9000cbafda63eb, type: 3}
   gamePlayerPrefab: {fileID: 2208156073547461706, guid: 249e06af49db8f54bb16e7597754b811, type: 3}

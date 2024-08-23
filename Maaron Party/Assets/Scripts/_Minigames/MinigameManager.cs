@@ -125,6 +125,8 @@ public class MinigameManager : NetworkBehaviour
 	{
 		if (!gameFin)
 		{
+			if (ctr != null)
+				ctr.enabled = false;
 			gameFin = true;
 			_player.EndGame();
 			StartCoroutine( MinigameOverCo() );
@@ -154,11 +156,12 @@ public class MinigameManager : NetworkBehaviour
 			Debug.Log(d);
 
 			yield return new WaitForSeconds(0.5f);
-			//gm.TriggerTransition(true);
+			//gm.CmdTriggerTransition(true);
 			gm.AwardMinigamePrize(rewards);
 
 			yield return new WaitForSeconds(0.5f);
-			gm.ReturnToBoard("");
+			nm.StartBoardGame();
+			//gm.ReturnToBoard("");
 		}
 	}
 }
