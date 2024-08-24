@@ -7,7 +7,8 @@ public class TrickyTilesManager : MinigameController
 	[SerializeField] Animator[] anims;
 	[SerializeField] private Material emptyMat;
 	[SerializeField] private Material[] mats;
-	[SerializeField] private MeshRenderer[] objs;
+	//[SerializeField] private MeshRenderer[] objs;
+	[SerializeField] private TrickyTile[] tiles;
 	[SerializeField] private float cycle=3;
 	int nRound;
 	int nTraps=1;
@@ -30,7 +31,7 @@ public class TrickyTilesManager : MinigameController
 				foreach (int ind in selectedTraps)
 					anims[ind].SetTrigger("open");
 				for (int i = 0; i < selectedTraps.Count; i++)
-					objs[i].material = emptyMat;
+					tiles[i].CmdClearMaterial();
 			}
 		}
 		else
@@ -59,12 +60,12 @@ public class TrickyTilesManager : MinigameController
 			temp.Remove(rng);
 		}
 
-		for (int i = 0; i < objs.Length; i++)
+		for (int i = 0; i < tiles.Length; i++)
 		{
 			if (i<selectedTraps.Count)
-				objs[i].material = mats[selectedTraps[i]];
+				tiles[i].CmdSetMaterial(selectedTraps[i]);
 			else
-				objs[i].material = emptyMat;
+				tiles[i].CmdClearMaterial();
 		}
 
 		if (nRound == 1) nTraps++;
