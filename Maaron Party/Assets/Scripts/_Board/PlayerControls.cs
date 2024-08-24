@@ -103,7 +103,7 @@ public class PlayerControls : NetworkBehaviour
 
 	private void Awake() 
 	{
-		DontDestroyOnLoad(this);	
+		DontDestroyOnLoad(this);
 	}
 	public override void OnStartClient()
 	{

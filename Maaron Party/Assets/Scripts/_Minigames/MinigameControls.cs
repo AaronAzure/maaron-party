@@ -56,6 +56,7 @@ public class MinigameControls : NetworkBehaviour
 		//SetModel( characterInd );
 		//transform.parent = mm.transform;
 		//if (!IsOwner) enabled = false;
+		transform.Rotate(0,180,0);	
 		if (!isOwned) {
 			enabled = false;
 			return;
