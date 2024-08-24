@@ -4662,7 +4662,7 @@ MonoBehaviour:
   coinTxt: {fileID: 237942978694384833}
   starTxt: {fileID: 4799556476913100222}
   isAtFork: 0
-  controlledRoll: -1
+  controlledRoll: 1
 --- !u!114 &8237437606785764728
 MonoBehaviour:
   m_ObjectHideFlags: 0

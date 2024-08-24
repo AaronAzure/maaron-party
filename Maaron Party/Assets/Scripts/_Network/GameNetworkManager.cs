@@ -38,7 +38,8 @@ public class GameNetworkManager : NetworkManager
 	
 	[Space] [Header("Network")]
 	[SerializeField] private List<NetworkConnectionToClient> conns = new();
-	bool isInTransition;
+	//bool isInTransition;
+	[Space] [SerializeField] private int fixedGame=-1;
 
 
 	[Space] [Header("Scenes")]
@@ -46,7 +47,8 @@ public class GameNetworkManager : NetworkManager
 	[Scene] [SerializeField] private string lobbyScene;
 	[Scene] [SerializeField] private string boardScene;
 	[Scene] [SerializeField] private string practiceScene;
-	[Scene] [SerializeField] private string minigameScene;
+	int nMinigame;
+	[Scene] [SerializeField] private string[] minigameScenes;
 
 	[Space] [SerializeField] private GameObject previewObj;
 
@@ -252,7 +254,7 @@ public class GameNetworkManager : NetworkManager
 		nPlayerOrder = 0;
 		//nTurn++;
 		gm.IncreaseTurnNum();
-		ServerChangeScene(minigameScene);
+		ServerChangeScene(minigameScenes[fixedGame == -1 ? nMinigame++ % minigameScenes.Length : fixedGame]);
 		
 		//while (NetworkServer.isLoadingScene)
 		//	yield return null;
@@ -265,7 +267,7 @@ public class GameNetworkManager : NetworkManager
 	/// </summary>
 	public void LoadPreviewMinigame()
 	{
-		gm.StartMinigame(minigameScene);
+		gm.StartMinigame(minigameScenes[fixedGame == -1 ? nMinigame++ % minigameScenes.Length : fixedGame]);
 	}
 	public void ReloadPreviewMinigame()
 	{

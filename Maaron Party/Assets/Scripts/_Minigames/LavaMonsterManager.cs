@@ -7,7 +7,6 @@ public class LavaMonsterManager : MinigameController
 	[SerializeField] private LavaMonster[] monsters;
 	[SerializeField] private float delay=10;
 	private int ind;
-	private float timer;
 
 	private void OnEnable() 
 	{

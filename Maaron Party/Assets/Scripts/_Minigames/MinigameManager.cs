@@ -48,6 +48,8 @@ public class MinigameManager : NetworkBehaviour
 			for (int i=0 ; i<rewards.Length ; i++)
 				rewards[i] = -1;
 		}
+		if (ctr != null)
+			ctr.enabled = false;
 
 		timerTxt.text = $"{timer}";
 		CmdReadyUp();
@@ -62,7 +64,7 @@ public class MinigameManager : NetworkBehaviour
 			//if (pm == null)
 			//	gm.CmdTriggerTransitionDelay(false);
 			RpcSetUpPlayer();
-			ctr.enabled = true;
+			StartCoroutine(CountDownCo());
 		}
 	} 
 	[ClientRpc] private void RpcSetUpPlayer()
@@ -71,7 +73,7 @@ public class MinigameManager : NetworkBehaviour
 		_player.canMove = playersCanMove;
 		_player.canJump = playersCanJump;
 		_player.SetSpawn();
-		countdownCo = StartCoroutine( CountdownCo() );
+		countdownCo = StartCoroutine( GameTimerCo() );
 		if (pm != null)
 			pm.CmdTriggerTransition(false);
 		//if (isServer)
@@ -93,17 +95,21 @@ public class MinigameManager : NetworkBehaviour
 		Vector3 spawnP = spawnPos.position + spawnDir * 3; // Radius is just the distance away from the point
 		return spawnP;
 	}
+	IEnumerator CountDownCo()
+	{
+		yield return new WaitForSeconds(1);
+		ctr.enabled = true;
+	}
 
 
 
-
-	IEnumerator CountdownCo()
+	IEnumerator GameTimerCo()
 	{
 		yield return new WaitForSeconds(1);
 		timerTxt.text = $"{--timer}";
 
 		if (timer > 0)
-			StartCoroutine( CountdownCo() );
+			StartCoroutine( GameTimerCo() );
 		// game over
 		else if (isServer)
 			GameOver();

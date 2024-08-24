@@ -311,11 +311,14 @@ MonoBehaviour:
   clientBtn: {fileID: 2092168800}
   startBtn: {fileID: 1516030785}
   anim: {fileID: 0}
+  fixedGame: -1
   minPlayers: 2
   lobbyScene: Assets/Scenes/_TestLobby.unity
   boardScene: Assets/Scenes/TestBoard.unity
   practiceScene: Assets/Scenes/TestPreview.unity
-  minigameScene: Assets/Scenes/TestMinigame.unity
+  minigameScenes:
+  - Assets/Scenes/TestMinigame 1.unity
+  - Assets/Scenes/TestMinigame.unity
   previewObj: {fileID: 8149806081266758905, guid: a4aef1495346d694ab338e0e88ce8c28, type: 3}
   lobbyPlayerPrefab: {fileID: 1037466775356406029, guid: a8be1d7671adca64ea71e7d4a57fbdf0, type: 3}
   boardPlayerPrefab: {fileID: 3325275383187896159, guid: 8a9d11e354baf9d48b9000cbafda63eb, type: 3}
@@ -374,7 +377,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 193865295}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6442dc8070ceb41f094e44de0bf87274, type: 3}
   m_Name: 
@@ -517,7 +520,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 2147483647
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &645441475
 Transform:
   m_ObjectHideFlags: 0
@@ -640,7 +643,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 2147483647
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1147147124
 Transform:
   m_ObjectHideFlags: 0

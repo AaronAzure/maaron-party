@@ -4,5 +4,5 @@ using UnityEngine;
 
 public class MinigameController : MonoBehaviour
 {
-
+	protected float timer;
 }

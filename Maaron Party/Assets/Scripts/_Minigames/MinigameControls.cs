@@ -82,6 +82,7 @@ public class MinigameControls : NetworkBehaviour
 		CmdSetModel();
 		rb.velocity = Vector3.zero;
 		transform.position = mm.GetPlayerSpawn(id);
+		rb.useGravity = true;
 		CmdReactivate();
 		//gameObject.SetActive(true);
 		model.rotation = Quaternion.identity;
