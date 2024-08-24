@@ -59,8 +59,8 @@ public class MinigameManager : NetworkBehaviour
 		Debug.Log($"<color=white>{nBmReady} >= {nm.numPlayers}</color>");
 		if (nBmReady >= nm.numPlayers)
 		{
-			if (pm == null)
-				gm.CmdTriggerTransition(false);
+			//if (pm == null)
+			//	gm.CmdTriggerTransitionDelay(false);
 			RpcSetUpPlayer();
 			ctr.enabled = true;
 		}

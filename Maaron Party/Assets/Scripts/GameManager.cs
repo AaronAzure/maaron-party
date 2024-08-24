@@ -11,15 +11,6 @@ public class GameManager : NetworkBehaviour
 	#region Variables
 	public static GameManager Instance;
 	private GameNetworkManager nm {get{return GameNetworkManager.Instance;}}
-	//public int nPlayers {get; private set;}
-	//public NetworkVariable<List<ulong>> players = new NetworkVariable<List<ulong>>(
-	//	new(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-	//public NetworkVariable<int> nPlayers = new NetworkVariable<int>(
-	//	0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-	//public NetworkList<ulong> players;
-	//public NetworkList<int> playerModels;
-	[SyncVar] public int nPlayers;
-	private Scene m_LoadedScene;
 
 
 	[Space] [Header("Lobby Manager")]
@@ -30,8 +21,9 @@ public class GameManager : NetworkBehaviour
 	[SerializeField] private List<ushort> currNodes;
 	[SerializeField] private List<int> coins;
 	[SerializeField] private List<int> stars;
-	public bool hasStarted {get; private set;}
-	public bool lobbyCreated {get; private set;}
+	[SyncVar] public int nTurn; 
+	//public bool hasStarted {get; private set;}
+	//public bool lobbyCreated {get; private set;}
 	[SerializeField] Animator anim;
 
 	#endregion
@@ -119,11 +111,24 @@ public class GameManager : NetworkBehaviour
 	{
 		anim.SetTrigger(fadeIn ? "in" : "out");
 	}
+	public void TriggerTransitionDelay(bool fadeIn)
+	{
+		StartCoroutine(TriggerTransitionDelayCo(fadeIn));
+	}
+	private IEnumerator TriggerTransitionDelayCo(bool fadeIn)
+	{
+		yield return new WaitForSeconds(0.2f);
+		anim.SetTrigger(fadeIn ? "in" : "out");
+	}
 
 
 	[SyncVar] public string minigameName;
 
 	#region minigame
+	public void IncreaseTurnNum()
+	{
+		nTurn++;
+	}
 	public void StartMinigame(string minigameName) // host side
 	{
 		RpcStartMinigame(minigameName);
@@ -166,11 +171,5 @@ public class GameManager : NetworkBehaviour
 				coins[i] += rewards[i];
 			}
 		}
-	}
-
-
-	public void ReturnToBoard(string minigameName)
-	{
-		//SceneManager.LoadScene(0);
 	}
 }

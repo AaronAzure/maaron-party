@@ -76,7 +76,8 @@ public class BoardManager : NetworkBehaviour
 	{
 		Debug.Log($"<color=white>Setting Up</color>");
 		_player = PlayerControls.Instance;
-		_player.SetStartNode(startNode);
+		if (gm.nTurn == 0)
+			_player.SetStartNode(startNode);
 		_player.RemoteStart(spawnPos);
 		if (isServer)
 			StartCoroutine( StartGameCo() );

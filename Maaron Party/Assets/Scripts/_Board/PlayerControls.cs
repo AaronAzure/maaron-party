@@ -119,10 +119,10 @@ public class PlayerControls : NetworkBehaviour
 			nm.RemoveBoardConnection(this);
 	}
 
-	private void OnEnable() 
-	{
-		HidePaths();
-	}
+	//private void OnEnable() 
+	//{
+	//	HidePaths();
+	//}
 
 	public void RemoteStart(Transform spawnPos) 
 	{
@@ -131,15 +131,18 @@ public class PlayerControls : NetworkBehaviour
 			vCam.parent = null;
 		
 		CmdSetModel(characterInd);
-		transform.position = spawnPos.position + new Vector3(-4 + 2*id,0,0);
+		if (gm.nTurn == 0)
+		{
+			transform.position = spawnPos.position + new Vector3(-4 + 2*id,0,0);
+			startPos = this.transform.position;
+		}
 		
 		if (!isOwned) {
 			enabled = false;
 			return;
 		}
 		//id.Value = OwnerClientId;
-		startPos = this.transform.position;
-		if (gm.hasStarted)
+		if (gm.nTurn > 0)
 		{
 			LoadData();
 		}

@@ -166,6 +166,7 @@ public class GameNetworkManager : NetworkManager
 				NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
 			}
 			lobbyPlayers.Clear();
+			boardControls.Reverse();
 		}
 		// transitioning from board to minigame
 		else if (SceneManager.GetActiveScene().name.Contains("Board"))
@@ -181,6 +182,7 @@ public class GameNetworkManager : NetworkManager
 				NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
 			}
 			boardControls.Clear();
+			minigameControls.Reverse();
 		}
 		// transitioning from minigame to board
 		else if (SceneManager.GetActiveScene().name.Contains("Minigame"))
@@ -195,6 +197,7 @@ public class GameNetworkManager : NetworkManager
 				NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
 			}
 			minigameControls.Clear();
+			boardControls.Reverse();
 		}
 		base.ServerChangeScene(newSceneName);
 	}
@@ -218,7 +221,6 @@ public class GameNetworkManager : NetworkManager
 	}
 
 	int nPlayerOrder; 
-	int nTurn; 
 	public void NextBoardPlayerTurn()
 	{
 		Debug.Log($"<color=white>NextBoardPlayerTurn() = {nPlayerOrder} < {boardControls.Count}</color>");
@@ -232,7 +234,7 @@ public class GameNetworkManager : NetworkManager
 	{
 		base.OnServerSceneChanged(sceneName);
 		Debug.Log($"==> Scene Loaded = {sceneName}");
-		gm.TriggerTransition(false);
+		gm.TriggerTransitionDelay(false);
 	}
 	#endregion
 
@@ -248,6 +250,8 @@ public class GameNetworkManager : NetworkManager
 		
 		yield return new WaitForSeconds(0.5f);
 		nPlayerOrder = 0;
+		//nTurn++;
+		gm.IncreaseTurnNum();
 		ServerChangeScene(minigameScene);
 		
 		//while (NetworkServer.isLoadingScene)

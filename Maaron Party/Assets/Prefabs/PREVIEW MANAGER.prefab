@@ -15,7 +15,6 @@ GameObject:
   - component: {fileID: 5898036743355332293}
   - component: {fileID: 2037460836369847413}
   - component: {fileID: 8217530540112059302}
-  - component: {fileID: 5637931216426969823}
   m_Layer: 5
   m_Name: PREVIEW Canvas
   m_TagString: Untagged
@@ -162,23 +161,6 @@ MonoBehaviour:
   syncInterval: 0
   anim: {fileID: 2037460836369847413}
   nManagerReady: 0
---- !u!114 &5637931216426969823
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1320157803886027218}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  _assetId: 1412980524
-  serverOnly: 0
-  visibility: 0
-  hasSpawned: 0
 --- !u!1 &1455064802535451489
 GameObject:
   m_ObjectHideFlags: 0

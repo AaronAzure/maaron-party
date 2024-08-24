@@ -28,7 +28,7 @@ public class PreviewManager : NetworkBehaviour
 		if (nManagerReady >= nm.numPlayers)
 		{
 			nm.LoadPreviewMinigame();
-			gm.CmdTriggerTransition(false);
+			gm.CmdTriggerTransitionDelay(false);
 		}
 	} 
 
