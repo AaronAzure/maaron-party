@@ -4,20 +4,13 @@ using UnityEngine;
 using Mirror;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.ProBuilder.MeshOperations;
 
 public class GameManager : NetworkBehaviour
 {
 	#region Variables
 	public static GameManager Instance;
-	//public int nPlayers {get; private set;}
-	//public NetworkVariable<List<ulong>> players = new NetworkVariable<List<ulong>>(
-	//	new(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-	//public NetworkVariable<int> nPlayers = new NetworkVariable<int>(
-	//	0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-	//public NetworkList<ulong> players;
-	//public NetworkList<int> playerModels;
-	[SyncVar] public int nPlayers;
-	private Scene m_LoadedScene;
+	private GameNetworkManager nm {get{return GameNetworkManager.Instance;}}
 
 
 	[Space] [Header("Lobby Manager")]
@@ -28,8 +21,9 @@ public class GameManager : NetworkBehaviour
 	[SerializeField] private List<ushort> currNodes;
 	[SerializeField] private List<int> coins;
 	[SerializeField] private List<int> stars;
-	public bool hasStarted {get; private set;}
-	public bool lobbyCreated {get; private set;}
+	[SyncVar] public int nTurn; 
+	//public bool hasStarted {get; private set;}
+	//public bool lobbyCreated {get; private set;}
 	[SerializeField] Animator anim;
 
 	#endregion
@@ -54,171 +48,17 @@ public class GameManager : NetworkBehaviour
 			TriggerTransition(false);
 	}
 
-	public void StartHost()
-	{
-		//NetworkManager.Singleton.StartHost();
-		//if (buttons != null) buttons.SetActive(false);
-		//if (startBtn != null)
-		//	startBtn.gameObject.SetActive(true);
-	}
-	public void StartClient()
-	{
-		//NetworkManager.Singleton.StartClient();
-		//if (buttons != null) buttons.SetActive(false);
-	}
-
 	#endregion
 	
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~ NETWORK ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	#region Network
 
-	[Command] public void CmdJoinGame(ulong id)
-	{
-		//if (!IsHost) return;
-		//nPlayers.Value++;
-		////Debug.Log($"Player {id} joined!!");
-		//if (!players.Contains(id))
-		//	players.Add(id);
-	}
-	[Command(requiresAuthority=false)] public void CmdLeftGame(ulong id)
-	{
-		//if (!IsHost) return;
-		//if (!lobbyCreated)
-		//	nPlayers.Value--;
-		//if (players != null && players.Contains(id))
-		//	players.Remove(id);
-	}
-
-	[Command(requiresAuthority=false)] public void CmdSetPlayerModel(int ind)
-	{
-		//Debug.Log($"<color=blue>CmdSetPlayerModel = {ind}</color>");
-		//playerModels.Add(ind);
-	}
-	[ClientRpc] public void RpcSetPlayerModel()
-	{
-		//Debug.Log($"<color=blue>SetPlayerModelClientRpc</color>");
-		//LobbyObject.Instance.CmdSendPlayerModel();
-	}
-
-	//public override void OnNetworkSpawn()
-	//{
-	//	base.OnNetworkSpawn();
-	//	NetworkManager.Singleton.SceneManager.OnLoadComplete += this.OnLoadComplete;
-	//	NetworkManager.Singleton.SceneManager.OnUnloadComplete += this.OnUnloadComplete;
-	//	NetworkManager.SceneManager.OnSceneEvent += SceneManager_OnSceneEvent;
-	//}
-	//private void SceneManager_OnSceneEvent(SceneEvent sceneEvent)
-	//{
-	//    var clientOrServer = sceneEvent.ClientId == NetworkManager.ServerClientId ? "server" : "client";
-	//    switch (sceneEvent.SceneEventType)
-	//    {
-	//        case SceneEventType.LoadComplete:
-	//            {
-	//                // We want to handle this for only the server-side
-	//                if (sceneEvent.ClientId == NetworkManager.ServerClientId)
-	//                {
-	//                    // *** IMPORTANT ***
-	//                    // Keep track of the loaded scene, you need this to unload it
-	//                    m_LoadedScene = sceneEvent.Scene;
-	//                }
-	//                Debug.Log($"Loaded the {sceneEvent.SceneName} scene on " +
-	//                    $"{clientOrServer}-({sceneEvent.ClientId}).");
-	//                break;
-	//            }
-	//        case SceneEventType.UnloadComplete:
-	//            {
-	//                Debug.Log($"Unloaded the {sceneEvent.SceneName} scene on " +
-	//                    $"{clientOrServer}-({sceneEvent.ClientId}).");
-	//                break;
-	//            }
-	//        case SceneEventType.LoadEventCompleted:
-	//        case SceneEventType.UnloadEventCompleted:
-	//            {
-	//                var loadUnload = sceneEvent.SceneEventType == SceneEventType.LoadEventCompleted ? "Load" : "Unload";
-	//                Debug.Log($"{loadUnload} event completed for the following client " +
-	//                    $"identifiers:({sceneEvent.ClientsThatCompleted})");
-	//                if (sceneEvent.ClientsThatTimedOut.Count > 0)
-	//                {
-	//                    Debug.LogWarning($"{loadUnload} event timed out for the following client " +
-	//                        $"identifiers:({sceneEvent.ClientsThatTimedOut})");
-	//                }
-	//                break;
-	//            }
-	//    }
-	//}
-
-	public void StartGame()
-	{
-		lobbyCreated = true;
-		//npla
-		//for (int i=0 ; i<NetworkManager.Singleton.ConnectedClientsIds.Count ; i++)
-		//{
-		//	SetPlayerModelClientRpc(
-		//		new ClientRpcParams { 
-		//			Send = new ClientRpcSendParams { 
-		//				TargetClientIds = new List<ulong> {NetworkManager.Singleton.ConnectedClientsIds[i]}
-		//			}
-		//		}
-		//	);
-		//}
-
-		//string s = "<color=cyan>NetworkManager.Singleton.ConnectedClientsIds: ";
-		//foreach (ulong x in NetworkManager.Singleton.ConnectedClientsIds)
-		//	s += $"|{x}| ";
-		//Debug.Log(s + "</color>");
-		//startBtn.gameObject.SetActive(false);
-		StartCoroutine( StartGameCo() );
-	}
-	
-	IEnumerator StartGameCo()
-	{
-		CmdTriggerTransition(true);
-		
-		yield return new WaitForSeconds(0.5f);
-		//GameNetworkManager.Instance.ServerChangeScene("TestBoard");
-		
-		//while (NetworkServer.isLoadingScene)
-		//	yield return null;
-		//CmdTriggerTransition(false);
-		//SceneManager.LoadScene("TestBoard", LoadSceneMode.Single);
-		//NetworkManager.Singleton.SceneManager.LoadScene("TestBoard", LoadSceneMode.Single);
-	}
-
-	[Command(requiresAuthority=false)] public void CmdNextPlayerTurn(ulong id)
-	{
-		//BoardManager.Instance.NextPlayerTurnClientRpc(
-		//	new ClientRpcParams { 
-		//		Send = new ClientRpcSendParams { 
-		//			TargetClientIds = new List<ulong> {id}
-		//		}
-		//	}
-		//);
-	}
-	[Command(requiresAuthority=false)] public void CmdLoadMinigame()
-	{
-		StartCoroutine(LoadMinigameCo());
-	}
-	IEnumerator LoadMinigameCo()
-	{
-		CmdTriggerTransition(true);
-		yield return new WaitForSeconds(0.5f);
-		//NetworkManager.Singleton.SceneManager.LoadScene("TestMinigame", LoadSceneMode.Single);
-	}
 
 	#endregion
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~ NETWORK ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-	public void IncreaseNumPlayers()
-	{
-		//nPlayers.Value++;
-	}
-	public void DecreaseNumPlayers()
-	{
-		//nPlayers.Value--;
-	}
 
 	//* --------------------
 	//* ------- save -------
@@ -271,68 +111,45 @@ public class GameManager : NetworkBehaviour
 	{
 		anim.SetTrigger(fadeIn ? "in" : "out");
 	}
-
-	string minigameName;
-	bool previewLoaded;
-	bool unloaded;
-	[Command(requiresAuthority=false)] public void CmdLoadPreviewMinigame(string minigameName)
+	public void TriggerTransitionDelay(bool fadeIn)
 	{
-		hasStarted = true;
-		StartCoroutine( LoadPreviewMinigameCo(minigameName) );
+		StartCoroutine(TriggerTransitionDelayCo(fadeIn));
 	}
-	IEnumerator LoadPreviewMinigameCo(string minigameName)
+	private IEnumerator TriggerTransitionDelayCo(bool fadeIn)
 	{
-		yield return new WaitForSeconds(1.5f);
-		CmdTriggerTransition(true);
+		yield return new WaitForSeconds(0.2f);
+		anim.SetTrigger(fadeIn ? "in" : "out");
+	}
 
-		yield return new WaitForSeconds(0.5f);
-		previewLoaded = false;
+
+	[SyncVar] public string minigameName;
+
+	#region minigame
+	public void IncreaseTurnNum()
+	{
+		nTurn++;
+	}
+	public void StartMinigame(string minigameName) // host side
+	{
+		RpcStartMinigame(minigameName);
+	}
+	[ClientRpc] private void RpcStartMinigame(string minigameName) 
+	{
+		StartCoroutine(StartMiniGameCo(minigameName));
+	} 
+	IEnumerator StartMiniGameCo(string minigameName)
+	{
 		this.minigameName = minigameName;
-		//SceneEventProgressStatus status = NetworkManager.Singleton.SceneManager.LoadScene("TestPreview", LoadSceneMode.Single);
-		
-		while (!previewLoaded)
+
+		AsyncOperation async = SceneManager.LoadSceneAsync(minigameName, LoadSceneMode.Additive);
+
+		while (!async.isDone)
 			yield return null;
-		//NetworkManager.Singleton.SceneManager.LoadScene(minigameName, LoadSceneMode.Additive);
-
-		//SceneManager.LoadScene(1);
-		//SceneManager.LoadSceneAsync(minigameName, LoadSceneMode.Additive);
+		if (isServer)
+			CmdTriggerTransition(false);
 	}
 
-	[Command(requiresAuthority=false)] public void CmdReloadPreviewMinigame()
-	{
-		//NetworkManager.Singleton.SceneManager.UnloadScene(m_LoadedScene);
-		//NetworkManager.Singleton.SceneManager.LoadScene("TestMinigame", LoadSceneMode.Additive);
-		//SceneManager.UnloadSceneAsync(minigameName);
-		//SceneManager.LoadSceneAsync(minigameName, LoadSceneMode.Additive);
-		StartCoroutine( ReloadPreviewMinigameCo() );
-	}
-	IEnumerator ReloadPreviewMinigameCo()
-	{
-		//CmdTriggerTransition(true);
-		yield return new WaitForSeconds(0.5f);
-		unloaded = false;
-		//NetworkManager.Singleton.SceneManager.UnloadScene(m_LoadedScene);
-		//NetworkManager.Singleton.SceneManager.LoadScene("TestPreview", LoadSceneMode.Single);
-		
-		while (!unloaded)
-			yield return null;
-		//NetworkManager.Singleton.SceneManager.LoadScene(minigameName, LoadSceneMode.Additive);
-
-		//SceneManager.LoadScene(1);
-		//SceneManager.LoadSceneAsync(minigameName, LoadSceneMode.Additive);
-	}
-
-	
-	private void OnLoadComplete(ulong clientId, string sceneName, LoadSceneMode loadSceneMode)
-	{
-		Debug.Log("OnLoadComplete clientId: " + clientId + " scene: " + sceneName + " mode: " + loadSceneMode);
-		previewLoaded = true;
-	}
-	private void OnUnloadComplete(ulong clientId, string sceneName)
-	{
-		Debug.Log("OnLoadComplete clientId: " + clientId + " scene: " + sceneName);
-		unloaded = true;
-	}
+	#endregion
 
 	public int GetPrizeValue(int place)
 	{
@@ -354,11 +171,5 @@ public class GameManager : NetworkBehaviour
 				coins[i] += rewards[i];
 			}
 		}
-	}
-
-
-	public void ReturnToBoard(string minigameName)
-	{
-		//SceneManager.LoadScene(0);
 	}
 }

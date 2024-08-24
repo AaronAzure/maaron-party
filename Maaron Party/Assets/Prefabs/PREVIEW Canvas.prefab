@@ -630,6 +630,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   anim: {fileID: 1917219386650095332}
+  nManagerReady: 0
 --- !u!114 &5121106660198612302
 MonoBehaviour:
   m_ObjectHideFlags: 0

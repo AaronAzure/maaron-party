@@ -18,6 +18,7 @@ public class PlayerControls : NetworkBehaviour
 	private Vector3 startPos;
 	private float time;
 	[SyncVar] public int characterInd=-1;
+	[SyncVar] public int id=-1;
 
 	
 	//[Space] [Header("Network")]
@@ -118,10 +119,10 @@ public class PlayerControls : NetworkBehaviour
 			nm.RemoveBoardConnection(this);
 	}
 
-	private void OnEnable() 
-	{
-		HidePaths();
-	}
+	//private void OnEnable() 
+	//{
+	//	HidePaths();
+	//}
 
 	public void RemoteStart(Transform spawnPos) 
 	{
@@ -130,15 +131,18 @@ public class PlayerControls : NetworkBehaviour
 			vCam.parent = null;
 		
 		CmdSetModel(characterInd);
-		transform.position = spawnPos.position + new Vector3(-4 + 2*bm.GetNth(),0,0);
+		if (gm.nTurn == 0)
+		{
+			transform.position = spawnPos.position + new Vector3(-4 + 2*id,0,0);
+			startPos = this.transform.position;
+		}
 		
 		if (!isOwned) {
 			enabled = false;
 			return;
 		}
 		//id.Value = OwnerClientId;
-		startPos = this.transform.position;
-		if (gm.hasStarted)
+		if (gm.nTurn > 0)
 		{
 			LoadData();
 		}
@@ -155,10 +159,10 @@ public class PlayerControls : NetworkBehaviour
 	{
 		RpcSetModel(ind);
 	}
-
 	[ClientRpc] public void RpcSetModel(int ind)
 	{
-		name = $"__ PLAYER {ind} __";
+		name = $"__ PLAYER {id} __";
+		transform.parent = bm.transform;
 		for (int i=0 ; i<models.Length ; i++)
 			models[i].SetActive(false);
 		if (models != null && ind >= 0 && ind < models.Length)

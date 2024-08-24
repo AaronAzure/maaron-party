@@ -26,9 +26,8 @@ public class GameNetworkManager : NetworkManager
 	#region Variables
 	public static GameNetworkManager Instance;
 	public Transform spawnHolder;
-	private GameManager gm;
+	private GameManager gm {get{return GameManager.Instance;}}
 	//GameObject ball;
-	int nPlayers;
 	[SerializeField] private GameObject buttons;
 	[SerializeField] private Button hostBtn;
 	[SerializeField] private Button clientBtn;
@@ -39,6 +38,7 @@ public class GameNetworkManager : NetworkManager
 	
 	[Space] [Header("Network")]
 	[SerializeField] private List<NetworkConnectionToClient> conns = new();
+	bool isInTransition;
 
 
 	[Space] [Header("Scenes")]
@@ -47,6 +47,9 @@ public class GameNetworkManager : NetworkManager
 	[Scene] [SerializeField] private string boardScene;
 	[Scene] [SerializeField] private string practiceScene;
 	[Scene] [SerializeField] private string minigameScene;
+
+	[Space] [SerializeField] private GameObject previewObj;
+
 
 	[Space] [SerializeField] private LobbyObject lobbyPlayerPrefab;
 	[SerializeField] private PlayerControls boardPlayerPrefab;
@@ -141,48 +144,66 @@ public class GameNetworkManager : NetworkManager
 	}
 	public void StartGame()
 	{
-		gm = GameManager.Instance;
 		StartBoardGame();
-		nPlayers = NetworkServer.connections.Count;
+		//nPlayers = NetworkServer.connections.Count;
 		Debug.Log($"<color=magenta>NetworkServer.connections.Count = {NetworkServer.connections.Count}</color>");
-		//if (GameManager.Instance != null)
 		startBtn.gameObject.SetActive(false);
 	}
 
+
 	public override void ServerChangeScene(string newSceneName)
 	{
+		// transitioning from lobby to board
 		if (lobbyScene.Contains(SceneManager.GetActiveScene().name))
 		{
 			for (int i = lobbyPlayers.Count - 1; i >= 0; i--)
 			{
 				var conn = lobbyPlayers[i].connectionToClient;
-				//var gameplayerInstance = Instantiate(gamePlayerPrefab);
-				//gameplayerInstance.SetDisplayName(RoomPlayers[i].DisplayName);
 				PlayerControls player = Instantiate(boardPlayerPrefab);
 				player.characterInd = lobbyPlayers[i].characterInd;
+				player.id = i;
 
 				NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
 			}
+			lobbyPlayers.Clear();
+			boardControls.Reverse();
 		}
+		// transitioning from board to minigame
 		else if (SceneManager.GetActiveScene().name.Contains("Board"))
 		{
+			Debug.Log($"<color=yellow>STARTING MINIGAME</color>");
 			for (int i = boardControls.Count - 1; i >= 0; i--)
 			{
 				var conn = boardControls[i].connectionToClient;
-				//var gameplayerInstance = Instantiate(gamePlayerPrefab);
-				//gameplayerInstance.SetDisplayName(RoomPlayers[i].DisplayName);
 				MinigameControls player = Instantiate(gamePlayerPrefab);
 				player.characterInd = boardControls[i].characterInd;
+				player.id = i;
 
 				NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
 			}
+			boardControls.Clear();
+			minigameControls.Reverse();
+		}
+		// transitioning from minigame to board
+		else if (SceneManager.GetActiveScene().name.Contains("Minigame"))
+		{
+			for (int i = minigameControls.Count - 1; i >= 0; i--)
+			{
+				var conn = minigameControls[i].connectionToClient;
+				PlayerControls player = Instantiate(boardPlayerPrefab);
+				player.characterInd = minigameControls[i].characterInd;
+				player.id = i;
+
+				NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
+			}
+			minigameControls.Clear();
+			boardControls.Reverse();
 		}
 		base.ServerChangeScene(newSceneName);
 	}
 
 
-
-	#region Board Methods
+	#region Board
 
 	public void StartBoardGame()
 	{
@@ -200,7 +221,6 @@ public class GameNetworkManager : NetworkManager
 	}
 
 	int nPlayerOrder; 
-	int nTurn; 
 	public void NextBoardPlayerTurn()
 	{
 		Debug.Log($"<color=white>NextBoardPlayerTurn() = {nPlayerOrder} < {boardControls.Count}</color>");
@@ -214,28 +234,59 @@ public class GameNetworkManager : NetworkManager
 	{
 		base.OnServerSceneChanged(sceneName);
 		Debug.Log($"==> Scene Loaded = {sceneName}");
-		gm.TriggerTransition(false);
+		gm.TriggerTransitionDelay(false);
 	}
-	public void BoardManagerStart()
+	#endregion
+
+
+	#region Minigame
+	public int GetNumPlayers()
 	{
-		//BoardManager.Instance.Test();
-		//Debug.Log($"<color=cyan>BoardManagerStart(  {nBmReady}  )</color>");
+		return minigameControls.Count;
 	}
-
-
-
 	IEnumerator StartMiniGameCo()
 	{
 		gm.CmdTriggerTransition(true);
 		
 		yield return new WaitForSeconds(0.5f);
-		ServerChangeScene(practiceScene);
+		nPlayerOrder = 0;
+		//nTurn++;
+		gm.IncreaseTurnNum();
+		ServerChangeScene(minigameScene);
 		
-		while (NetworkServer.isLoadingScene)
-			yield return null;
-		SceneManager.LoadScene(minigameScene, LoadSceneMode.Additive);
-		gm.CmdTriggerTransition(false);
+		//while (NetworkServer.isLoadingScene)
+		//	yield return null;
+
+		//gm.CmdTriggerTransition(false);
 	}
+
+	/// <summary>
+	/// Called when all preview (on all clients) have loaded
+	/// </summary>
+	public void LoadPreviewMinigame()
+	{
+		gm.StartMinigame(minigameScene);
+	}
+	public void ReloadPreviewMinigame()
+	{
+		Debug.Log($"<color=yellow>STARTING MINIGAME</color>");
+		for (int i = minigameControls.Count - 1; i >= 0; i--)
+		{
+			var conn = minigameControls[i].connectionToClient;
+			int temp = minigameControls[i].characterInd;
+			minigameControls.Remove(minigameControls[i]);
+
+			MinigameControls player = Instantiate(gamePlayerPrefab);
+			player.characterInd = temp;
+			player.id = i;
+
+			NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
+		}
+		//gm.StartMinigame(minigameScene);
+		//gm.CmdReloadPreviewMinigameUnload();
+		//StartCoroutine(LoadPreviewMinigameCo());
+	}
+
 
 	void OnCreateCharacter(NetworkConnectionToClient conn, CreateMMOCharacterMessage message)
     {

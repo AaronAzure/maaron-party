@@ -7,7 +7,9 @@ public class PreviewManager : NetworkBehaviour
 {
 	public static PreviewManager Instance;
 	[SerializeField] private Animator anim;
-	private GameManager gm;
+	private GameManager gm {get{return GameManager.Instance;}}
+	private GameNetworkManager nm {get{return GameNetworkManager.Instance;}}
+	[SyncVar] public int nManagerReady;
 
 	private void Awake() 
 	{
@@ -17,9 +19,18 @@ public class PreviewManager : NetworkBehaviour
 	// Start is called before the first frame update
 	void Start()
 	{
-		gm = GameManager.Instance;
-		gm.CmdTriggerTransition(false);
+		CmdReadyUp();
 	}
+
+	[Command(requiresAuthority=false)] public void CmdReadyUp()
+	{
+		++nManagerReady;
+		if (nManagerReady >= nm.numPlayers)
+		{
+			nm.LoadPreviewMinigame();
+			gm.CmdTriggerTransitionDelay(false);
+		}
+	} 
 
 	[Command(requiresAuthority=false)] public void CmdTriggerTransition(bool fadeIn)
 	{

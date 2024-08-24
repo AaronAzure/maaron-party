@@ -58,6 +58,11 @@ public class BoardManager : NetworkBehaviour
 	private void Start() 
 	{
 		CmdReadyUp();
+		//string s = $"<color=#FF8D07>";
+		//s += $"NetworkServer.connections.Count = {NetworkServer.connections.Count} | ";
+		//s += $"GameNetworkManager.Instance.numPlayers = {GameNetworkManager.Instance.numPlayers} | ";
+		//s += "</color>";
+		//Debug.Log(s);
 	}
 
 	[Command(requiresAuthority=false)] public void CmdReadyUp()
@@ -71,7 +76,8 @@ public class BoardManager : NetworkBehaviour
 	{
 		Debug.Log($"<color=white>Setting Up</color>");
 		_player = PlayerControls.Instance;
-		_player.SetStartNode(startNode);
+		if (gm.nTurn == 0)
+			_player.SetStartNode(startNode);
 		_player.RemoteStart(spawnPos);
 		if (isServer)
 			StartCoroutine( StartGameCo() );

@@ -7,16 +7,19 @@ using Mirror;
 public class MinigameManager : NetworkBehaviour
 {
 	public static MinigameManager Instance;
-	private GameManager gm;
-	private MinigameControls _player;
+	private PreviewManager pm {get {return PreviewManager.Instance;}}
+	private GameNetworkManager nm {get {return GameNetworkManager.Instance;}}
+	private GameManager gm {get {return GameManager.Instance;}}
+	private MinigameControls _player {get {return MinigameControls.Instance;}}
 	//[SerializeField] private NetworkObject playerToSpawn;
+	[SyncVar] public int nBmReady; 
 	[SerializeField] private Transform spawnHolder;
 	[SerializeField] private Transform spawnPos;
 	[SerializeField] private TextMeshProUGUI timerTxt;
-	private int nPlayers;
 
 	
 	[Space] [Header("Specific Rules")]
+	[SerializeField] private MinigameController ctr;
 	[SerializeField] private int timer=30;
 	Coroutine countdownCo;
 	[SerializeField] private bool lastManStanding=true;
@@ -27,6 +30,7 @@ public class MinigameManager : NetworkBehaviour
 	[Space] [Header("Results")]
 	[SerializeField] private int[] rewards;
 	int nOut;
+	int nPlayers=4;
 
 
 
@@ -37,30 +41,47 @@ public class MinigameManager : NetworkBehaviour
 
 	private void Start() 
 	{
-		gm = GameManager.Instance;
-		if (gm != null)
+		if (isServer)
 		{
-			//nPlayers = gm.nPlayers.Value;
-			//if (PreviewManager.Instance == null)
-			//	gm.TriggerTransitionServerRpc(false);
+			nPlayers = nm.GetNumPlayers();
+			rewards = new int[nPlayers];
+			for (int i=0 ; i<rewards.Length ; i++)
+				rewards[i] = -1;
 		}
-		
-		// Spawn players
-		//SpawnPlayerServerRpc((int) NetworkManager.Singleton.LocalClientId);
-		rewards = new int[nPlayers];
-		for (int i=0 ; i<rewards.Length ; i++)
-			rewards[i] = -1;
 
 		timerTxt.text = $"{timer}";
-		countdownCo = StartCoroutine( CountdownCo() );
-		if (PreviewManager.Instance != null)
-			PreviewManager.Instance.CmdTriggerTransition(false);
+		CmdReadyUp();
 	}
 
-	[Command(requiresAuthority=false)] public void CmdSpawnPlayer(int clientId)
+	[Command(requiresAuthority=false)] public void CmdReadyUp()
+	{
+		++nBmReady;
+		Debug.Log($"<color=white>{nBmReady} >= {nm.numPlayers}</color>");
+		if (nBmReady >= nm.numPlayers)
+		{
+			//if (pm == null)
+			//	gm.CmdTriggerTransitionDelay(false);
+			RpcSetUpPlayer();
+			ctr.enabled = true;
+		}
+	} 
+	[ClientRpc] private void RpcSetUpPlayer()
+	{
+		Debug.Log($"<color=white>Setting Up</color>");
+		_player.canMove = playersCanMove;
+		_player.canJump = playersCanJump;
+		_player.SetSpawn();
+		countdownCo = StartCoroutine( CountdownCo() );
+		if (pm != null)
+			pm.CmdTriggerTransition(false);
+		//if (isServer)
+		//	StartCoroutine( StartGameCo() );
+	}
+
+	public Vector3 GetPlayerSpawn(int id)
 	{
 		/* Distance around the circle */  
-		float radians = 180 + (2 * Mathf.PI / nPlayers * clientId);
+		float radians = Mathf.PI + (2 * Mathf.PI / nPlayers * id);
 		
 		/* Get the vector direction */ 
 		float vertical = Mathf.Sin(radians);
@@ -70,20 +91,11 @@ public class MinigameManager : NetworkBehaviour
 		
 		/* Get the spawn position */ 
 		Vector3 spawnP = spawnPos.position + spawnDir * 3; // Radius is just the distance away from the point
-
-		//var networkObject = NetworkManager.SpawnManager.InstantiateAndSpawn(
-		//	playerToSpawn, (ulong) clientId, position:spawnP, destroyWithScene:true);
-		RpcInitPlayer();
-
-		//MinigameControls obj = networkObject.GetComponent<MinigameControls>();
+		return spawnP;
 	}
-	[ClientRpc] private void RpcInitPlayer()
-	{ 
-		_player = MinigameControls.Instance;
-		//_player.transform.LookAt(spawnPos);
-		_player.canMove = playersCanMove;
-		_player.canJump = playersCanJump;
-	}
+
+
+
 
 	IEnumerator CountdownCo()
 	{
@@ -93,7 +105,7 @@ public class MinigameManager : NetworkBehaviour
 		if (timer > 0)
 			StartCoroutine( CountdownCo() );
 		// game over
-		else
+		else if (isServer)
 			GameOver();
 	} 
 
@@ -102,38 +114,38 @@ public class MinigameManager : NetworkBehaviour
 	{
 		if (id < rewards.Length)
 			rewards[id] = gm.GetPrizeValue(nOut++);
-		RpcPlayerEliminated((ulong) id);
+		//RpcPlayerEliminated((ulong) id);
 		if (lastManStanding && nOut == nPlayers - 1)
 		{
 			StopCoroutine( countdownCo );
 			GameOver();
 		}
 	}
-	[ClientRpc] private void RpcPlayerEliminated(ulong id)
-	{
-		_player.RpcDeath(id);
-	}
 	private void GameOver()
 	{
 		if (!gameFin)
 		{
+			if (ctr != null)
+				ctr.enabled = false;
 			gameFin = true;
+			_player.EndGame();
 			StartCoroutine( MinigameOverCo() );
 		}
 	}
 	private IEnumerator MinigameOverCo()
 	{
 		// practice
-		if (PreviewManager.Instance != null)
+		if (pm != null)
 		{
 			yield return new WaitForSeconds(0.5f);
-			PreviewManager.Instance.CmdTriggerTransition(true);
+			pm.CmdTriggerTransition(true);
 
 			yield return new WaitForSeconds(0.5f);
-			gm.CmdReloadPreviewMinigame();
+			//gm.CmdReloadPreviewMinigame();
+			nm.ReloadPreviewMinigame();
 		}
 		// real
-		else
+		else if (isServer)
 		{
 			for (int i=0 ; i<rewards.Length ; i++)
 				if (rewards[i] == -1)
@@ -144,11 +156,12 @@ public class MinigameManager : NetworkBehaviour
 			Debug.Log(d);
 
 			yield return new WaitForSeconds(0.5f);
-			//gm.TriggerTransition(true);
+			//gm.CmdTriggerTransition(true);
 			gm.AwardMinigamePrize(rewards);
 
 			yield return new WaitForSeconds(0.5f);
-			gm.ReturnToBoard("");
+			nm.StartBoardGame();
+			//gm.ReturnToBoard("");
 		}
 	}
 }

@@ -20,17 +20,22 @@ public class MinigameControls : NetworkBehaviour
 	[SerializeField] private float rotateSpeed=5f;
 	public bool canMove;
 	public bool canJump;
+	private bool gameStarted;
 
 	
 	[Space] [Header("Model")]
 	[SerializeField] private Transform model;
 	[SyncVar] public int characterInd;
+	[SyncVar] public int id;
 	[SerializeField] private GameObject[] models;
 	[SerializeField] private Rigidbody rb;
 
 	#endregion
 
-
+	private void Awake() 
+	{
+		DontDestroyOnLoad(this);	
+	}
 	public override void OnStartClient()
 	{
 		base.OnStartClient();
@@ -48,13 +53,43 @@ public class MinigameControls : NetworkBehaviour
 	// Start is called before the first frame update
 	void Start()
 	{
-		SetModel( characterInd );
+		//SetModel( characterInd );
 		//transform.parent = mm.transform;
 		//if (!IsOwner) enabled = false;
+		if (!isOwned) {
+			enabled = false;
+			return;
+		}
 
-		//playerId = (int) OwnerClientId;
-		player = ReInput.players.GetPlayer(playerId);
+		player = ReInput.players.GetPlayer(0);
 	}
+	[Command(requiresAuthority = false)] public void CmdSetModel()
+	{
+		RpcSetModel();
+	}
+	[ClientRpc] public void RpcSetModel()
+	{
+		name = $"__ PLAYER {id} __";
+		transform.parent = mm.transform;
+		for (int i=0 ; i<models.Length ; i++)
+			models[i].SetActive(false);
+		if (models != null && characterInd >= 0 && characterInd < models.Length)
+			models[characterInd].SetActive(true);
+	}
+
+	public void SetSpawn()
+	{
+		CmdSetModel();
+		rb.velocity = Vector3.zero;
+		transform.position = mm.GetPlayerSpawn(id);
+		CmdReactivate();
+		//gameObject.SetActive(true);
+		model.rotation = Quaternion.identity;
+		gameStarted = true;
+	}
+	[Command] private void CmdReactivate() => RpcReactivate();
+	[ClientRpc] private void RpcReactivate() => gameObject.SetActive(true);
+	 
 
 	public void SetModel(int ind)
 	{
@@ -66,7 +101,7 @@ public class MinigameControls : NetworkBehaviour
 
 	private void FixedUpdate() 
 	{
-		//if (!IsOwner) return;
+		if (!isOwned || !gameStarted) return;
 		if (canMove)
 			Move();
 	}
@@ -89,22 +124,28 @@ public class MinigameControls : NetworkBehaviour
 		var rotation = Quaternion.LookRotation(lookPos);
 		model.rotation = Quaternion.Slerp(model.rotation, rotation, Time.fixedDeltaTime * rotateSpeed);
 	}
-	[ClientRpc] public void RpcDeath(ulong targetId)
+	[Command] public void CmdDeath()
 	{
-		//if (OwnerClientId == targetId)
-		//{
-		//	this.enabled = false;
-		//	gameObject.SetActive(false);
-		//}
+		RpcDeath();
+	}
+	[ClientRpc] public void RpcDeath()
+	{
+		gameObject.SetActive(false);
+	}
+	public void EndGame()
+	{
+		gameStarted = false;
 	}
 
 	private void OnTriggerEnter(Collider other) 
 	{
-		//if (IsOwner && enabled && other.gameObject.CompareTag("Death"))
-		//{
-		//	MinigameManager.Instance.PlayerEliminatedServerRpc(playerId);
-		//	this.enabled = false;
-		//	gameObject.SetActive(false);
-		//}
+		if (isOwned && gameStarted && enabled && other.gameObject.CompareTag("Death"))
+		{
+			mm.CmdPlayerEliminated(id);
+			gameStarted = false;
+			CmdDeath();
+			gameObject.SetActive(false);
+			
+		}
 	}
 }
