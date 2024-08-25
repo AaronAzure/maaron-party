@@ -41,9 +41,9 @@ public class MinigameManager : NetworkBehaviour
 
 	private void Start() 
 	{
+		nPlayers = GameObject.FindGameObjectsWithTag("Player").Length;
 		if (isServer)
 		{
-			nPlayers = nm.GetNumPlayers();
 			rewards = new int[nPlayers];
 			for (int i=0 ; i<rewards.Length ; i++)
 				rewards[i] = -1;
@@ -69,21 +69,20 @@ public class MinigameManager : NetworkBehaviour
 	} 
 	[ClientRpc] private void RpcSetUpPlayer()
 	{
-		Debug.Log($"<color=white>Setting Up</color>");
+		//!Debug.Log($"<color=white>Setting Up</color>");
 		_player.canMove = playersCanMove;
 		_player.canJump = playersCanJump;
 		_player.SetSpawn();
 		countdownCo = StartCoroutine( GameTimerCo() );
 		if (pm != null)
 			pm.CmdTriggerTransition(false);
-		//if (isServer)
-		//	StartCoroutine( StartGameCo() );
 	}
 
 	public Vector3 GetPlayerSpawn(int id)
 	{
 		/* Distance around the circle */  
-		float radians = Mathf.PI + (2 * Mathf.PI / nPlayers * id);
+		float radians = 2 * Mathf.PI * ((float)id / (float)nPlayers);
+		//!Debug.Log($"radians = {radians} | id = {id} | nPlayers = {nPlayers}");
 		
 		/* Get the vector direction */ 
 		float vertical = Mathf.Sin(radians);
