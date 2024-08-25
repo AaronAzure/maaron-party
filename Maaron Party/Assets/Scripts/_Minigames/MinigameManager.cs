@@ -13,9 +13,13 @@ public class MinigameManager : NetworkBehaviour
 	private MinigameControls _player {get {return MinigameControls.Instance;}}
 	//[SerializeField] private NetworkObject playerToSpawn;
 	[SyncVar] public int nBmReady; 
-	[SerializeField] private Transform spawnHolder;
-	[SerializeField] private Transform spawnPos;
 	[SerializeField] private TextMeshProUGUI timerTxt;
+	
+	[Space] [SerializeField] private Transform spawnPos;
+
+	[Space] [SerializeField] private bool spawnInLine;
+	[SerializeField] private Transform spawnPosA;
+	[SerializeField] private Transform spawnPosB;
 
 	
 	[Space] [Header("Specific Rules")]
@@ -80,19 +84,39 @@ public class MinigameManager : NetworkBehaviour
 
 	public Vector3 GetPlayerSpawn(int id)
 	{
-		/* Distance around the circle */  
-		float radians = 2 * Mathf.PI * ((float)id / (float)nPlayers);
-		//!Debug.Log($"radians = {radians} | id = {id} | nPlayers = {nPlayers}");
-		
-		/* Get the vector direction */ 
-		float vertical = Mathf.Sin(radians);
-		float horizontal = Mathf.Cos(radians); 
-		
-		Vector3 spawnDir = new Vector3 (horizontal, 0, vertical);
-		
-		/* Get the spawn position */ 
-		Vector3 spawnP = spawnPos.position + spawnDir * 3; // Radius is just the distance away from the point
-		return spawnP;
+		if (spawnInLine)
+		{
+			/* Distance around the circle */  
+			if (nPlayers == 2)
+			{
+				float dist = (id + 1f) / 3f;
+				Vector3 diff = spawnPosB.position - spawnPosA.position;
+				return spawnPosA.position + diff * dist;
+			}
+			else
+			{
+				float dist = (float)id / (float)(nPlayers-1);
+				Vector3 diff = spawnPosB.position - spawnPosA.position;
+				return spawnPosA.position + diff * dist;
+			}
+		}
+		// in a circle
+		else
+		{
+			/* Distance around the circle */  
+			float radians = 2 * Mathf.PI * ((float)id / (float)nPlayers);
+			//!Debug.Log($"radians = {radians} | id = {id} | nPlayers = {nPlayers}");
+			
+			/* Get the vector direction */ 
+			float vertical = Mathf.Sin(radians);
+			float horizontal = Mathf.Cos(radians); 
+			
+			Vector3 spawnDir = new Vector3 (horizontal, 0, vertical);
+			
+			/* Get the spawn position */ 
+			Vector3 spawnP = spawnPos.position + spawnDir * 3; // Radius is just the distance away from the point
+			return spawnP;
+		}
 	}
 	IEnumerator CountDownCo()
 	{

@@ -1322,7 +1322,7 @@ MonoBehaviour:
   playerId: 0
   moveSpeed: 8
   maxSpeed: 5
-  rotateSpeed: 5
+  rotateSpeed: 12.5
   canMove: 0
   canJump: 0
   model: {fileID: 6183082833554358603}
