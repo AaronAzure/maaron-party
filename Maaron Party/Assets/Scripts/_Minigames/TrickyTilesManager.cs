@@ -7,7 +7,6 @@ public class TrickyTilesManager : MinigameController
 	[SerializeField] Animator[] anims;
 	[SerializeField] private Material emptyMat;
 	[SerializeField] private Material[] mats;
-	//[SerializeField] private MeshRenderer[] objs;
 	[SerializeField] private TrickyTile[] tiles;
 	[SerializeField] private float cycle=3;
 	int nRound;

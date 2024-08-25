@@ -248,8 +248,8 @@ GameObject:
   m_Component:
   - component: {fileID: 193865297}
   - component: {fileID: 193865296}
-  - component: {fileID: 193865298}
   - component: {fileID: 193865299}
+  - component: {fileID: 193865300}
   m_Layer: 0
   m_Name: '>> NETWORK MANAGER'
   m_TagString: Untagged
@@ -278,7 +278,7 @@ MonoBehaviour:
   autoConnectClientBuild: 0
   offlineScene: 
   onlineScene: 
-  transport: {fileID: 193865298}
+  transport: {fileID: 0}
   networkAddress: localhost
   maxConnections: 4
   disconnectInactiveConnections: 0
@@ -317,8 +317,8 @@ MonoBehaviour:
   boardScene: Assets/Scenes/TestBoard.unity
   practiceScene: Assets/Scenes/TestPreview.unity
   minigameScenes:
-  - Assets/Scenes/TestMinigame.unity
   - Assets/Scenes/TestMinigame 1.unity
+  - Assets/Scenes/TestMinigame 0.unity
   - Assets/Scenes/TestMinigame 2.unity
   previewObj: {fileID: 8149806081266758905, guid: a4aef1495346d694ab338e0e88ce8c28, type: 3}
   lobbyPlayerPrefab: {fileID: 1037466775356406029, guid: a8be1d7671adca64ea71e7d4a57fbdf0, type: 3}
@@ -342,7 +342,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &193865298
+--- !u!114 &193865299
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 193865295}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6442dc8070ceb41f094e44de0bf87274, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  offsetX: 0
+  offsetY: 0
+--- !u!114 &193865300
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -371,20 +385,6 @@ MonoBehaviour:
   debugLog: 0
   statisticsGUI: 0
   statisticsLog: 0
---- !u!114 &193865299
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 193865295}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6442dc8070ceb41f094e44de0bf87274, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  offsetX: 0
-  offsetY: 0
 --- !u!1 &552371404
 GameObject:
   m_ObjectHideFlags: 0
@@ -547,7 +547,6 @@ GameObject:
   m_Component:
   - component: {fileID: 753698519}
   - component: {fileID: 753698518}
-  - component: {fileID: 753698517}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -555,14 +554,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!81 &753698517
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 753698516}
-  m_Enabled: 0
 --- !u!20 &753698518
 Camera:
   m_ObjectHideFlags: 0
@@ -1543,6 +1534,10 @@ PrefabInstance:
     - target: {fileID: 4357352453857552675, guid: 8e6c6d2c05137ca408b79d8a7e2b266a, type: 3}
       propertyPath: m_Name
       value: '>> GAME MANAGER'
+      objectReference: {fileID: 0}
+    - target: {fileID: 4357352453857552675, guid: 8e6c6d2c05137ca408b79d8a7e2b266a, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5151234886908247087, guid: 8e6c6d2c05137ca408b79d8a7e2b266a, type: 3}
       propertyPath: sceneId

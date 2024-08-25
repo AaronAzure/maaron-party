@@ -15,7 +15,7 @@ EditorBuildSettings:
     path: Assets/Scenes/TestPreview.unity
     guid: ecafb3ad07b47af4aa79e6c2a829b840
   - enabled: 1
-    path: Assets/Scenes/TestMinigame.unity
+    path: Assets/Scenes/TestMinigame 0.unity
     guid: 1618ee67e59322744af4fb48571ca482
   - enabled: 1
     path: Assets/Scenes/TestMinigame 1.unity
