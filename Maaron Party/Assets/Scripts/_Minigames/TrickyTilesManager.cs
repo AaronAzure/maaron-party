@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class TrickyTilesManager : MinigameController
 {
-	[SerializeField] Animator[] anims;
+	//[SerializeField] Animator[] anims;
 	[SerializeField] private Material emptyMat;
 	[SerializeField] private Material[] mats;
-	[SerializeField] private TrickyTile[] tiles;
+	[SerializeField] private TrickyTile[] anims;
+	[SerializeField] private TrickyTileMarker[] markers;
 	[SerializeField] private float cycle=3;
 	int nRound;
 	int nTraps=1;
@@ -28,9 +29,9 @@ public class TrickyTilesManager : MinigameController
 				isTrapOpen = true;
 				timer = 0;
 				foreach (int ind in selectedTraps)
-					anims[ind].SetTrigger("open");
+					anims[ind].CmdTriggerTrap();
 				for (int i = 0; i < selectedTraps.Count; i++)
-					tiles[i].CmdClearMaterial();
+					markers[i].CmdClearMaterial();
 			}
 		}
 		else
@@ -59,14 +60,15 @@ public class TrickyTilesManager : MinigameController
 			temp.Remove(rng);
 		}
 
-		for (int i = 0; i < tiles.Length; i++)
+		for (int i = 0; i < markers.Length; i++)
 		{
 			if (i<selectedTraps.Count)
-				tiles[i].CmdSetMaterial(selectedTraps[i]);
+				markers[i].CmdSetMaterial(selectedTraps[i]);
 			else
-				tiles[i].CmdClearMaterial();
+				markers[i].CmdClearMaterial();
 		}
 
+		nRound++;
 		if (nRound == 1) nTraps++;
 		if (nRound == 2) nTraps++;
 		if (nRound == 3) nTraps++;
@@ -74,6 +76,5 @@ public class TrickyTilesManager : MinigameController
 		if (nRound == 7) nTraps++;
 		if (nRound == 9) nTraps++;
 		if (nRound == 12) nTraps++;
-		nRound++;
 	}
 }
