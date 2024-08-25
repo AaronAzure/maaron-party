@@ -158,7 +158,7 @@ public class GameNetworkManager : NetworkManager
 		// transitioning from lobby to board
 		if (lobbyScene.Contains(SceneManager.GetActiveScene().name))
 		{
-			for (int i = lobbyPlayers.Count - 1; i >= 0; i--)
+			for (int i = 0; i < lobbyPlayers.Count; i++)
 			{
 				var conn = lobbyPlayers[i].connectionToClient;
 				PlayerControls player = Instantiate(boardPlayerPrefab);
@@ -168,13 +168,12 @@ public class GameNetworkManager : NetworkManager
 				NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
 			}
 			lobbyPlayers.Clear();
-			boardControls.Reverse();
 		}
 		// transitioning from board to minigame
 		else if (SceneManager.GetActiveScene().name.Contains("Board"))
 		{
 			Debug.Log($"<color=yellow>STARTING MINIGAME</color>");
-			for (int i = boardControls.Count - 1; i >= 0; i--)
+			for (int i = 0; i < boardControls.Count; i++)
 			{
 				var conn = boardControls[i].connectionToClient;
 				MinigameControls player = Instantiate(gamePlayerPrefab);
@@ -184,12 +183,11 @@ public class GameNetworkManager : NetworkManager
 				NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
 			}
 			boardControls.Clear();
-			minigameControls.Reverse();
 		}
 		// transitioning from minigame to board
 		else if (SceneManager.GetActiveScene().name.Contains("Minigame"))
 		{
-			for (int i = minigameControls.Count - 1; i >= 0; i--)
+			for (int i = 0; i < minigameControls.Count; i++)
 			{
 				var conn = minigameControls[i].connectionToClient;
 				PlayerControls player = Instantiate(boardPlayerPrefab);
@@ -199,7 +197,6 @@ public class GameNetworkManager : NetworkManager
 				NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
 			}
 			minigameControls.Clear();
-			boardControls.Reverse();
 		}
 		base.ServerChangeScene(newSceneName);
 	}
@@ -272,7 +269,7 @@ public class GameNetworkManager : NetworkManager
 	public void ReloadPreviewMinigame()
 	{
 		Debug.Log($"<color=yellow>STARTING MINIGAME</color>");
-		for (int i = minigameControls.Count - 1; i >= 0; i--)
+		for (int i = 0; i < minigameControls.Count; i++)
 		{
 			var conn = minigameControls[i].connectionToClient;
 			int temp = minigameControls[i].characterInd;
