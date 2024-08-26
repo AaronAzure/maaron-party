@@ -53,12 +53,9 @@ public class PlayerControls : NetworkBehaviour
 	
 	
 	[Space] [Header("Stats")]
-	//[SerializeField] private NetworkVariable<int> coins = new NetworkVariable<int>(
-	//	10, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-	////[SerializeField] private int coins=10;
-	//private NetworkVariable<int> coinsT = new NetworkVariable<int>(0,
-	//	NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-	[SerializeField] private int stars;
+	[SyncVar] private int coins=10;
+	private int coinsT;
+	[SyncVar] private int stars;
 	private int starsT;
 	[SerializeField] private float currencyT;
 
@@ -101,6 +98,8 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private int controlledRoll=-1;
 
 
+	#region Methods
+
 	private void Awake() 
 	{
 		DontDestroyOnLoad(this);
@@ -119,11 +118,6 @@ public class PlayerControls : NetworkBehaviour
 			nm.RemoveBoardConnection(this);
 	}
 
-	//private void OnEnable() 
-	//{
-	//	HidePaths();
-	//}
-
 	public void RemoteStart(Transform spawnPos) 
 	{
 		//name = $"__ PLAYER {characterInd} __";
@@ -141,18 +135,22 @@ public class PlayerControls : NetworkBehaviour
 			enabled = false;
 			return;
 		}
-		//id.Value = OwnerClientId;
+		
+		// after first turn
 		if (gm.nTurn > 0)
 		{
 			LoadData();
 		}
+		// 第一名 
 		else
 		{
-			//coinsT.Value = coins.Value;
+			coinsT = coins;
 			starsT = stars;
 		}
-		//coinTxt.text = $"{coins.Value}";
-		starTxt.text = $"{stars}";
+		//coinTxt.text = $"{coins}";
+		//starTxt.text = $"{stars}";
+		CmdSetCoinText(coins);
+		CmdSetStarText(stars);
 	}
 
 	[Command(requiresAuthority = false)] public void CmdSetModel(int ind)
@@ -180,40 +178,48 @@ public class PlayerControls : NetworkBehaviour
 		nextNode = startNode;
 	}
 
-	// Update is called once per frame
+	[Command(requiresAuthority=false)] private void CmdSetCoinText(int n) => RpcSetCoinText(n);
+	[ClientRpc] private void RpcSetCoinText(int n) => coinTxt.text = $"{n}";
+	[Command(requiresAuthority=false)] private void CmdSetStarText(int n) => RpcSetStarText(n);
+	[ClientRpc] private void RpcSetStarText(int n) => starTxt.text = $"{n}";
+
+	#endregion
+
+
+	#region FixedUpdate
 	void FixedUpdate()
 	{
-		//if (!IsOwner) return;
-		//if (coins.Value != coinsT.Value)
-		//{
-		//	if (currencyT < 0.1f)
-		//	{
-		//		currencyT += Time.fixedDeltaTime;
-		//	} 
-		//	else
-		//	{
-		//		coinsT.Value = coinsT.Value < coins.Value ? coinsT.Value + 1 : coinsT.Value - 1;
-		//		coinTxt.text = $"{coinsT.Value}";
-		//		currencyT = 0;
-		//	}
-		//	if (coins.Value == coinsT.Value)
-		//		isCurrencyAsync = false;
-		//}
-		//else if (stars != starsT)
-		//{
-		//	if (currencyT < 0.1f)
-		//	{
-		//		currencyT += Time.fixedDeltaTime;
-		//	} 
-		//	else
-		//	{
-		//		starsT = starsT < stars ? starsT + 1 : starsT - 1;
-		//		starTxt.text = $"{starsT}";
-		//		currencyT = 0;
-		//	}
-		//	if (stars == starsT)
-		//		isCurrencyAsync = false;
-		//}
+		if (!isOwned) return;
+		if (coins != coinsT)
+		{
+			if (currencyT < 0.1f)
+			{
+				currencyT += Time.fixedDeltaTime;
+			} 
+			else
+			{
+				coinsT = coinsT < coins ? coinsT + 1 : coinsT - 1;
+				CmdSetCoinText(coinsT);
+				currencyT = 0;
+			}
+			if (coins == coinsT)
+				isCurrencyAsync = false;
+		}
+		else if (stars != starsT)
+		{
+			if (currencyT < 0.1f)
+			{
+				currencyT += Time.fixedDeltaTime;
+			} 
+			else
+			{
+				starsT = starsT < stars ? starsT + 1 : starsT - 1;
+				CmdSetStarText(starsT);
+				currencyT = 0;
+			}
+			if (stars == starsT)
+				isCurrencyAsync = false;
+		}
 
 		if (isAtFork) {}
 		else if (movesLeft > 0)
@@ -264,6 +270,7 @@ public class PlayerControls : NetworkBehaviour
 		}
 	}
 
+	#endregion
 
 	public void YourTurn()
 	{
@@ -329,8 +336,8 @@ public class PlayerControls : NetworkBehaviour
 
 	public void NodeEffect(int bonus)
 	{
-		//coins.Value = Mathf.Clamp(coins.Value + bonus, 0, 999);
-		//isCurrencyAsync = true;
+		coins = Mathf.Clamp(coins + bonus, 0, 999);
+		isCurrencyAsync = true;
 		if (bonus > 0)
 		{
 			bonusObj.SetActive(false);
