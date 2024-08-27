@@ -117,6 +117,7 @@ GameObject:
   - component: {fileID: 7942924009876713582}
   - component: {fileID: 3135663012211380467}
   - component: {fileID: 6037385910890798184}
+  - component: {fileID: 6150871448344155073}
   m_Layer: 0
   m_Name: Button (2)
   m_TagString: Untagged
@@ -225,7 +226,32 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3135663012211380467}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 3325275383187896159}
+        m_TargetAssemblyTypeName: PlayerControls, Assembly-CSharp
+        m_MethodName: _BUY_ITEM
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 2
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &6150871448344155073
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 14075831723079435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20ac0ba3ae8f0d14b810231fb631e032, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ind: 0
 --- !u!1 &76582073219980877
 GameObject:
   m_ObjectHideFlags: 0
@@ -1017,6 +1043,7 @@ GameObject:
   - component: {fileID: 7910706540921287072}
   - component: {fileID: 6257143014808274432}
   - component: {fileID: 4385891274075558698}
+  - component: {fileID: 5960602303857353530}
   m_Layer: 0
   m_Name: Button (5)
   m_TagString: Untagged
@@ -1125,7 +1152,32 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6257143014808274432}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 3325275383187896159}
+        m_TargetAssemblyTypeName: PlayerControls, Assembly-CSharp
+        m_MethodName: _BUY_ITEM
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 5
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &5960602303857353530
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 281560290122431827}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20ac0ba3ae8f0d14b810231fb631e032, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ind: 0
 --- !u!1 &286714729314071965
 GameObject:
   m_ObjectHideFlags: 0
@@ -1673,6 +1725,7 @@ GameObject:
   - component: {fileID: 3522839901903313293}
   - component: {fileID: 8791603666562532311}
   - component: {fileID: 4797706264985669891}
+  - component: {fileID: 6390341950348981561}
   m_Layer: 0
   m_Name: Button (7)
   m_TagString: Untagged
@@ -1781,7 +1834,32 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8791603666562532311}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 3325275383187896159}
+        m_TargetAssemblyTypeName: PlayerControls, Assembly-CSharp
+        m_MethodName: _BUY_ITEM
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 7
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &6390341950348981561
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 625980805187116381}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20ac0ba3ae8f0d14b810231fb631e032, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ind: 0
 --- !u!1 &651608526059555318
 GameObject:
   m_ObjectHideFlags: 0
@@ -1940,6 +2018,7 @@ GameObject:
   - component: {fileID: 6615467626035298252}
   - component: {fileID: 1773185516620289488}
   - component: {fileID: 720836683734557686}
+  - component: {fileID: 5330868291434291626}
   m_Layer: 0
   m_Name: Button (3)
   m_TagString: Untagged
@@ -2048,7 +2127,32 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1773185516620289488}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 3325275383187896159}
+        m_TargetAssemblyTypeName: PlayerControls, Assembly-CSharp
+        m_MethodName: _BUY_ITEM
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 3
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &5330868291434291626
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 725376603866487703}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20ac0ba3ae8f0d14b810231fb631e032, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ind: 0
 --- !u!1 &783542636380701665
 GameObject:
   m_ObjectHideFlags: 0
@@ -4278,6 +4382,7 @@ GameObject:
   - component: {fileID: 241338677775148179}
   - component: {fileID: 5633415920624050145}
   - component: {fileID: 901581757614940139}
+  - component: {fileID: 3528871601136301187}
   m_Layer: 0
   m_Name: Button (4)
   m_TagString: Untagged
@@ -4386,7 +4491,32 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5633415920624050145}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 3325275383187896159}
+        m_TargetAssemblyTypeName: PlayerControls, Assembly-CSharp
+        m_MethodName: _BUY_ITEM
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 4
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &3528871601136301187
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2593882797373212727}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20ac0ba3ae8f0d14b810231fb631e032, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ind: 0
 --- !u!1 &2806690972887752020
 GameObject:
   m_ObjectHideFlags: 0
@@ -4900,6 +5030,7 @@ GameObject:
   - component: {fileID: 4636237763480721512}
   - component: {fileID: 4280403503784013461}
   - component: {fileID: 1982112968119544958}
+  - component: {fileID: 25815466937601763}
   m_Layer: 0
   m_Name: Button (6)
   m_TagString: Untagged
@@ -5008,7 +5139,32 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4280403503784013461}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 3325275383187896159}
+        m_TargetAssemblyTypeName: PlayerControls, Assembly-CSharp
+        m_MethodName: _BUY_ITEM
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 6
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &25815466937601763
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3107705308441696637}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20ac0ba3ae8f0d14b810231fb631e032, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ind: 0
 --- !u!1 &3248107812717705177
 GameObject:
   m_ObjectHideFlags: 0
@@ -6580,6 +6736,7 @@ GameObject:
   - component: {fileID: 3893234625361987146}
   - component: {fileID: 3781668233239951888}
   - component: {fileID: 6830431574675348822}
+  - component: {fileID: 5087619078688994342}
   m_Layer: 0
   m_Name: Button (1)
   m_TagString: Untagged
@@ -6688,7 +6845,32 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3781668233239951888}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 3325275383187896159}
+        m_TargetAssemblyTypeName: PlayerControls, Assembly-CSharp
+        m_MethodName: _BUY_ITEM
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &5087619078688994342
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4344123979808291312}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20ac0ba3ae8f0d14b810231fb631e032, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ind: 0
 --- !u!1 &4408669136759465949
 GameObject:
   m_ObjectHideFlags: 0
@@ -7138,6 +7320,7 @@ GameObject:
   - component: {fileID: 8776153735360924624}
   - component: {fileID: 2647728312894670607}
   - component: {fileID: 8031604886622732642}
+  - component: {fileID: 730644502285804656}
   m_Layer: 0
   m_Name: Button
   m_TagString: Untagged
@@ -7246,7 +7429,32 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2647728312894670607}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 3325275383187896159}
+        m_TargetAssemblyTypeName: PlayerControls, Assembly-CSharp
+        m_MethodName: _BUY_ITEM
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &730644502285804656
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5458008471050074752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20ac0ba3ae8f0d14b810231fb631e032, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ind: 0
 --- !u!1 &5526706547268603153
 GameObject:
   m_ObjectHideFlags: 0
@@ -7723,6 +7931,7 @@ MonoBehaviour:
   isAtStar: 0
   isBuyingStar: 0
   isAtShop: 0
+  isStop: 0
   shopItems:
   - {fileID: 8031604886622732642}
   - {fileID: 6830431574675348822}
@@ -8764,6 +8973,7 @@ GameObject:
   - component: {fileID: 4874209496555299477}
   - component: {fileID: 7541341833266766298}
   - component: {fileID: 7725717087126966843}
+  - component: {fileID: 3093294868875879715}
   m_Layer: 0
   m_Name: Button (8)
   m_TagString: Untagged
@@ -8872,7 +9082,32 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 7541341833266766298}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 3325275383187896159}
+        m_TargetAssemblyTypeName: PlayerControls, Assembly-CSharp
+        m_MethodName: _BUY_ITEM
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 8
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &3093294868875879715
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6796092566802599633}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20ac0ba3ae8f0d14b810231fb631e032, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ind: 0
 --- !u!1 &6884633599378410420
 GameObject:
   m_ObjectHideFlags: 0

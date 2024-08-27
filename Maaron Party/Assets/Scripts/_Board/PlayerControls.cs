@@ -106,7 +106,7 @@ public class PlayerControls : NetworkBehaviour
 
 	[Space] [Header("Shop")]
 	[SerializeField] private Button[] shopItems;
-	List<int> items = new();
+	[SyncVar] [SerializeField] List<int> items = new();
 	[SerializeField] TextMeshProUGUI[] itemTxts;
 
 
@@ -134,18 +134,18 @@ public class PlayerControls : NetworkBehaviour
 			nm.RemoveBoardConnection(this);
 	}
 
-	private void Start() 
-	{
-		if (isOwned)
-		{
-			for (int i = 0; i < shopItems.Length; i++)
-			{
-				shopItems[i].onClick.AddListener(() => {
-					this.BuyItem(i);
-				});
-			}
-		}
-	}
+	//private void Start() 
+	//{
+	//	if (isOwned)
+	//	{
+	//		for (int i = 0; i < shopItems.Length; i++)
+	//		{
+	//			shopItems[i].onClick.AddListener(() => {
+	//				this.BuyItem(i);
+	//			});
+	//		}
+	//	}
+	//}
 	public void RemoteStart(Transform spawnPos) 
 	{
 		//name = $"__ PLAYER {characterInd} __";
@@ -179,6 +179,7 @@ public class PlayerControls : NetworkBehaviour
 		
 		CmdSetCoinText(coins);
 		CmdSetStarText(stars);
+		CmdReplaceItems(items);
 		CmdShowItems();
 	}
 
@@ -256,16 +257,15 @@ public class PlayerControls : NetworkBehaviour
 			}
 		}
 
-		if (isStop) {Debug.Log("isStop");}
-		else if (isAtFork) {Debug.Log("isAtFork");}
-		else if (isAtStar) {Debug.Log("isAtStar");}
-		else if (isAtShop) {Debug.Log("isAtShop");}
-		else if (isBuyingStar) {Debug.Log("isBuyingStar");}
+		if (isStop) {}
+		else if (isAtFork) {}
+		else if (isAtStar) {}
+		else if (isAtShop) {}
+		else if (isBuyingStar) {}
 		else if (movesLeft > 0)
 		{
 			if (transform.position != nextNode.transform.position)
 			{
-				Debug.Log("movesLeft > 0");
 				var lookPos = nextNode.transform.position + - transform.position;
 				lookPos.y = 0;
 				var rotation = Quaternion.LookRotation(lookPos);
@@ -556,16 +556,18 @@ public class PlayerControls : NetworkBehaviour
 
 	#endregion
 
-	public void BuyItem(int itemId)
+	public void _BUY_ITEM(int itemId)
 	{
 		Debug.Log($"<color=cyan>BOUGHT ITEM {itemId}</color>");
 		if (items.Count < 3)
 			items.Add(itemId);
+		CmdReplaceItems(items);
 		CmdShowItems();
 	}
 	[Command(requiresAuthority=false)] private void CmdShowItems() => RpcShowItems();
 	[ClientRpc] private void RpcShowItems()
 	{
+		Debug.Log("<color=yellow>优桐桐桐桐er！！</color>");
 		for (int i = 0; i < itemTxts.Length; i++)
 		{
 			if (items.Count > i)
@@ -573,6 +575,11 @@ public class PlayerControls : NetworkBehaviour
 			else
 				itemTxts[i].text = "-";
 		}
+	}
+	[Command(requiresAuthority=false)] private void CmdReplaceItems(List<int> ints) => RpcReplaceItems(ints);
+	[ClientRpc(includeOwner=false)] private void RpcReplaceItems(List<int> ints)
+	{
+		items = ints;
 	}
 
 
