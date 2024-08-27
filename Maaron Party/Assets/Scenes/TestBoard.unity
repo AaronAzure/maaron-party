@@ -539,7 +539,7 @@ MonoBehaviour:
   nextNodes:
   - {fileID: 2131703821}
   nodeId: 0
-  nodeSpace: 0
+  nodeSpace: 4
 --- !u!65 &127639539
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -581,7 +581,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ce76c81285e4d4a40b922343348c54c2, type: 2}
+  - {fileID: 2100000, guid: f5b52d174f6b95b4d914b822eb3e6fd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

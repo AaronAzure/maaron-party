@@ -8,7 +8,7 @@ public class Node : MonoBehaviour
 	private Vector3 offset = new Vector3(0,0.25f);
 	public ushort nodeId;
 
-	enum NodeSpace { blue, red, green, star }
+	enum NodeSpace { blue, red, green, star, shop }
 	[SerializeField] private NodeSpace nodeSpace;
 
 	private void OnDrawGizmosSelected() 
@@ -28,12 +28,18 @@ public class Node : MonoBehaviour
 	/// Returns true if no event, else false
 	/// </summary>
 	/// <returns></returns>
-	public bool GetNodeTraverseEffect()
+	public bool GetNodeTraverseEffect(PlayerControls p)
 	{
 		switch (nodeSpace)
 		{
-			case NodeSpace.star: return true;
-			default: return false;
+			case NodeSpace.star: 
+				p.OnStarNode();
+				return true;
+			case NodeSpace.shop: 
+				p.OnShopNode();
+				return true;
+			default: 
+				return false;
 		}
 	}
 

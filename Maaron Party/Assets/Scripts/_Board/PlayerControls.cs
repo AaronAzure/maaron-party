@@ -63,7 +63,9 @@ public class PlayerControls : NetworkBehaviour
 	[Space] [Header("UI")]
 	[SerializeField] private GameObject canvas;
 	[SerializeField] private GameObject starUi;
-	[SerializeField] private Transform dataUi;
+	[SerializeField] private GameObject shopUi;
+	
+	[Space] [SerializeField] private Transform dataUi;
 	[SerializeField] private Image dataImg;
 	[SerializeField] private TextMeshProUGUI coinTxt;
 	[SerializeField] private TextMeshProUGUI starTxt;
@@ -90,11 +92,17 @@ public class PlayerControls : NetworkBehaviour
 	}
 
 
+	#region States
+
 	[Space] [Header("States")]
 	[SerializeField] private bool isAtFork;
 	[SerializeField] private bool isAtStar;
 	[SerializeField] private bool isBuyingStar;
+	[SerializeField] private bool isAtShop;
+	private bool isStop;
 	private bool isCurrencyAsync;
+
+	#endregion
 
 
 	[Space] [Header("HACKS")]
@@ -230,7 +238,8 @@ public class PlayerControls : NetworkBehaviour
 			}
 		}
 
-		if (isAtFork) {}
+		if (isStop) {}
+		else if (isAtFork) {}
 		else if (isAtStar) {}
 		else if (isBuyingStar) {}
 		else if (movesLeft > 0)
@@ -249,10 +258,9 @@ public class PlayerControls : NetworkBehaviour
 			else
 			{
 				time = 0;
-				if (nextNode.GetNodeTraverseEffect())
+				if (nextNode.GetNodeTraverseEffect(this))
 				{
-					isAtStar = true;
-					starUi.SetActive(true);
+					isStop = true;
 					return;
 				}
 
@@ -379,6 +387,21 @@ public class PlayerControls : NetworkBehaviour
 			canvas.SetActive(false);
 	}
 
+
+	#region Nodes
+
+	public void OnShopNode()
+	{
+		isAtShop = true;
+		shopUi.SetActive(true);
+		isStop = false;
+	}
+	public void OnStarNode()
+	{
+		isAtStar = true;
+		starUi.SetActive(true);
+		isStop = false;
+	}
 	public void NodeEffect(int bonus)
 	{
 		coins = Mathf.Clamp(coins + bonus, 0, 999);
@@ -483,15 +506,19 @@ public class PlayerControls : NetworkBehaviour
 		HidePaths();
 		isAtFork = false;
 	}
+
+	#endregion
+
+	
 	void UpdateMovesLeft(int x)
 	{
 		movesLeft = x;
 		movesLeftTxt.text = $"{movesLeft}";
 	}
 
-	IEnumerator MoveCo()
-	{
-		yield return new WaitForSeconds(2);
-		UpdateMovesLeft( Random.Range(1, 11) );
-	}
+	//IEnumerator MoveCo()
+	//{
+	//	yield return new WaitForSeconds(2);
+	//	UpdateMovesLeft( Random.Range(1, 11) );
+	//}
 }
