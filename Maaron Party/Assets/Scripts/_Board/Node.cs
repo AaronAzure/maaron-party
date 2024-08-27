@@ -8,21 +8,40 @@ public class Node : MonoBehaviour
 	private Vector3 offset = new Vector3(0,0.25f);
 	public ushort nodeId;
 
-	enum NodeSpace { blue, red, green }
+	enum NodeSpace { blue, red, green, star }
 	[SerializeField] private NodeSpace nodeSpace;
 
 	private void OnDrawGizmosSelected() 
 	{
 		Gizmos.color = Color.magenta;
 		foreach (Node node in nextNodes)
-			Gizmos.DrawLine(transform.position + offset, node.transform.position + offset);
+		{
+			if (node != null)
+			{
+				Gizmos.DrawLine(transform.position + offset, node.transform.position + offset);
+				Gizmos.DrawSphere(node.transform.position + offset, 0.2f);
+			}
+		}
 	}
 
 	/// <summary>
 	/// Returns true if no event, else false
 	/// </summary>
 	/// <returns></returns>
-	public bool GetNodeEffect(PlayerControls p)
+	public bool GetNodeTraverseEffect()
+	{
+		switch (nodeSpace)
+		{
+			case NodeSpace.star: return true;
+			default: return false;
+		}
+	}
+
+	/// <summary>
+	/// Returns true if no event, else false
+	/// </summary>
+	/// <returns></returns>
+	public bool GetNodeLandEffect(PlayerControls p)
 	{
 		switch (nodeSpace)
 		{

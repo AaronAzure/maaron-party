@@ -10,7 +10,6 @@ public class PlayerControls : NetworkBehaviour
 {
 	public static PlayerControls Instance;
 	private Player player;
-	private int playerId;
 	[SerializeField] private Node currNode;
 	[SerializeField] private Node nextNode;
 	[SerializeField] private float moveSpeed=2.5f;
@@ -62,6 +61,7 @@ public class PlayerControls : NetworkBehaviour
 
 	[Space] [Header("UI")]
 	[SerializeField] private GameObject canvas;
+	[SerializeField] private GameObject starUi;
 	[SerializeField] private Transform dataUi;
 	[SerializeField] private Image dataImg;
 	[SerializeField] private TextMeshProUGUI coinTxt;
@@ -91,6 +91,7 @@ public class PlayerControls : NetworkBehaviour
 
 	[Space] [Header("States")]
 	[SerializeField] private bool isAtFork;
+	[SerializeField] private bool isAtStar;
 	private bool isCurrencyAsync;
 
 
@@ -121,6 +122,7 @@ public class PlayerControls : NetworkBehaviour
 	public void RemoteStart(Transform spawnPos) 
 	{
 		//name = $"__ PLAYER {characterInd} __";
+		player = ReInput.players.GetPlayer(0);
 		if (vCam != null)
 			vCam.parent = null;
 		
@@ -147,8 +149,7 @@ public class PlayerControls : NetworkBehaviour
 			coinsT = coins;
 			starsT = stars;
 		}
-		//coinTxt.text = $"{coins}";
-		//starTxt.text = $"{stars}";
+		
 		CmdSetCoinText(coins);
 		CmdSetStarText(stars);
 	}
@@ -222,6 +223,7 @@ public class PlayerControls : NetworkBehaviour
 		}
 
 		if (isAtFork) {}
+		else if (isAtStar) {}
 		else if (movesLeft > 0)
 		{
 			if (transform.position != nextNode.transform.position)
@@ -238,16 +240,19 @@ public class PlayerControls : NetworkBehaviour
 			else
 			{
 				time = 0;
+				if (nextNode.GetNodeTraverseEffect())
+				{
+					isAtStar = true;
+					starUi.SetActive(true);
+					return;
+				}
+
 				UpdateMovesLeft(movesLeft-1);
 				if (movesLeft <= 0)
 				{
 					currNode = nextNode; 
 					movesLeftTxt.text = "";
 					StartCoroutine( NodeEffectCo() );
-					//if (nextNode.nextNodes.Count == 1)
-					//	nextNode = nextNode.nextNodes[0];
-					//else
-					//	nextNode = null;
 				}
 				else
 				{
@@ -296,18 +301,45 @@ public class PlayerControls : NetworkBehaviour
 
 	private void SaveData()
 	{
-		gm.SaveCurrNode(currNode.nodeId, playerId);
-		//gm.SaveCoins(coins.Value, playerId);
-		gm.SaveStars(stars, playerId);
+		gm.SaveCurrNode(currNode.nodeId, id);
+		gm.SaveCoins(coins, id);
+		gm.SaveStars(stars, id);
 	}
 	private void LoadData()
 	{
-		currNode = NodeManager.Instance.GetNode( gm.GetCurrNode(playerId) );
+		currNode = NodeManager.Instance.GetNode( gm.GetCurrNode(id) );
 		startPos = transform.position = currNode.transform.position;
-		//coinsT.Value = coins.Value = gm.GetCoins(playerId);
-		starsT = stars = gm.GetStars(playerId);
+		coinsT = coins = gm.GetCoins(id);
+		starsT = stars = gm.GetStars(id);
 	}
 
+	public void _PURCHASE_STAR(bool purchase)
+	{
+		if (purchase && coins >= 20)
+		{
+			coins -= 20;
+			stars++;
+		}
+
+		startPos = transform.position;
+		// more than one path
+		if (nextNode.nextNodes.Count > 1)
+		{
+			isAtFork = true;
+			HidePaths();
+			for (int i=0 ; i<nextNode.nextNodes.Count ; i++)
+				RevealPaths(nextNode.nextNodes[i].transform.position, i);
+		}
+		// single path
+		else
+		{
+			nextNode = nextNode.nextNodes[0];
+		}
+
+		if (starUi != null)
+			starUi.SetActive(false);
+		isAtStar = false;
+	}
 	public void ROLL_DICE()
 	{
 		if (currNode != null)
@@ -355,7 +387,7 @@ public class PlayerControls : NetworkBehaviour
 	private IEnumerator NodeEffectCo()
 	{
 		// no event
-		if (currNode.GetNodeEffect(this))
+		if (currNode.GetNodeLandEffect(this))
 			yield return new WaitForSeconds(0.5f);
 		else 
 			yield return new WaitForSeconds(0.5f);
