@@ -288,19 +288,21 @@ public class PlayerControls : NetworkBehaviour
 
 	public void YourTurn()
 	{
+		CmdCamToggle(true);
 		TargetYourTurn(netIdentity.connectionToClient);
 	}
+	[Command(requiresAuthority=false)] private void CmdCamToggle(bool activate) => RpcCamToggle(activate);
+	[ClientRpc] private void RpcCamToggle(bool activate) => vCam.gameObject.SetActive(activate);
 	[TargetRpc] public void TargetYourTurn(NetworkConnectionToClient target)
 	{
-		//!Debug.Log($"<color=yellow>target</color>");
-		vCam.gameObject.SetActive(true);
 		if (canvas != null)
 			canvas.SetActive(true);
 		this.enabled = true;
 	}
 	public void EndTurn()
 	{
-		vCam.gameObject.SetActive(false);
+		CmdCamToggle(false);
+		//vCam.gameObject.SetActive(false);
 		if (canvas != null)
 			canvas.SetActive(false);
 		this.enabled = false;
@@ -311,8 +313,8 @@ public class PlayerControls : NetworkBehaviour
 	private void SaveData()
 	{
 		gm.SaveCurrNode(currNode.nodeId, id);
-		gm.SaveCoins(coins, id);
-		gm.SaveStars(stars, id);
+		gm.CmdSaveCoins(coins, id);
+		gm.CmdSaveStars(stars, id);
 	}
 	private void LoadData()
 	{
@@ -381,18 +383,14 @@ public class PlayerControls : NetworkBehaviour
 	{
 		coins = Mathf.Clamp(coins + bonus, 0, 999);
 		isCurrencyAsync = true;
-		if (bonus > 0)
-		{
-			bonusObj.SetActive(false);
-			bonusObj.SetActive(true);
-			bonusTxt.text = $"+{bonus}";
-		}
-		else if (bonus < 0)
-		{
-			penaltyObj.SetActive(false);
-			penaltyObj.SetActive(true);
-			penaltyTxt.text = $"{bonus}";
-		}
+		CmdShowBonusTxt(bonus);
+	}
+	[Command] private void CmdShowBonusTxt(int n) => RpcShowBonusTxt(n);
+	[ClientRpc] private void RpcShowBonusTxt(int n)
+	{
+		bonusObj.SetActive(false);
+		bonusObj.SetActive(true);
+		bonusTxt.text = n > 0 ? $"+{n}" : $"{n}";
 	}
 
 	private IEnumerator NodeEffectCo()

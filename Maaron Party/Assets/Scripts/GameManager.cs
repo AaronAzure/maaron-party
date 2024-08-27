@@ -19,8 +19,8 @@ public class GameManager : NetworkBehaviour
 
 	[Space] [Header("In game references")]
 	[SerializeField] private List<ushort> currNodes;
-	[SerializeField] private List<int> coins;
-	[SerializeField] private List<int> stars;
+	[SyncVar] [SerializeField] private List<int> coins;
+	[SyncVar] [SerializeField] private List<int> stars;
 	[SyncVar] public int nTurn; 
 	//private int nPlayers {get{return GameObject.FindGameObjectsWithTag("Player").Length;}}
 	//public bool hasStarted {get; private set;}
@@ -76,7 +76,7 @@ public class GameManager : NetworkBehaviour
 		return currNodes[playerId];
 	}
 
-	public void SaveCoins(int newCoin, int playerId)
+	[Command(requiresAuthority=false)] public void CmdSaveCoins(int newCoin, int playerId)
 	{
 		if (coins == null)
 			coins = new();
@@ -89,7 +89,7 @@ public class GameManager : NetworkBehaviour
 		return coins[playerId];
 	}
 
-	public void SaveStars(int newStar, int playerId)
+	[Command(requiresAuthority=false)] public void CmdSaveStars(int newStar, int playerId)
 	{
 		if (stars == null)
 			stars = new();

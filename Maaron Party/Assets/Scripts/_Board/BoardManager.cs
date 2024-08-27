@@ -96,14 +96,6 @@ public class BoardManager : NetworkBehaviour
 		nm.NextBoardPlayerTurn();
 	}
 
-	[ClientRpc] public void RpcNextPlayerTurn()
-	{
-		if (_player == null)
-			_player = PlayerControls.Instance;
-		else
-			Debug.Log("<color=red>PlayerControls.Instance is NULL</color");
-		_player.YourTurn();
-	}
 	public void NextPlayerTurn()
 	{
 		CmdNextPlayerTurn();
@@ -125,10 +117,5 @@ public class BoardManager : NetworkBehaviour
 		//}
 			//gm.CmdLoadMinigame();
 			//LoadMinigame("TestMinigame");
-	}
-
-	void LoadMinigame(string minigameName)
-	{
-		//gm.LoadPreviewMinigame(minigameName);
 	}
 }
