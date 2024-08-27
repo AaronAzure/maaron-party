@@ -21,7 +21,8 @@ public class GameManager : NetworkBehaviour
 	[SerializeField] private List<ushort> currNodes;
 	[SyncVar] [SerializeField] private List<int> coins;
 	[SyncVar] [SerializeField] private List<int> stars;
-	[SyncVar] public int nTurn; 
+	[SyncVar] public int nTurn=1; 
+	[SyncVar] public int maxTurns=20; 
 	//private int nPlayers {get{return GameObject.FindGameObjectsWithTag("Player").Length;}}
 	//public bool hasStarted {get; private set;}
 	//public bool lobbyCreated {get; private set;}
@@ -45,6 +46,7 @@ public class GameManager : NetworkBehaviour
 		currNodes = new();
 		coins = new();
 		stars = new();
+		nTurn = 1;
 		if (BoardManager.Instance == null)
 			TriggerTransition(false);
 	}
@@ -118,7 +120,7 @@ public class GameManager : NetworkBehaviour
 	}
 	private IEnumerator TriggerTransitionDelayCo(bool fadeIn)
 	{
-		yield return new WaitForSeconds(0.2f);
+		yield return new WaitForSeconds(0.5f);
 		anim.SetTrigger(fadeIn ? "in" : "out");
 	}
 

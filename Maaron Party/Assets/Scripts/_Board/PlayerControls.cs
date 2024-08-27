@@ -129,7 +129,7 @@ public class PlayerControls : NetworkBehaviour
 			vCam.parent = null;
 		
 		CmdSetModel(characterInd);
-		if (gm.nTurn == 0)
+		if (gm.nTurn == 1)
 		{
 			transform.position = spawnPos.position + new Vector3(-4 + 2*id,0,0);
 			startPos = this.transform.position;
@@ -141,7 +141,7 @@ public class PlayerControls : NetworkBehaviour
 		}
 		
 		// after first turn
-		if (gm.nTurn > 0)
+		if (gm.nTurn > 1)
 		{
 			LoadData();
 		}
