@@ -57,6 +57,7 @@ public class PlayerControls : NetworkBehaviour
 	[SyncVar] private int stars;
 	private int starsT;
 	[SerializeField] private float currencyT;
+	[SerializeField] private float currencySpeedT=1;
 
 
 	[Space] [Header("UI")]
@@ -92,6 +93,7 @@ public class PlayerControls : NetworkBehaviour
 	[Space] [Header("States")]
 	[SerializeField] private bool isAtFork;
 	[SerializeField] private bool isAtStar;
+	[SerializeField] private bool isBuyingStar;
 	private bool isCurrencyAsync;
 
 
@@ -195,7 +197,7 @@ public class PlayerControls : NetworkBehaviour
 		{
 			if (currencyT < 0.1f)
 			{
-				currencyT += Time.fixedDeltaTime;
+				currencyT += Time.fixedDeltaTime * currencySpeedT;
 			} 
 			else
 			{
@@ -204,13 +206,16 @@ public class PlayerControls : NetworkBehaviour
 				currencyT = 0;
 			}
 			if (coins == coinsT)
+			{
 				isCurrencyAsync = false;
+				currencySpeedT = 1;
+			}
 		}
 		else if (stars != starsT)
 		{
 			if (currencyT < 0.1f)
 			{
-				currencyT += Time.fixedDeltaTime;
+				currencyT += Time.fixedDeltaTime * currencySpeedT;
 			} 
 			else
 			{
@@ -219,11 +224,15 @@ public class PlayerControls : NetworkBehaviour
 				currencyT = 0;
 			}
 			if (stars == starsT)
-				isCurrencyAsync = false;
+			{
+				isBuyingStar = isCurrencyAsync = false;
+				currencySpeedT = 1;
+			}
 		}
 
 		if (isAtFork) {}
 		else if (isAtStar) {}
+		else if (isBuyingStar) {}
 		else if (movesLeft > 0)
 		{
 			if (transform.position != nextNode.transform.position)
@@ -318,7 +327,9 @@ public class PlayerControls : NetworkBehaviour
 		if (purchase && coins >= 20)
 		{
 			coins -= 20;
+			currencySpeedT = 2;
 			stars++;
+			isBuyingStar = true;
 		}
 
 		startPos = transform.position;

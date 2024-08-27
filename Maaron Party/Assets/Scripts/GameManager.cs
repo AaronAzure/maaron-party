@@ -22,6 +22,7 @@ public class GameManager : NetworkBehaviour
 	[SerializeField] private List<int> coins;
 	[SerializeField] private List<int> stars;
 	[SyncVar] public int nTurn; 
+	//private int nPlayers {get{return GameObject.FindGameObjectsWithTag("Player").Length;}}
 	//public bool hasStarted {get; private set;}
 	//public bool lobbyCreated {get; private set;}
 	[SerializeField] Animator anim;
@@ -153,13 +154,18 @@ public class GameManager : NetworkBehaviour
 
 	public int GetPrizeValue(int place)
 	{
-		//switch (place)
-		//{
-		//	case 0: return nPlayers.Value == 2 ? 3 : nPlayers.Value == 3 ? 0 : 0 ;
-		//	case 1: return nPlayers.Value == 2 ? 15 : nPlayers.Value == 3 ? 5 : 3 ;
-		//	case 2: return nPlayers.Value == 2 ? 15 : nPlayers.Value == 3 ? 15 : 5 ;
-		//	case 3: return nPlayers.Value == 2 ? 15 : nPlayers.Value == 3 ? 15 : 15 ;
-		//}
+		int nPlayers = NetworkServer.connections.Count;
+		switch (place)
+		{
+			// 3, 0, 0
+			case 0: return nPlayers == 2 ? 3 : nPlayers == 3 ? 0 : 0 ;
+			// 15, 5, 3
+			case 1: return nPlayers == 2 ? 15 : nPlayers == 3 ? 5 : 3 ;
+			// -, 15, 5
+			case 2: return nPlayers == 2 ? 15 : nPlayers == 3 ? 15 : 5 ;
+			// -, -, 15
+			case 3: return nPlayers == 2 ? 15 : nPlayers == 3 ? 15 : 15 ;
+		}
 		return 0;
 	}
 	public void AwardMinigamePrize(int[] rewards)
