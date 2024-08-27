@@ -99,10 +99,15 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private bool isAtStar;
 	[SerializeField] private bool isBuyingStar;
 	[SerializeField] private bool isAtShop;
-	private bool isStop;
+	[SerializeField] private bool isStop;
 	private bool isCurrencyAsync;
 
 	#endregion
+
+	[Space] [Header("Shop")]
+	[SerializeField] private Button[] shopItems;
+	List<int> items = new();
+	[SerializeField] TextMeshProUGUI[] itemTxts;
 
 
 	[Space] [Header("HACKS")]
@@ -129,6 +134,18 @@ public class PlayerControls : NetworkBehaviour
 			nm.RemoveBoardConnection(this);
 	}
 
+	private void Start() 
+	{
+		if (isOwned)
+		{
+			for (int i = 0; i < shopItems.Length; i++)
+			{
+				shopItems[i].onClick.AddListener(() => {
+					this.BuyItem(i);
+				});
+			}
+		}
+	}
 	public void RemoteStart(Transform spawnPos) 
 	{
 		//name = $"__ PLAYER {characterInd} __";
@@ -162,6 +179,7 @@ public class PlayerControls : NetworkBehaviour
 		
 		CmdSetCoinText(coins);
 		CmdSetStarText(stars);
+		CmdShowItems();
 	}
 
 	[Command(requiresAuthority = false)] public void CmdSetModel(int ind)
@@ -238,14 +256,16 @@ public class PlayerControls : NetworkBehaviour
 			}
 		}
 
-		if (isStop) {}
-		else if (isAtFork) {}
-		else if (isAtStar) {}
-		else if (isBuyingStar) {}
+		if (isStop) {Debug.Log("isStop");}
+		else if (isAtFork) {Debug.Log("isAtFork");}
+		else if (isAtStar) {Debug.Log("isAtStar");}
+		else if (isAtShop) {Debug.Log("isAtShop");}
+		else if (isBuyingStar) {Debug.Log("isBuyingStar");}
 		else if (movesLeft > 0)
 		{
 			if (transform.position != nextNode.transform.position)
 			{
+				Debug.Log("movesLeft > 0");
 				var lookPos = nextNode.transform.position + - transform.position;
 				lookPos.y = 0;
 				var rotation = Quaternion.LookRotation(lookPos);
@@ -318,11 +338,14 @@ public class PlayerControls : NetworkBehaviour
 		//!Debug.Log($"<color=yellow>TURN ENDED</color>");
 	}
 
+	#region Saving data
+
 	private void SaveData()
 	{
 		gm.SaveCurrNode(currNode.nodeId, id);
 		gm.CmdSaveCoins(coins, id);
 		gm.CmdSaveStars(stars, id);
+		gm.CmdSaveItems(items, id);
 	}
 	private void LoadData()
 	{
@@ -330,7 +353,10 @@ public class PlayerControls : NetworkBehaviour
 		startPos = transform.position = currNode.transform.position;
 		coinsT = coins = gm.GetCoins(id);
 		starsT = stars = gm.GetStars(id);
+		items = gm.GetItems(id);
 	}
+
+	#endregion
 
 	public void _PURCHASE_STAR(bool purchase)
 	{
@@ -359,7 +385,28 @@ public class PlayerControls : NetworkBehaviour
 
 		if (starUi != null)
 			starUi.SetActive(false);
-		isAtStar = false;
+		isStop = isAtStar = false;
+	}
+	public void _CLOSE_SHOP()
+	{
+		startPos = transform.position;
+		// more than one path
+		if (nextNode.nextNodes.Count > 1)
+		{
+			isAtFork = true;
+			HidePaths();
+			for (int i=0 ; i<nextNode.nextNodes.Count ; i++)
+				RevealPaths(nextNode.nextNodes[i].transform.position, i);
+		}
+		// single path
+		else
+		{
+			nextNode = nextNode.nextNodes[0];
+		}
+
+		if (shopUi != null)
+			shopUi.SetActive(false);
+		isStop = isAtShop = false;
 	}
 	public void ROLL_DICE()
 	{
@@ -508,6 +555,26 @@ public class PlayerControls : NetworkBehaviour
 	}
 
 	#endregion
+
+	public void BuyItem(int itemId)
+	{
+		Debug.Log($"<color=cyan>BOUGHT ITEM {itemId}</color>");
+		if (items.Count < 3)
+			items.Add(itemId);
+		CmdShowItems();
+	}
+	[Command(requiresAuthority=false)] private void CmdShowItems() => RpcShowItems();
+	[ClientRpc] private void RpcShowItems()
+	{
+		for (int i = 0; i < itemTxts.Length; i++)
+		{
+			if (items.Count > i)
+				itemTxts[i].text = $"{items[i]}";
+			else
+				itemTxts[i].text = "-";
+		}
+	}
+
 
 	
 	void UpdateMovesLeft(int x)

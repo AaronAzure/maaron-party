@@ -21,6 +21,7 @@ public class GameManager : NetworkBehaviour
 	[SerializeField] private List<ushort> currNodes;
 	[SyncVar] [SerializeField] private List<int> coins;
 	[SyncVar] [SerializeField] private List<int> stars;
+	[SyncVar] [SerializeField] private List<List<int>> items;
 	[SyncVar] public int nTurn=1; 
 	[SyncVar] public int maxTurns=20; 
 	//private int nPlayers {get{return GameObject.FindGameObjectsWithTag("Player").Length;}}
@@ -46,6 +47,7 @@ public class GameManager : NetworkBehaviour
 		currNodes = new();
 		coins = new();
 		stars = new();
+		items = new();
 		nTurn = 1;
 		if (BoardManager.Instance == null)
 			TriggerTransition(false);
@@ -89,6 +91,18 @@ public class GameManager : NetworkBehaviour
 	public int GetCoins(int playerId)
 	{
 		return coins[playerId];
+	}
+	[Command(requiresAuthority=false)] public void CmdSaveItems(List<int> newItems, int playerId)
+	{
+		if (items == null)
+			items = new();
+		while (items.Count <= playerId)
+			items.Add(new());
+		items[playerId] = newItems;
+	}
+	public List<int> GetItems(int playerId)
+	{
+		return items[playerId];
 	}
 
 	[Command(requiresAuthority=false)] public void CmdSaveStars(int newStar, int playerId)
