@@ -196,7 +196,9 @@ public class PlayerControls : NetworkBehaviour
 			models[i].SetActive(false);
 		if (models != null && ind >= 0 && ind < models.Length)
 			models[ind].SetActive(true);
-		anim = models[ind].GetComponent<Animator>();
+
+		if (isOwned)
+			anim = models[ind].GetComponent<Animator>();
 
 		if (bm != null)
 			bm.SetUiLayout(dataUi);

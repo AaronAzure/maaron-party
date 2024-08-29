@@ -28,6 +28,7 @@ public class MinigameControls : NetworkBehaviour
 	[SyncVar] public int characterInd;
 	[SyncVar] public int id;
 	[SerializeField] private GameObject[] models;
+	[SerializeField] private Animator anim;
 	[SerializeField] private Rigidbody rb;
 
 	#endregion
@@ -76,6 +77,9 @@ public class MinigameControls : NetworkBehaviour
 			models[i].SetActive(false);
 		if (models != null && characterInd >= 0 && characterInd < models.Length)
 			models[characterInd].SetActive(true);
+
+		if (isOwned)
+			anim = models[characterInd].GetComponent<Animator>();
 	}
 
 	public void SetSpawn()
@@ -119,6 +123,7 @@ public class MinigameControls : NetworkBehaviour
 
 		if (moveX != 0 || moveZ != 0)
 			Rotate(moveX, moveZ);
+		if (anim != null) anim.SetFloat("moveSpeed", rb.velocity.magnitude);
 	}
 
 	private void Rotate(float x, float z)
