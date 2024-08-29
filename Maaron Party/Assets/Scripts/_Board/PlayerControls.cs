@@ -28,6 +28,7 @@ public class PlayerControls : NetworkBehaviour
 	[Space] [Header("Model")]
 	[SerializeField] private Transform model;
 	[SerializeField] private GameObject[] models;
+	[SerializeField] private Animator anim;
 	[SerializeField] private Transform vCam;
 
 	[Space] [SerializeField] private GameObject bonusObj;
@@ -195,6 +196,7 @@ public class PlayerControls : NetworkBehaviour
 			models[i].SetActive(false);
 		if (models != null && ind >= 0 && ind < models.Length)
 			models[ind].SetActive(true);
+		anim = models[ind].GetComponent<Animator>();
 
 		if (bm != null)
 			bm.SetUiLayout(dataUi);
@@ -267,6 +269,7 @@ public class PlayerControls : NetworkBehaviour
 			if (transform.position != nextNode.transform.position)
 			{
 				var lookPos = nextNode.transform.position + - transform.position;
+				if (anim != null) anim.SetFloat("moveSpeed", moveSpeed);
 				lookPos.y = 0;
 				var rotation = Quaternion.LookRotation(lookPos);
 				model.rotation = Quaternion.Slerp(model.rotation, rotation, Time.fixedDeltaTime * rotateSpeed);
@@ -281,6 +284,7 @@ public class PlayerControls : NetworkBehaviour
 				if (nextNode.GetNodeTraverseEffect(this))
 				{
 					isStop = true;
+					if (anim != null) anim.SetFloat("moveSpeed", 0);
 					return;
 				}
 
@@ -290,6 +294,7 @@ public class PlayerControls : NetworkBehaviour
 				{
 					currNode = nextNode; 
 					movesLeftTxt.text = "";
+					if (anim != null) anim.SetFloat("moveSpeed", 0);
 					StartCoroutine( NodeEffectCo() );
 				}
 				else
@@ -299,6 +304,7 @@ public class PlayerControls : NetworkBehaviour
 					if (nextNode.nextNodes.Count > 1)
 					{
 						isAtFork = true;
+						if (anim != null) anim.SetFloat("moveSpeed", 0);
 						HidePaths();
 						for (int i=0 ; i<nextNode.nextNodes.Count ; i++)
 							RevealPaths(nextNode.nextNodes[i].transform.position, i);
@@ -442,12 +448,14 @@ public class PlayerControls : NetworkBehaviour
 	public void OnShopNode()
 	{
 		isAtShop = true;
+		if (anim != null) anim.SetFloat("moveSpeed", 0);
 		shopUi.SetActive(true);
 		isStop = false;
 	}
 	public void OnStarNode()
 	{
 		isAtStar = true;
+		if (anim != null) anim.SetFloat("moveSpeed", 0);
 		starUi.SetActive(true);
 		isStop = false;
 	}
