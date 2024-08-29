@@ -284,7 +284,8 @@ public class PlayerControls : NetworkBehaviour
 					return;
 				}
 
-				UpdateMovesLeft(movesLeft-1);
+				movesLeft--;
+				CmdUpdateMovesLeft(movesLeft);
 				if (movesLeft <= 0)
 				{
 					currNode = nextNode; 
@@ -428,7 +429,8 @@ public class PlayerControls : NetworkBehaviour
 
 		int rng = controlledRoll != -1 ? controlledRoll : Random.Range(1, 11);
 		Debug.Log($"<color=magenta>ROLLED {rng}</color>");
-		UpdateMovesLeft( rng );
+		movesLeft = rng;
+		CmdUpdateMovesLeft( movesLeft );
 
 		if (canvas != null)
 			canvas.SetActive(false);
@@ -567,7 +569,6 @@ public class PlayerControls : NetworkBehaviour
 	[Command(requiresAuthority=false)] private void CmdShowItems() => RpcShowItems();
 	[ClientRpc] private void RpcShowItems()
 	{
-		Debug.Log("<color=yellow>优桐桐桐桐er！！</color>");
 		for (int i = 0; i < itemTxts.Length; i++)
 		{
 			if (items.Count > i)
@@ -584,11 +585,8 @@ public class PlayerControls : NetworkBehaviour
 
 
 	
-	void UpdateMovesLeft(int x)
-	{
-		movesLeft = x;
-		movesLeftTxt.text = $"{movesLeft}";
-	}
+	[Command(requiresAuthority=false)] void CmdUpdateMovesLeft(int x) => RpcUpdateMovesLeft(x);
+	[ClientRpc] void RpcUpdateMovesLeft(int x) => movesLeftTxt.text = $"{(x == 0 ? "" : x)}";
 
 	//IEnumerator MoveCo()
 	//{
