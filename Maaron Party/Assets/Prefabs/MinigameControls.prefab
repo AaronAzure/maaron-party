@@ -1324,8 +1324,10 @@ MonoBehaviour:
   moveSpeed: 8
   maxSpeed: 5
   rotateSpeed: 12.5
+  kbForce: 12.5
   canMove: 0
   canJump: 0
+  canKb: 0
   model: {fileID: 6183082833554358603}
   characterInd: 0
   id: 0

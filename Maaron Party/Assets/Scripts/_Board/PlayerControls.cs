@@ -30,6 +30,7 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private GameObject[] models;
 	[SerializeField] private Animator anim;
 	[SerializeField] private Transform vCam;
+	[SerializeField] private GameObject starCam;
 
 	[Space] [SerializeField] private GameObject bonusObj;
 	[SerializeField] private TextMeshPro bonusTxt;
@@ -257,6 +258,7 @@ public class PlayerControls : NetworkBehaviour
 			if (stars == starsT)
 			{
 				isBuyingStar = isCurrencyAsync = false;
+				starCam.SetActive(false);
 				currencySpeedT = 1;
 			}
 		}
@@ -459,6 +461,7 @@ public class PlayerControls : NetworkBehaviour
 		isAtStar = true;
 		if (anim != null) anim.SetFloat("moveSpeed", 0);
 		starUi.SetActive(true);
+		starCam.SetActive(true);
 		isStop = false;
 	}
 	public void NodeEffect(int bonus)

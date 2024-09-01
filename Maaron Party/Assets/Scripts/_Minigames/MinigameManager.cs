@@ -29,6 +29,7 @@ public class MinigameManager : NetworkBehaviour
 	[SerializeField] private bool lastManStanding=true;
 	[SerializeField] private bool playersCanMove=true;
 	[SerializeField] private bool playersCanJump;
+	[SerializeField] private bool playersCanKb;
 
 	
 	[Space] [Header("Results")]
@@ -76,6 +77,7 @@ public class MinigameManager : NetworkBehaviour
 		//!Debug.Log($"<color=white>Setting Up</color>");
 		_player.canMove = playersCanMove;
 		_player.canJump = playersCanJump;
+		_player.canKb = playersCanKb;
 		_player.SetSpawn();
 		countdownCo = StartCoroutine( GameTimerCo() );
 		if (pm != null)
@@ -144,7 +146,7 @@ public class MinigameManager : NetworkBehaviour
 		if (id < rewards.Length)
 			rewards[id] = gm.GetPrizeValue(nOut++);
 		//RpcPlayerEliminated((ulong) id);
-		if (lastManStanding && nOut == nPlayers - 1)
+		if (lastManStanding && nOut >= nPlayers - 1)
 		{
 			StopCoroutine( countdownCo );
 			GameOver();

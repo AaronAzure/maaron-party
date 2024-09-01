@@ -9,7 +9,7 @@ public class MinigameControls : NetworkBehaviour
 	#region Variables
 
 	public static MinigameControls Instance;
-	private GameManager gm { get { return GameManager.Instance; } }
+	//private GameManager gm { get { return GameManager.Instance; } }
 	private GameNetworkManager nm { get { return GameNetworkManager.Instance; } }
 	private MinigameManager mm { get { return MinigameManager.Instance; } }
 	private Player player;
@@ -18,8 +18,12 @@ public class MinigameControls : NetworkBehaviour
 	[SerializeField] private float moveSpeed=3f;
 	[SerializeField] private float maxSpeed=7f;
 	[SerializeField] private float rotateSpeed=5f;
+	[SerializeField] private float kbForce=5f;
 	public bool canMove;
 	public bool canJump;
+	public bool canKb;
+	private bool isReceivingKb;
+	private Coroutine kbCo;
 	private bool gameStarted;
 
 	
@@ -33,6 +37,8 @@ public class MinigameControls : NetworkBehaviour
 
 	#endregion
 
+
+	#region Methods
 	private void Awake() 
 	{
 		DontDestroyOnLoad(this);	
@@ -109,7 +115,7 @@ public class MinigameControls : NetworkBehaviour
 	private void FixedUpdate() 
 	{
 		if (!isOwned || !gameStarted) return;
-		if (canMove)
+		if (canMove && !isReceivingKb)
 			Move();
 	}
 
@@ -153,7 +159,26 @@ public class MinigameControls : NetworkBehaviour
 			gameStarted = false;
 			CmdDeath();
 			gameObject.SetActive(false);
-			
 		}
 	}
+
+	private void OnCollisionEnter(Collision other) 
+	{
+		if (isOwned && canKb && !isReceivingKb && gameStarted && enabled && other.gameObject.CompareTag("Player"))
+		{
+			if (kbCo == null)
+				kbCo = StartCoroutine(ReceiveKbCo((transform.position - other.transform.position).normalized));
+		}
+	}
+	IEnumerator ReceiveKbCo(Vector3 dir)
+	{
+		isReceivingKb = true;
+		rb.AddForce(dir * kbForce, ForceMode.Impulse);
+
+		yield return new WaitForSeconds(0.1f);
+		isReceivingKb = false;
+		rb.velocity = new Vector3(0, rb.velocity.y, 0);
+		kbCo = null;
+	}
+	#endregion
 }

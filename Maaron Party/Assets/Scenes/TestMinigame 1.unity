@@ -6587,6 +6587,10 @@ PrefabInstance:
       propertyPath: timer
       value: 45
       objectReference: {fileID: 0}
+    - target: {fileID: 4811647752833339361, guid: 90b4264d96bde3846957efb1a230c72a, type: 3}
+      propertyPath: playersCanKb
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6863294509175959981, guid: 90b4264d96bde3846957efb1a230c72a, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
