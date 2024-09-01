@@ -378,6 +378,8 @@ public class PlayerControls : NetworkBehaviour
 			stars++;
 			isBuyingStar = true;
 		}
+		else	
+			starCam.SetActive(false);
 
 		startPos = transform.position;
 		// more than one path
