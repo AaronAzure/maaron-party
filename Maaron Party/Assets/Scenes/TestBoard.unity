@@ -3979,8 +3979,8 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.07028145
-  m_Center: {x: 0, y: 0.07028145, z: 0}
+  m_Radius: 0.02
+  m_Center: {x: 0, y: 0.02, z: 0}
 --- !u!1 &573237259 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1819129819980566161, guid: bdb6df6f236f88347acaecaf7810e670, type: 3}
@@ -9411,7 +9411,8 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5866666021909216657, guid: bdb6df6f236f88347acaecaf7810e670, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:

@@ -112,6 +112,13 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] TextMeshProUGUI[] itemTxts;
 
 
+	[Space] [Header("Ragdoll")]
+	[SerializeField] private GameObject shoveObj;
+	[SerializeField] private GameObject ragdollObj;
+	[SerializeField] private Rigidbody[] ragdollRb;
+	[SerializeField] private float ragdollKb=15;
+
+
 	[Space] [Header("HACKS")]
 	[SerializeField] private int controlledRoll=-1;
 
@@ -136,18 +143,7 @@ public class PlayerControls : NetworkBehaviour
 			nm.RemoveBoardConnection(this);
 	}
 
-	//private void Start() 
-	//{
-	//	if (isOwned)
-	//	{
-	//		for (int i = 0; i < shopItems.Length; i++)
-	//		{
-	//			shopItems[i].onClick.AddListener(() => {
-	//				this.BuyItem(i);
-	//			});
-	//		}
-	//	}
-	//}
+
 	public void RemoteStart(Transform spawnPos) 
 	{
 		//name = $"__ PLAYER {characterInd} __";
@@ -328,15 +324,19 @@ public class PlayerControls : NetworkBehaviour
 	public void YourTurn()
 	{
 		CmdCamToggle(true);
+		CmdPlayerToggle(true);
 		TargetYourTurn(netIdentity.connectionToClient);
 	}
 	[Command(requiresAuthority=false)] private void CmdCamToggle(bool activate) => RpcCamToggle(activate);
 	[ClientRpc] private void RpcCamToggle(bool activate) => vCam.gameObject.SetActive(activate);
+	[Command(requiresAuthority=false)] private void CmdShoveToggle(bool activate) => RpcShoveToggle(activate);
+	[ClientRpc(includeOwner=false)] private void RpcShoveToggle(bool activate) => shoveObj.SetActive(activate);
 	[TargetRpc] public void TargetYourTurn(NetworkConnectionToClient target)
 	{
 		if (canvas != null)
 			canvas.SetActive(true);
 		this.enabled = true;
+		CmdShoveToggle(true);
 	}
 	public void EndTurn()
 	{
@@ -344,6 +344,7 @@ public class PlayerControls : NetworkBehaviour
 		//vCam.gameObject.SetActive(false);
 		if (canvas != null)
 			canvas.SetActive(false);
+		CmdShoveToggle(false);
 		this.enabled = false;
 		SaveData();
 		//!Debug.Log($"<color=yellow>TURN ENDED</color>");
@@ -603,6 +604,27 @@ public class PlayerControls : NetworkBehaviour
 	[Command(requiresAuthority=false)] void CmdUpdateMovesLeft(int x) => RpcUpdateMovesLeft(x);
 	[ClientRpc] void RpcUpdateMovesLeft(int x) => movesLeftTxt.text = $"{(x == 0 ? "" : x)}";
 
+	//private void OnTriggerEnter(Collider other) 
+	//{
+	//	if (isOwned && !this.enabled && model.gameObject.activeSelf && other.gameObject.CompareTag("Enemy"))
+	//	{
+	//		CmdPlayerToggle(false);
+	//		Debug.Log("<color=red>KNOCKBACK!!</color>");
+	//		CmdRagdollToggle(true);
+	//		ragdollObj.transform.parent = null;
+	//		Vector3 dir = (transform.position - other.transform.position).normalized;
+	//		foreach (Rigidbody ragdoll in ragdollRb)
+	//		{
+	//			ragdoll.AddForce(dir * ragdollKb, ForceMode.Impulse);
+	//			//ragdoll.AddExplosionForce(ragdollKb, other.transform.position, 50f, 70f, ForceMode.Impulse);
+	//		}
+	//	}
+	//}
+	[Command(requiresAuthority=false)] private void CmdRagdollToggle(bool active) => RpcRagdollToggle(active);
+	[ClientRpc] private void RpcRagdollToggle(bool active) => model.gameObject.SetActive(active);
+
+	[Command(requiresAuthority=false)] private void CmdPlayerToggle(bool active) => RpcPlayerToggle(active);
+	[ClientRpc] private void RpcPlayerToggle(bool active) => ragdollObj.SetActive(active);
 	//IEnumerator MoveCo()
 	//{
 	//	yield return new WaitForSeconds(2);
