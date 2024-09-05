@@ -324,7 +324,7 @@ public class PlayerControls : NetworkBehaviour
 	public void YourTurn()
 	{
 		CmdCamToggle(true);
-		CmdPlayerToggle(true);
+		//CmdPlayerToggle(true);
 		TargetYourTurn(netIdentity.connectionToClient);
 	}
 	[Command(requiresAuthority=false)] private void CmdCamToggle(bool activate) => RpcCamToggle(activate);
