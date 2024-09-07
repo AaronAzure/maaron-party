@@ -254,6 +254,7 @@ public class PlayerControls : NetworkBehaviour
 			if (stars == starsT)
 			{
 				isBuyingStar = isCurrencyAsync = false;
+				anim.SetBool("hasStar", false);
 				starCam.SetActive(false);
 				currencySpeedT = 1;
 			}
@@ -378,6 +379,9 @@ public class PlayerControls : NetworkBehaviour
 			currencySpeedT = 2;
 			stars++;
 			isBuyingStar = true;
+			anim.SetBool("hasStar", true);
+			Vector3 dir = Camera.main.transform.position - transform.position;
+			model.rotation = Quaternion.LookRotation(new Vector3(dir.x, 0, dir.z).normalized);
 		}
 		else	
 			starCam.SetActive(false);
