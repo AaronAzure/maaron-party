@@ -610,7 +610,7 @@ GameObject:
   - component: {fileID: 1037466775356406029}
   - component: {fileID: 2095060165436680098}
   m_Layer: 0
-  m_Name: Player Lobby UI
+  m_Name: LobbyControls UI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

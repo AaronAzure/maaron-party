@@ -10,6 +10,7 @@ public class Node : MonoBehaviour
 
 	enum NodeSpace { blue, red, green, star, shop }
 	[SerializeField] private NodeSpace nodeSpace;
+	[SerializeField] private GameObject targetObj;
 
 	private void OnDrawGizmosSelected() 
 	{
@@ -62,5 +63,18 @@ public class Node : MonoBehaviour
 				return false;
 		}
 		return true;
+	}
+
+	
+	private void OnTriggerEnter(Collider other) 
+	{
+		if (other.CompareTag("Range"))
+			targetObj.SetActive(true);
+	}
+
+	private void OnTriggerExit(Collider other) 
+	{
+		if (other.CompareTag("Range"))		
+			targetObj.SetActive(false);
 	}
 }
