@@ -27,4 +27,12 @@ public class NodeManager : MonoBehaviour
 	{
 		return ind >= 0 && ind < nodes.Length ? nodes[ind] : nodes[0];
 	}
+	public void SetDistanceAway(ushort ind, int movesLeft)
+	{
+		if (ind >= 0 && ind < nodes.Length) nodes[ind].SetDistanceAway(1, movesLeft);
+	}
+	public void ClearDistanceAway(ushort ind)
+	{
+		if (ind >= 0 && ind < nodes.Length) nodes[ind].ClearDistanceAway();
+	}
 }

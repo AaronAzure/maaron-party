@@ -117,6 +117,7 @@ public class PlayerControls : NetworkBehaviour
 
 	[Space] [Header("Spell")]
 	[SerializeField] private GameObject spellCam;
+	[SerializeField] private float spellCamSpeed=0.5f;
 
 
 	[Space] [Header("Ragdoll")]
@@ -272,7 +273,7 @@ public class PlayerControls : NetworkBehaviour
 			float moveX = player.GetAxis("Move Horizontal");
 			float moveZ = player.GetAxis("Move Vertical");
 			
-			spellCam.transform.position += new Vector3(moveX, 0, moveZ);
+			spellCam.transform.position += new Vector3(moveX, 0, moveZ) * spellCamSpeed;
 		}
 
 		if (isStop) {}
@@ -319,14 +320,7 @@ public class PlayerControls : NetworkBehaviour
 					// more than one path
 					if (nextNode.nextNodes.Count > 1)
 					{
-						isAtFork = true;
-						if (anim != null) anim.SetFloat("moveSpeed", 0);
-						HidePaths();
-						nextNode.SetDistanceAway(0, movesLeft);
-						spellCam.transform.localPosition = new Vector3(0,25,-7.071078f);
-						spellCam.SetActive(true);
-						for (int i=0 ; i<nextNode.nextNodes.Count ; i++)
-							RevealPaths(nextNode.nextNodes[i].transform.position, i);
+						StuckAtFork();
 					}
 					// single path
 					else
@@ -408,10 +402,7 @@ public class PlayerControls : NetworkBehaviour
 		// more than one path
 		if (nextNode.nextNodes.Count > 1)
 		{
-			isAtFork = true;
-			HidePaths();
-			for (int i=0 ; i<nextNode.nextNodes.Count ; i++)
-				RevealPaths(nextNode.nextNodes[i].transform.position, i);
+			StuckAtFork();
 		}
 		// single path
 		else
@@ -429,10 +420,7 @@ public class PlayerControls : NetworkBehaviour
 		// more than one path
 		if (nextNode.nextNodes.Count > 1)
 		{
-			isAtFork = true;
-			HidePaths();
-			for (int i=0 ; i<nextNode.nextNodes.Count ; i++)
-				RevealPaths(nextNode.nextNodes[i].transform.position, i);
+			StuckAtFork();
 		}
 		// single path
 		else
@@ -446,13 +434,13 @@ public class PlayerControls : NetworkBehaviour
 	}
 	public void ROLL_DICE()
 	{
+		if (isUsingSpell) return;
+		
 		if (currNode != null)
 		{
 			if (currNode.nextNodes.Count > 1)
 			{
-				isAtFork = true;
-				for (int i=0 ; i<currNode.nextNodes.Count ; i++)
-					RevealPaths(currNode.nextNodes[i].transform.position, i);
+				StuckAtFork();
 				nextNode = currNode;
 			}
 			else
@@ -473,6 +461,30 @@ public class PlayerControls : NetworkBehaviour
 
 
 	#region Nodes
+
+	private void StuckAtFork()
+	{
+		isAtFork = true;
+		if (anim != null) anim.SetFloat("moveSpeed", 0);
+		HidePaths();
+		CmdShowNodeDistance(true, nextNode.nodeId, movesLeft);
+		//nextNode.SetDistanceAway(0, movesLeft);
+		spellCam.transform.localPosition = new Vector3(0,25,-7.071078f);
+		CmdToggleMapCam(true);
+		for (int i=0 ; i<nextNode.nextNodes.Count ; i++)
+			RevealPaths(nextNode.nextNodes[i].transform.position, i);
+	}
+	[Command(requiresAuthority=false)] void CmdToggleMapCam(bool active) => RpcToggleMapCam(active);
+	[ClientRpc] void RpcToggleMapCam(bool active) => spellCam.SetActive(active);
+	[Command(requiresAuthority=false)] void CmdShowNodeDistance(bool active, ushort nodeId, int movesLeft) 
+		=> RpcShowNodeDistance(active, nodeId, movesLeft);
+	[ClientRpc] void RpcShowNodeDistance(bool active, ushort nodeId, int movesLeft) 
+	{
+		if (active)
+			NodeManager.Instance.SetDistanceAway(nodeId, movesLeft);
+		else
+			NodeManager.Instance.ClearDistanceAway(nodeId);
+	}
 
 	public void OnShopNode()
 	{
@@ -589,10 +601,11 @@ public class PlayerControls : NetworkBehaviour
 
 	public void ChoosePath(int ind)
 	{
+		CmdShowNodeDistance(false, nextNode.nodeId, movesLeft);
 		nextNode = nextNode.nextNodes[ind];
-		nextNode.ClearDistanceAway();
+		//nextNode.ClearDistanceAway();
 		HidePaths();
-		spellCam.SetActive(false);
+		CmdToggleMapCam(false);
 		isAtFork = false;
 	}
 
