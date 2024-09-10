@@ -31,6 +31,8 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private Animator anim;
 	[SerializeField] private Transform vCam;
 	[SerializeField] private GameObject starCam;
+	[SerializeField] private GameObject rangeObj;
+	[SerializeField] private Animator rangeAnim;
 
 	[Space] [SerializeField] private GameObject bonusObj;
 	[SerializeField] private TextMeshPro bonusTxt;
@@ -578,6 +580,8 @@ public class PlayerControls : NetworkBehaviour
 
 	#endregion
 
+
+	#region Items/Spells
 	public void _BUY_ITEM(int itemId)
 	{
 		Debug.Log($"<color=cyan>BOUGHT ITEM {itemId}</color>");
@@ -602,7 +606,12 @@ public class PlayerControls : NetworkBehaviour
 	{
 		items = ints;
 	}
+	public void _USE_SPELL() => CmdUseSpell(!rangeObj.activeSelf);
+	[Command(requiresAuthority=false)] private void CmdUseSpell(bool active) => RpcUseSpell(active);
+	[ClientRpc] private void RpcUseSpell(bool active) => rangeAnim.SetTrigger(active ? "on" : "off");
+	//[ClientRpc] private void RpcUseSpell(bool active) => rangeObj.SetActive(active);
 
+	#endregion
 
 	
 	[Command(requiresAuthority=false)] void CmdUpdateMovesLeft(int x) => RpcUpdateMovesLeft(x);
