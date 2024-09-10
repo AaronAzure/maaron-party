@@ -267,6 +267,14 @@ public class PlayerControls : NetworkBehaviour
 			}
 		}
 
+		if (spellCam.activeSelf)
+		{
+			float moveX = player.GetAxis("Move Horizontal");
+			float moveZ = player.GetAxis("Move Vertical");
+			
+			spellCam.transform.position += new Vector3(moveX, 0, moveZ);
+		}
+
 		if (isStop) {}
 		else if (isAtFork) {}
 		else if (isAtStar) {}
@@ -314,7 +322,9 @@ public class PlayerControls : NetworkBehaviour
 						isAtFork = true;
 						if (anim != null) anim.SetFloat("moveSpeed", 0);
 						HidePaths();
-						nextNode.SetDistanceAway(0);
+						nextNode.SetDistanceAway(0, movesLeft);
+						spellCam.transform.localPosition = new Vector3(0,25,-7.071078f);
+						spellCam.SetActive(true);
 						for (int i=0 ; i<nextNode.nextNodes.Count ; i++)
 							RevealPaths(nextNode.nextNodes[i].transform.position, i);
 					}
@@ -582,6 +592,7 @@ public class PlayerControls : NetworkBehaviour
 		nextNode = nextNode.nextNodes[ind];
 		nextNode.ClearDistanceAway();
 		HidePaths();
+		spellCam.SetActive(false);
 		isAtFork = false;
 	}
 
@@ -618,6 +629,9 @@ public class PlayerControls : NetworkBehaviour
 	[ClientRpc] private void RpcUseSpell(bool active)
 	{
 		if (currNode != null) currNode.SetCanSpellTarget(!active);
+
+		if (active)
+			spellCam.transform.localPosition = new Vector3(0,25,-7.071078f);
 		spellCam.SetActive(active);
 		isUsingSpell = active;
 	 	rangeAnim.SetTrigger(active ? "on" : "off");
