@@ -14,6 +14,7 @@ public class Node : MonoBehaviour
 	[SerializeField] private GameObject targetObj;
 	[SerializeField] private TextMeshPro txt;
 	private bool canSpellTarget=true;
+	[HideInInspector] public int n=999;
 
 	private void OnDrawGizmosSelected() 
 	{
@@ -69,10 +70,27 @@ public class Node : MonoBehaviour
 	}
 
 
+	public void ClearDistanceAway()
+	{
+		if (txt != null && n != 999)
+		{
+			n = 999;
+			txt.text = "";
+			foreach (Node node in nextNodes)
+				if (node != null)
+					node.ClearDistanceAway();
+		}
+	}
 	public void SetDistanceAway(int x)
 	{
-		if (txt != null && txt.text == "")
-			txt.text = $"{x}";
+		if (txt != null && (txt.text == "" || x < n))
+		{
+			n = x;
+			txt.text = $"{n}";
+			foreach (Node node in nextNodes)
+				if (node != null)
+					node.SetDistanceAway(x+1);
+		}
 	}
 	public void SetCanSpellTarget(bool canSpellTarget) => this.canSpellTarget = canSpellTarget;
 	private void OnTriggerEnter(Collider other) 

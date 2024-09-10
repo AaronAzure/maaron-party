@@ -314,6 +314,7 @@ public class PlayerControls : NetworkBehaviour
 						isAtFork = true;
 						if (anim != null) anim.SetFloat("moveSpeed", 0);
 						HidePaths();
+						nextNode.SetDistanceAway(0);
 						for (int i=0 ; i<nextNode.nextNodes.Count ; i++)
 							RevealPaths(nextNode.nextNodes[i].transform.position, i);
 					}
@@ -579,6 +580,7 @@ public class PlayerControls : NetworkBehaviour
 	public void ChoosePath(int ind)
 	{
 		nextNode = nextNode.nextNodes[ind];
+		nextNode.ClearDistanceAway();
 		HidePaths();
 		isAtFork = false;
 	}

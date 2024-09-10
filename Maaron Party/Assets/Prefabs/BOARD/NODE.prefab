@@ -52,6 +52,8 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 9209997044384849430}
+  txt: {fileID: 6912015489443780956}
+  n: 999
 --- !u!65 &2792903447503191607
 BoxCollider:
   m_ObjectHideFlags: 0
