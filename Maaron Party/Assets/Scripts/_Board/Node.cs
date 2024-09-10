@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Node : MonoBehaviour
@@ -11,6 +12,8 @@ public class Node : MonoBehaviour
 	enum NodeSpace { blue, red, green, star, shop }
 	[SerializeField] private NodeSpace nodeSpace;
 	[SerializeField] private GameObject targetObj;
+	[SerializeField] private TextMeshPro txt;
+	private bool canSpellTarget=true;
 
 	private void OnDrawGizmosSelected() 
 	{
@@ -65,10 +68,16 @@ public class Node : MonoBehaviour
 		return true;
 	}
 
-	
+
+	public void SetDistanceAway(int x)
+	{
+		if (txt != null && txt.text == "")
+			txt.text = $"{x}";
+	}
+	public void SetCanSpellTarget(bool canSpellTarget) => this.canSpellTarget = canSpellTarget;
 	private void OnTriggerEnter(Collider other) 
 	{
-		if (other.CompareTag("Range"))
+		if (other.CompareTag("Range") && canSpellTarget)
 			targetObj.SetActive(true);
 	}
 

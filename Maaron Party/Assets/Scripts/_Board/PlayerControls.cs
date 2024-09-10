@@ -104,6 +104,7 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private bool isBuyingStar;
 	[SerializeField] private bool isAtShop;
 	[SerializeField] private bool isStop;
+	[SerializeField] private bool isUsingSpell;
 	private bool isCurrencyAsync;
 
 	#endregion
@@ -112,6 +113,10 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private Button[] shopItems;
 	[SyncVar] [SerializeField] List<int> items = new();
 	[SerializeField] TextMeshProUGUI[] itemTxts;
+
+
+	[Space] [Header("Spell")]
+	[SerializeField] private GameObject spellCam;
 
 
 	[Space] [Header("Ragdoll")]
@@ -608,7 +613,13 @@ public class PlayerControls : NetworkBehaviour
 	}
 	public void _USE_SPELL() => CmdUseSpell(!rangeObj.activeSelf);
 	[Command(requiresAuthority=false)] private void CmdUseSpell(bool active) => RpcUseSpell(active);
-	[ClientRpc] private void RpcUseSpell(bool active) => rangeAnim.SetTrigger(active ? "on" : "off");
+	[ClientRpc] private void RpcUseSpell(bool active)
+	{
+		if (currNode != null) currNode.SetCanSpellTarget(!active);
+		spellCam.SetActive(active);
+		isUsingSpell = active;
+	 	rangeAnim.SetTrigger(active ? "on" : "off");
+	}
 	//[ClientRpc] private void RpcUseSpell(bool active) => rangeObj.SetActive(active);
 
 	#endregion
