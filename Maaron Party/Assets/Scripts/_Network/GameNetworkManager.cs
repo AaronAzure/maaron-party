@@ -219,6 +219,15 @@ public class GameNetworkManager : NetworkManager
 		//NetworkManager.Singleton.SceneManager.LoadScene("TestBoard", LoadSceneMode.Single);
 	}
 
+	public void UnparentBoardControls()
+	{
+		for (int i=0 ; i<boardControls.Count ; i++)
+		{
+			if (boardControls[i] != null)
+				boardControls[i].MediateRemoteStart();
+		}
+	}
+
 	int nPlayerOrder; 
 	public void NextBoardPlayerTurn()
 	{

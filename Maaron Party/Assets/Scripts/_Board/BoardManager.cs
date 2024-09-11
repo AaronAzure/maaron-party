@@ -56,7 +56,10 @@ public class BoardManager : NetworkBehaviour
 		++nBmReady;
 		Debug.Log($"<color=white>{nBmReady} >= {nm.numPlayers}</color>");
 		if (nBmReady >= nm.numPlayers)
+		{
 			RpcSetUpPlayer();
+			nm.UnparentBoardControls();
+		}
 	} 
 	[ClientRpc] private void RpcSetUpPlayer()
 	{
@@ -64,9 +67,13 @@ public class BoardManager : NetworkBehaviour
 		_player = PlayerControls.Instance;
 		if (gm.nTurn == 1)
 			_player.SetStartNode(startNode);
-		_player.RemoteStart(spawnPos);
+		//_player.RemoteStart(spawnPos);
 		if (isServer)
 			StartCoroutine( StartGameCo() );
+	}
+	public Transform GetSpawnPos()
+	{
+		return spawnPos;
 	}
 	public int GetNth()
 	{

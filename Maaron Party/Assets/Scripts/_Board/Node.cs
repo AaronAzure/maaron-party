@@ -69,6 +69,19 @@ public class Node : MonoBehaviour
 		return true;
 	}
 
+	/// <summary>
+	/// Returns true if movement decreases when reached, else false (e.g. shop, star)
+	/// </summary>
+	/// <returns></returns>
+	public bool DoesConsumeMovement()
+	{
+		return nodeSpace switch
+		{
+			NodeSpace.star => false,
+			NodeSpace.shop => false,
+			_ => true,
+		};
+	}
 
 	public void ClearDistanceAway()
 	{
@@ -87,12 +100,19 @@ public class Node : MonoBehaviour
 		if (txt != null && (txt.text == "" || x < n))
 		{
 			n = x;
-			if (movesLeft == x)
-				txt.color = Color.green;
-			txt.text = $"{n}";
-			foreach (Node node in nextNodes)
-				if (node != null)
-					node.SetDistanceAway(x+1, movesLeft);
+			if (DoesConsumeMovement())
+			{
+				if (movesLeft == x)
+					txt.color = Color.green;
+				txt.text = $"{n}";
+				foreach (Node node in nextNodes)
+					if (node != null)
+						node.SetDistanceAway(x+1, movesLeft);
+			}
+			else
+				foreach (Node node in nextNodes)
+					if (node != null)
+						node.SetDistanceAway(x, movesLeft);
 		}
 	}
 	public void SetCanSpellTarget(bool canSpellTarget) => this.canSpellTarget = canSpellTarget;

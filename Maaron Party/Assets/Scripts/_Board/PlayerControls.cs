@@ -112,7 +112,8 @@ public class PlayerControls : NetworkBehaviour
 	[Space] [Header("Shop")]
 	[SerializeField] private Button[] shopItems;
 	[SyncVar] [SerializeField] List<int> items = new();
-	[SerializeField] TextMeshProUGUI[] itemTxts;
+	[SerializeField] Image[] itemImgs;
+	[SerializeField] private Sprite emptySpr;
 
 
 	[Space] [Header("Spell")]
@@ -129,6 +130,7 @@ public class PlayerControls : NetworkBehaviour
 
 	[Space] [Header("HACKS")]
 	[SerializeField] private int controlledRoll=-1;
+	[SerializeField] private bool freeShop;
 
 
 	#region Methods
@@ -152,9 +154,14 @@ public class PlayerControls : NetworkBehaviour
 	}
 
 
-	public void RemoteStart(Transform spawnPos) 
+	public void MediateRemoteStart()
 	{
-		//name = $"__ PLAYER {characterInd} __";
+		TargetRemoteStart(netIdentity.connectionToClient);
+	}
+	[Command(requiresAuthority = false)] private void CmdPing() => Debug.Log($"<color=yellow>TargetRemoteStart {name}</color>");
+	[TargetRpc] private void TargetRemoteStart(NetworkConnectionToClient target) 
+	{
+		//Debug.Log($"<color=yellow>TargetRemoteStart</color>");
 		player = ReInput.players.GetPlayer(0);
 		if (vCam != null)
 			vCam.parent = null;
@@ -162,7 +169,7 @@ public class PlayerControls : NetworkBehaviour
 		CmdSetModel(characterInd);
 		if (gm.nTurn == 1)
 		{
-			transform.position = spawnPos.position + new Vector3(-4 + 2*id,0,0);
+			transform.position = BoardManager.Instance.GetSpawnPos().position + new Vector3(-4 + 2*id,0,0);
 			startPos = this.transform.position;
 		}
 		
@@ -189,13 +196,12 @@ public class PlayerControls : NetworkBehaviour
 		CmdShowItems();
 	}
 
-	[Command(requiresAuthority = false)] public void CmdSetModel(int ind)
-	{
-		RpcSetModel(ind);
-	}
+	[Command(requiresAuthority = false)] public void CmdSetModel(int ind) => RpcSetModel(ind);
 	[ClientRpc] public void RpcSetModel(int ind)
 	{
 		name = $"__ PLAYER {id} __";
+		if (isOwned)
+			CmdPing();
 		transform.parent = bm.transform;
 		for (int i=0 ; i<models.Length ; i++)
 			models[i].SetActive(false);
@@ -383,6 +389,8 @@ public class PlayerControls : NetworkBehaviour
 
 	#endregion
 
+
+	#region BUTTONS
 	public void _PURCHASE_STAR(bool purchase)
 	{
 		if (purchase && coins >= 20)
@@ -432,10 +440,10 @@ public class PlayerControls : NetworkBehaviour
 			shopUi.SetActive(false);
 		isStop = isAtShop = false;
 	}
-	public void ROLL_DICE()
+	public void _ROLL_DICE()
 	{
 		if (isUsingSpell) return;
-		
+
 		if (currNode != null)
 		{
 			if (currNode.nextNodes.Count > 1)
@@ -459,6 +467,20 @@ public class PlayerControls : NetworkBehaviour
 			canvas.SetActive(false);
 	}
 
+	public void _TOGGLE_MAP()
+	{
+		if (spellCam.activeSelf)
+			CmdShowNodeDistance(false, nextNode == null ? (ushort) 0 : nextNode.nodeId, 1, -1);
+		else
+		{
+			spellCam.transform.localPosition = new Vector3(0,25,-10);
+			CmdShowNodeDistance(true, nextNode == null ? (ushort) 0 : nextNode.nodeId, 1, -1);
+		}
+		
+		CmdToggleMapCam(!spellCam.activeSelf);
+	}
+	#endregion
+
 
 	#region Nodes
 
@@ -467,21 +489,20 @@ public class PlayerControls : NetworkBehaviour
 		isAtFork = true;
 		if (anim != null) anim.SetFloat("moveSpeed", 0);
 		HidePaths();
-		CmdShowNodeDistance(true, nextNode.nodeId, movesLeft);
-		//nextNode.SetDistanceAway(0, movesLeft);
-		spellCam.transform.localPosition = new Vector3(0,25,-7.071078f);
+		CmdShowNodeDistance(true, nextNode.nodeId, 0, movesLeft);
+		spellCam.transform.localPosition = new Vector3(0,25,-10);
 		CmdToggleMapCam(true);
 		for (int i=0 ; i<nextNode.nextNodes.Count ; i++)
 			RevealPaths(nextNode.nextNodes[i].transform.position, i);
 	}
 	[Command(requiresAuthority=false)] void CmdToggleMapCam(bool active) => RpcToggleMapCam(active);
 	[ClientRpc] void RpcToggleMapCam(bool active) => spellCam.SetActive(active);
-	[Command(requiresAuthority=false)] void CmdShowNodeDistance(bool active, ushort nodeId, int movesLeft) 
-		=> RpcShowNodeDistance(active, nodeId, movesLeft);
-	[ClientRpc] void RpcShowNodeDistance(bool active, ushort nodeId, int movesLeft) 
+	[Command(requiresAuthority=false)] void CmdShowNodeDistance(bool active, ushort nodeId, int num, int movesLeft) 
+		=> RpcShowNodeDistance(active, nodeId, num, movesLeft);
+	[ClientRpc] void RpcShowNodeDistance(bool active, ushort nodeId, int num, int movesLeft) 
 	{
 		if (active)
-			NodeManager.Instance.SetDistanceAway(nodeId, movesLeft);
+			NodeManager.Instance.SetDistanceAway(nodeId, num, movesLeft);
 		else
 			NodeManager.Instance.ClearDistanceAway(nodeId);
 	}
@@ -601,9 +622,8 @@ public class PlayerControls : NetworkBehaviour
 
 	public void ChoosePath(int ind)
 	{
-		CmdShowNodeDistance(false, nextNode.nodeId, movesLeft);
+		CmdShowNodeDistance(false, nextNode.nodeId, 0, movesLeft);
 		nextNode = nextNode.nextNodes[ind];
-		//nextNode.ClearDistanceAway();
 		HidePaths();
 		CmdToggleMapCam(false);
 		isAtFork = false;
@@ -624,12 +644,12 @@ public class PlayerControls : NetworkBehaviour
 	[Command(requiresAuthority=false)] private void CmdShowItems() => RpcShowItems();
 	[ClientRpc] private void RpcShowItems()
 	{
-		for (int i = 0; i < itemTxts.Length; i++)
+		for (int i = 0; i < itemImgs.Length; i++)
 		{
 			if (items.Count > i)
-				itemTxts[i].text = $"{items[i]}";
+				itemImgs[i].sprite = Item.instance.GetSprite( items[i] );
 			else
-				itemTxts[i].text = "-";
+				itemImgs[i].sprite = emptySpr;
 		}
 	}
 	[Command(requiresAuthority=false)] private void CmdReplaceItems(List<int> ints) => RpcReplaceItems(ints);
@@ -644,12 +664,11 @@ public class PlayerControls : NetworkBehaviour
 		if (currNode != null) currNode.SetCanSpellTarget(!active);
 
 		if (active)
-			spellCam.transform.localPosition = new Vector3(0,25,-7.071078f);
+			spellCam.transform.localPosition = new Vector3(0,25,-10);
 		spellCam.SetActive(active);
 		isUsingSpell = active;
 	 	rangeAnim.SetTrigger(active ? "on" : "off");
 	}
-	//[ClientRpc] private void RpcUseSpell(bool active) => rangeObj.SetActive(active);
 
 	#endregion
 
