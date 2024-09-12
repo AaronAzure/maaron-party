@@ -97,14 +97,17 @@ public class Node : MonoBehaviour
 	}
 	public void SetDistanceAway(int x, int movesLeft)
 	{
-		if (txt != null && (txt.text == "" || x < n))
+		if (txt != null && (txt.text == "" || x < n) && n != 0)
 		{
 			n = x;
 			if (DoesConsumeMovement())
 			{
-				if (movesLeft == x)
-					txt.color = Color.green;
-				txt.text = $"{n}";
+				if (n > 0)
+				{
+					if (movesLeft == x)
+						txt.color = Color.green;
+					txt.text = $"{n}";
+				}
 				foreach (Node node in nextNodes)
 					if (node != null)
 						node.SetDistanceAway(x+1, movesLeft);

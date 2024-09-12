@@ -8,8 +8,15 @@ using Mirror;
 
 public class PlayerControls : NetworkBehaviour
 {
-	public static PlayerControls Instance;
+	[Header("HACKS")]
+	[SerializeField] private int controlledRoll=-1;
+	[SerializeField] private bool freeShop;
+
+	
+	[HideInInspector] public static PlayerControls Instance;
 	private Player player;
+	
+	[Space] [Header("Static")]
 	[SerializeField] private Node currNode;
 	[SerializeField] private Node nextNode;
 	[SerializeField] private float moveSpeed=2.5f;
@@ -107,9 +114,13 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private bool isAtShop;
 	[SerializeField] private bool isStop;
 	[SerializeField] private bool isUsingSpell;
+	[SerializeField] private bool inMap;
+	[SerializeField] private bool inSpellAnimation;
 	private bool isCurrencyAsync;
 
 	#endregion
+
+
 
 	[Space] [Header("Shop")]
 	[SerializeField] private Button[] shopItems;
@@ -118,22 +129,21 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private Sprite emptySpr;
 
 
+	#region Spell Vars
+
 	[Space] [Header("Spell")]
 	[SerializeField] private Item[] items;
 	[SerializeField] private GameObject spellCam;
 	[SerializeField] private float spellCamSpeed=0.5f;
+	[SerializeField] private GameObject fireballObj;
 
+	#endregion
 
 	[Space] [Header("Ragdoll")]
 	[SerializeField] private GameObject shoveObj;
 	[SerializeField] private GameObject ragdollObj;
 	[SerializeField] private Rigidbody[] ragdollRb;
 	[SerializeField] private float ragdollKb=15;
-
-
-	[Space] [Header("HACKS")]
-	[SerializeField] private int controlledRoll=-1;
-	[SerializeField] private bool freeShop;
 
 
 	#region Methods
@@ -283,6 +293,7 @@ public class PlayerControls : NetworkBehaviour
 		}
 
 		if (isStop) {}
+		else if (inMap) {}
 		else if (isAtFork) {}
 		else if (isAtStar) {}
 		else if (isAtShop) {}
@@ -458,7 +469,7 @@ public class PlayerControls : NetworkBehaviour
 	}
 	public void _ROLL_DICE()
 	{
-		if (isUsingSpell) return;
+		if (isUsingSpell || inMap) return;
 
 		if (currNode != null)
 		{
@@ -485,12 +496,17 @@ public class PlayerControls : NetworkBehaviour
 
 	public void _TOGGLE_MAP()
 	{
+		// deactive map
 		if (spellCam.activeSelf)
-			CmdShowNodeDistance(false, nextNode == null ? (ushort) 0 : nextNode.nodeId, 1, -1);
+		{
+			CmdShowNodeDistance(false, nextNode != null ? nextNode.nodeId : currNode.nodeId, nextNode != null ? 1 : 0, -1);
+			inMap = false;
+		}
 		else
 		{
 			spellCam.transform.localPosition = new Vector3(0,25,-10);
-			CmdShowNodeDistance(true, nextNode == null ? (ushort) 0 : nextNode.nodeId, 1, -1);
+			CmdShowNodeDistance(true, nextNode != null ? nextNode.nodeId : currNode.nodeId, nextNode != null ? 1 : 0, -1);
+			inMap = true;
 		}
 		
 		CmdToggleMapCam(!spellCam.activeSelf);
@@ -506,11 +522,16 @@ public class PlayerControls : NetworkBehaviour
 		isAtFork = true;
 		if (anim != null) anim.SetFloat("moveSpeed", 0);
 		HidePaths();
-		CmdShowNodeDistance(true, nextNode.nodeId, 0, movesLeft);
+		CmdShowNodeDistance(true, nextNode != null ? nextNode.nodeId : currNode.nodeId, 0, movesLeft);
 		spellCam.transform.localPosition = new Vector3(0,25,-10);
+		inMap = true;
 		CmdToggleMapCam(true);
-		for (int i=0 ; i<nextNode.nextNodes.Count ; i++)
-			RevealPaths(nextNode.nextNodes[i].transform.position, i);
+		if (nextNode != null)
+			for (int i=0 ; i<nextNode.nextNodes.Count ; i++)
+				RevealPaths(nextNode.nextNodes[i].transform.position, i);
+		else
+			for (int i=0 ; i<currNode.nextNodes.Count ; i++)
+				RevealPaths(currNode.nextNodes[i].transform.position, i);
 	}
 	[Command(requiresAuthority=false)] void CmdToggleMapCam(bool active) => RpcToggleMapCam(active);
 	[ClientRpc] void RpcToggleMapCam(bool active) => spellCam.SetActive(active);
@@ -639,11 +660,11 @@ public class PlayerControls : NetworkBehaviour
 
 	public void ChoosePath(int ind)
 	{
-		CmdShowNodeDistance(false, nextNode.nodeId, 0, movesLeft);
+		CmdShowNodeDistance(false, nextNode != null ? nextNode.nodeId : currNode.nodeId, 0, movesLeft);
 		nextNode = nextNode.nextNodes[ind];
 		HidePaths();
 		CmdToggleMapCam(false);
-		isAtFork = false;
+		inMap = isAtFork = false;
 	}
 
 	#endregion
