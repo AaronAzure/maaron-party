@@ -68,6 +68,8 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private GameObject canvas;
 	[SerializeField] private GameObject starUi;
 	[SerializeField] private GameObject shopUi;
+	[SerializeField] private GameObject spellUi;
+	[SerializeField] private GameObject baseUi;
 	
 	[Space] [SerializeField] private Transform dataUi;
 	[SerializeField] private Image dataImg;
@@ -111,12 +113,13 @@ public class PlayerControls : NetworkBehaviour
 
 	[Space] [Header("Shop")]
 	[SerializeField] private Button[] shopItems;
-	[SyncVar] [SerializeField] List<int> items = new();
+	[SyncVar] [SerializeField] List<int> itemInds = new();
 	[SerializeField] Image[] itemImgs;
 	[SerializeField] private Sprite emptySpr;
 
 
 	[Space] [Header("Spell")]
+	[SerializeField] private Item[] items;
 	[SerializeField] private GameObject spellCam;
 	[SerializeField] private float spellCamSpeed=0.5f;
 
@@ -192,7 +195,7 @@ public class PlayerControls : NetworkBehaviour
 		
 		CmdSetCoinText(coins);
 		CmdSetStarText(stars);
-		CmdReplaceItems(items);
+		CmdReplaceItems(itemInds);
 		CmdShowItems();
 	}
 
@@ -218,10 +221,7 @@ public class PlayerControls : NetworkBehaviour
 			: ind == 2 ? new Color(1,0.5f,0.8f) : Color.blue;
 	}
 
-	public void SetStartNode(Node startNode)
-	{
-		nextNode = startNode;
-	}
+	public void SetStartNode(Node startNode) => nextNode = startNode;
 
 	[Command(requiresAuthority=false)] private void CmdSetCoinText(int n) => RpcSetCoinText(n);
 	[ClientRpc] private void RpcSetCoinText(int n) => coinTxt.text = $"{n}";
@@ -376,21 +376,37 @@ public class PlayerControls : NetworkBehaviour
 		gm.SaveCurrNode(currNode.nodeId, id);
 		gm.CmdSaveCoins(coins, id);
 		gm.CmdSaveStars(stars, id);
-		gm.CmdSaveItems(items, id);
+		gm.CmdSaveItems(itemInds, id);
 	}
 	private void LoadData()
 	{
 		currNode = NodeManager.Instance.GetNode( gm.GetCurrNode(id) );
 		startPos = transform.position = currNode.transform.position;
+		transform.position = new Vector3(transform.position.x, 0, transform.position.z);
 		coinsT = coins = gm.GetCoins(id);
 		starsT = stars = gm.GetStars(id);
-		items = gm.GetItems(id);
+		itemInds = gm.GetItems(id);
 	}
 
 	#endregion
 
 
 	#region BUTTONS
+	public void _TOGGLE_SPELLS_UI()
+	{
+		// show base ui
+		if (spellUi.activeSelf)
+		{
+			spellUi.SetActive(false);
+			baseUi.SetActive(true);
+		}
+		// show spell ui
+		else
+		{
+			spellUi.SetActive(true);
+			baseUi.SetActive(false);
+		}
+	}
 	public void _PURCHASE_STAR(bool purchase)
 	{
 		if (purchase && coins >= 20)
@@ -479,6 +495,7 @@ public class PlayerControls : NetworkBehaviour
 		
 		CmdToggleMapCam(!spellCam.activeSelf);
 	}
+	
 	#endregion
 
 
@@ -636,9 +653,9 @@ public class PlayerControls : NetworkBehaviour
 	public void _BUY_ITEM(int itemId)
 	{
 		Debug.Log($"<color=cyan>BOUGHT ITEM {itemId}</color>");
-		if (items.Count < 3)
-			items.Add(itemId);
-		CmdReplaceItems(items);
+		if (itemInds.Count < 3)
+			itemInds.Add(itemId);
+		CmdReplaceItems(itemInds);
 		CmdShowItems();
 	}
 	[Command(requiresAuthority=false)] private void CmdShowItems() => RpcShowItems();
@@ -646,16 +663,29 @@ public class PlayerControls : NetworkBehaviour
 	{
 		for (int i = 0; i < itemImgs.Length; i++)
 		{
-			if (items.Count > i)
-				itemImgs[i].sprite = Item.instance.GetSprite( items[i] );
+			if (itemInds.Count > i)
+				itemImgs[i].sprite = Item.instance.GetSprite( itemInds[i] );
 			else
 				itemImgs[i].sprite = emptySpr;
+		}
+		for (int i = 0; i < items.Length; i++)
+		{
+			if (itemInds.Count > i)
+			{
+				items[i].ind = itemInds[i];
+				items[i].SetImage();
+			}
+			else
+			{
+				items[i].ind = -1;
+				items[i].SetImage();
+			}
 		}
 	}
 	[Command(requiresAuthority=false)] private void CmdReplaceItems(List<int> ints) => RpcReplaceItems(ints);
 	[ClientRpc(includeOwner=false)] private void RpcReplaceItems(List<int> ints)
 	{
-		items = ints;
+		itemInds = ints;
 	}
 	public void _USE_SPELL() => CmdUseSpell(!rangeObj.activeSelf);
 	[Command(requiresAuthority=false)] private void CmdUseSpell(bool active) => RpcUseSpell(active);

@@ -1,12 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Item : MonoBehaviour
 {
 	public static Item instance;
 	
 	public int ind;
+	[SerializeField] private Image img;
+	
+	[Space] [SerializeField] private PlayerControls p;
+	[SerializeField] private Sprite emptySpr;
 	[SerializeField] private Sprite spellThorn1;
 	[SerializeField] private Sprite spellThorn2;
 	[SerializeField] private Sprite spellThorn3;
@@ -38,5 +43,25 @@ public class Item : MonoBehaviour
 			8 => spellSpeed3,
 			_ => null,
 		};
+	}
+
+	public void SetImage()
+	{
+		if (img != null)
+			img.sprite = GetSprite(ind);
+	}
+
+	public void _USE_SPELL()
+	{
+		if (p != null) 
+		{
+			switch (ind)
+			{
+				case -1: break;
+				case 0: p._USE_SPELL(); break;
+				case 1: p._USE_SPELL(); break;
+				default: p._USE_SPELL(); break;
+			}
+		}
 	}
 }

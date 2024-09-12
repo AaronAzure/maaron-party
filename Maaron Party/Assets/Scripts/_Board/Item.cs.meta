@@ -3,7 +3,19 @@ guid: 20ac0ba3ae8f0d14b810231fb631e032
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - img: {instanceID: 0}
+  - p: {instanceID: 0}
+  - emptySpr: {fileID: 21300000, guid: bb946192ec4a9cd47813c89b169df76b, type: 3}
+  - spellThorn1: {instanceID: 0}
+  - spellThorn2: {instanceID: 0}
+  - spellThorn3: {instanceID: 0}
+  - spellFire1: {instanceID: 0}
+  - spellFire2: {instanceID: 0}
+  - spellFire3: {instanceID: 0}
+  - spellSpeed1: {instanceID: 0}
+  - spellSpeed2: {instanceID: 0}
+  - spellSpeed3: {instanceID: 0}
   executionOrder: -130
   icon: {instanceID: 0}
   userData: 
