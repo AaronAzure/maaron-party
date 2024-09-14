@@ -127,7 +127,7 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private GameObject spellCam;
 	[SerializeField] private float spellCamSpeed=0.5f;
 	[SerializeField] private GameObject fireSpell1;
-	[SerializeField] private GameObject dashSpell1;
+	[SerializeField] private ParticleSystem dashSpellPs1;
 
 	#endregion
 
@@ -751,7 +751,7 @@ public class PlayerControls : NetworkBehaviour
 	//Vector3 spellPos;
 	//Vector3 spellEndPos;
 	Coroutine spellCo;
-	public void UseDashSpell()
+	public void UseDashSpell(int dashMove)
 	{
 		isDashing = true;
 		ToggleSpellUi(false);
@@ -771,14 +771,20 @@ public class PlayerControls : NetworkBehaviour
 			}
 		}
 
-		movesLeft = 4;
+		movesLeft = dashMove;
 		CmdUpdateMovesLeft( movesLeft );
 
 		if (canvas != null)
 			canvas.SetActive(false);
 	}
 	[Command(requiresAuthority=false)] private void CmdToggleDashVfx(bool active) => RpcToggleDashVfx(active);
-	[ClientRpc] private void RpcToggleDashVfx(bool active) => dashSpell1.SetActive(active);
+	[ClientRpc] private void RpcToggleDashVfx(bool active)
+	{
+		if (active) 
+			dashSpellPs1.Play(true);
+		else
+			dashSpellPs1.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+	} 
 	
 	public void UseFireSpell(Transform target)
 	{
