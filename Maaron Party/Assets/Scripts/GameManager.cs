@@ -19,6 +19,7 @@ public class GameManager : NetworkBehaviour
 
 	[Space] [Header("In game references")]
 	[SerializeField] private List<ushort> currNodes;
+	[SyncVar] [SerializeField] private List<int> traps;
 	[SyncVar] [SerializeField] private List<int> coins;
 	[SyncVar] [SerializeField] private List<int> stars;
 	[SyncVar] [SerializeField] private List<List<int>> items;
@@ -45,6 +46,7 @@ public class GameManager : NetworkBehaviour
 	public void Start() 
 	{
 		currNodes = new();
+		traps = new();
 		coins = new();
 		stars = new();
 		items = new();
@@ -78,6 +80,20 @@ public class GameManager : NetworkBehaviour
 	public ushort GetCurrNode(int playerId)
 	{
 		return currNodes[playerId];
+	}
+
+	public void SaveTrap(int nodeId, int playerId)
+	{
+		if (traps == null)
+			traps = new();
+		//while (traps.Count <= playerId)
+		//	traps.Add(0);
+		if (!traps.Contains(nodeId))
+			traps.Add(nodeId);
+	}
+	public List<int> GetTraps()
+	{
+		return traps;
 	}
 
 	[Command(requiresAuthority=false)] public void CmdSaveCoins(int newCoin, int playerId)

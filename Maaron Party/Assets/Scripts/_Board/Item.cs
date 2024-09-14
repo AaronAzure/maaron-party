@@ -58,14 +58,14 @@ public class Item : MonoBehaviour
 			switch (ind)
 			{
 				case -1: break;
-				case 0: p._USE_SPELL(); break;
-				case 1: p._USE_SPELL(); break;
+				case 0: p._USE_SPELL(0); break;
+				case 1: p._USE_SPELL(1); break;
 
 				case 6: p.UseDashSpell(4); break;
 				case 7: p.UseDashSpell(8); break;
 				case 8: p.UseDashSpell(12); break;
 
-				default: p._USE_SPELL(); break;
+				default: p._USE_SPELL(-1); break;
 			}
 		}
 	}

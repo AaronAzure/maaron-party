@@ -12,9 +12,12 @@ public class Node : MonoBehaviour
 	enum NodeSpace { blue, red, green, star, shop }
 	[SerializeField] private NodeSpace nodeSpace;
 	[SerializeField] private GameObject targetObj;
+	[SerializeField] private GameObject thornObj;
+	[SerializeField] private Animator targetAnim;
 	[SerializeField] private TextMeshPro txt;
 	private bool canSpellTarget=true;
 	[HideInInspector] public int n=999;
+	private PlayerControls p { get { return PlayerControls.Instance; } }
 
 	private void OnDrawGizmosSelected() 
 	{
@@ -120,6 +123,11 @@ public class Node : MonoBehaviour
 	}
 	public void SetCanSpellTarget(bool canSpellTarget) => this.canSpellTarget = canSpellTarget;
 
+	public void ToggleThorn(bool active) 
+	{
+		thornObj.SetActive(active);
+	}
+
 	private void OnTriggerEnter(Collider other) 
 	{
 		if (other.CompareTag("Range") && canSpellTarget && DoesConsumeMovement())
@@ -140,15 +148,41 @@ public class Node : MonoBehaviour
 			if (Input.GetMouseButtonDown(0))
 			{
 				//Debug.Log("<color=#EFA01D>MOUSE CLICK</color>");
-				PlayerControls.Instance.UseFireSpell(transform);
+				switch (p._spellInd)
+				{
+					case 0: 
+						ToggleThorn(true);
+						PlayerControls.Instance.UseThornSpell(this);
+						break;
+					case 3:
+						PlayerControls.Instance.UseFireSpell(transform);
+						break;
+					case 4:
+						PlayerControls.Instance.UseFireSpell(transform);
+						break;
+					case 5:
+						PlayerControls.Instance.UseFireSpell(transform);
+						break;
+				}
 			}
 		}
 	}
 
-	//private void OnMouseExit() 
-	//{
-	//	if (targetObj.activeSelf)
-	//		//meshRenderer.material = normalMat;
-	//}
+	private void OnMouseEnter() 
+	{
+		if (targetObj.activeSelf)
+			targetAnim.enabled = true;
+	}
+
+	private void OnMouseExit() 
+	{
+		if (targetObj.activeSelf)
+		{
+			targetAnim.enabled = false;
+			targetObj.SetActive(false);
+			targetObj.SetActive(true);
+			//targetAnim.enabled = false;
+		}
+	}
 
 }

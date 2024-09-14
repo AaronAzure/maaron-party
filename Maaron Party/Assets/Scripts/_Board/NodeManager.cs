@@ -21,6 +21,9 @@ public class NodeManager : MonoBehaviour
 		{
 			nodes[i].nodeId = i;
 		}
+		List<int> traps = GameManager.Instance.GetTraps();
+		foreach (int trapId in traps)
+			nodes[trapId].ToggleThorn(true);
 	}
 
 	public Node GetNode(ushort ind)

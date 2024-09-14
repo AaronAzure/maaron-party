@@ -128,6 +128,7 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private float spellCamSpeed=0.5f;
 	[SerializeField] private GameObject fireSpell1;
 	[SerializeField] private ParticleSystem dashSpellPs1;
+	public int _spellInd {get; private set;} 
 
 	#endregion
 
@@ -725,7 +726,11 @@ public class PlayerControls : NetworkBehaviour
 	{
 		itemInds = ints;
 	}
-	public void _USE_SPELL() => CmdUseSpell(!rangeObj.activeSelf);
+	public void _USE_SPELL(int ind) 
+	{
+		_spellInd = ind;
+		CmdUseSpell(!rangeObj.activeSelf);
+	}
 	[Command(requiresAuthority=false)] private void CmdUseSpell(bool active) => RpcUseSpell(active);
 	[ClientRpc] private void RpcUseSpell(bool active)
 	{
@@ -786,43 +791,64 @@ public class PlayerControls : NetworkBehaviour
 			dashSpellPs1.Stop(true, ParticleSystemStopBehavior.StopEmitting);
 	} 
 	
-	public void UseFireSpell(Transform target)
+	public void UseThornSpell(Node target)
 	{
-		//spellPos = fireballObj.transform.position;
-		//spellEndPos = target.position;
-		//spellTime = 0;
 		ToggleSpellUi(false);
-		//fireballObj.SetActive(true);
 		usingFireSpell1 = true;
 		if (spellCo == null)
-			spellCo = StartCoroutine( SpellCo(target) );
+			spellCo = StartCoroutine( ThornCo(target) );
 	}
-	void FireSpell(Transform target)
+	IEnumerator ThornCo(Node target)
 	{
-		//if (spellTime < 1)
-		//{
-		//	spellTime += Time.fixedDeltaTime;
-		//	fireballObj.transform.position = Vector3.Lerp(spellPos, spellEndPos, Mathf.SmoothStep(0,1,spellTime)) + Vector3.up;
-		//	if (spellTime >= 1)
-		//		usingFireSpell1 = false;
-		//}
+		nodeCam.m_Follow = target.transform;
+		CmdSaveTrap(target.nodeId);
+		CmdToggleNodeCam(true);
+
+		yield return new WaitForSeconds(1f);
+		//CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera.VirtualCameraGameObject.name;
+		Debug.Log($"{CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera.VirtualCameraGameObject.name}");
+		
+		yield return new WaitForSeconds(1.5f);
+		CmdToggleNodeCam(false);
+		spellCo = null;
+	}
+	[Command(requiresAuthority=false)] private void CmdSaveTrap(int nodeId) => gm.SaveTrap(nodeId, id);
+	public void UseFireSpell(Transform target)
+	{
+		ToggleSpellUi(false);
+		usingFireSpell1 = true;
 		if (spellCo == null)
 			spellCo = StartCoroutine( SpellCo(target) );
 	}
 	IEnumerator SpellCo(Transform target)
 	{
 		//yield return new WaitForSeconds(0.5f);
-		nodeCam.gameObject.SetActive(true);
 		nodeCam.m_Follow = target;
+		CmdToggleNodeCam(true);
+		//nodeCam.gameObject.SetActive(true);
 
 		yield return new WaitForSeconds(1f);
-		fireSpell1.transform.position = target.transform.position;
+		CmdFireSpell1(target.transform.position);
+		//fireSpell1.transform.position = target.transform.position;
+		//fireSpell1.SetActive(false);
+		//fireSpell1.SetActive(true);
+
+		yield return new WaitForSeconds(1f);
+		//CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera.VirtualCameraGameObject.name;
+		Debug.Log($"{CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera.VirtualCameraGameObject.name}");
+		
+		yield return new WaitForSeconds(1.5f);
+		CmdToggleNodeCam(false);
+		spellCo = null;
+	}
+	[Command(requiresAuthority=false)] private void CmdToggleNodeCam(bool active) => RpcToggleNodeCam(active);
+	[ClientRpc] private void RpcToggleNodeCam(bool active) => nodeCam.gameObject.SetActive(active);
+	[Command(requiresAuthority=false)] private void CmdFireSpell1(Vector3 target) => RpcFireSpell1(target);
+	[ClientRpc] private void RpcFireSpell1(Vector3 target)
+	{
+		fireSpell1.transform.position = target;
 		fireSpell1.SetActive(false);
 		fireSpell1.SetActive(true);
-
-		yield return new WaitForSeconds(2.5f);
-		nodeCam.gameObject.SetActive(false);
-		spellCo = null;
 	}
 
 	#endregion
