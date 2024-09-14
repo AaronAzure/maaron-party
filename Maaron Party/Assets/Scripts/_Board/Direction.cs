@@ -16,7 +16,6 @@ public class Direction : MonoBehaviour
 		if (Input.GetMouseButtonDown(0))
 		{
 			p.ChoosePath(index);
-			//Debug.Log($"CLICKED {this.name}");
 		}
 	}
 

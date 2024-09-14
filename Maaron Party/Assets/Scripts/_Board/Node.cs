@@ -119,15 +119,36 @@ public class Node : MonoBehaviour
 		}
 	}
 	public void SetCanSpellTarget(bool canSpellTarget) => this.canSpellTarget = canSpellTarget;
+
 	private void OnTriggerEnter(Collider other) 
 	{
-		if (other.CompareTag("Range") && canSpellTarget)
+		if (other.CompareTag("Range") && canSpellTarget && DoesConsumeMovement())
 			targetObj.SetActive(true);
 	}
-
 	private void OnTriggerExit(Collider other) 
 	{
 		if (other.CompareTag("Range"))		
 			targetObj.SetActive(false);
 	}
+
+
+	private void OnMouseOver() 
+	{
+		if (targetObj.activeSelf)
+		{
+			//Debug.Log("<color=white>Mouse over</color>");
+			if (Input.GetMouseButtonDown(0))
+			{
+				//Debug.Log("<color=#EFA01D>MOUSE CLICK</color>");
+				PlayerControls.Instance.UseFireSpell(transform);
+			}
+		}
+	}
+
+	//private void OnMouseExit() 
+	//{
+	//	if (targetObj.activeSelf)
+	//		//meshRenderer.material = normalMat;
+	//}
+
 }

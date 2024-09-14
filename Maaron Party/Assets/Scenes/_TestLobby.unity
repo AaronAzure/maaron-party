@@ -366,6 +366,7 @@ MonoBehaviour:
   startBtn: {fileID: 1516030785}
   anim: {fileID: 0}
   fixedGame: -1
+  skipSideQuests: 1
   minPlayers: 2
   lobbyScene: Assets/Scenes/_TestLobby.unity
   boardScene: Assets/Scenes/TestBoard.unity

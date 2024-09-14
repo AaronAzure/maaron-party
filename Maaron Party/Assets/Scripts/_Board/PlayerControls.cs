@@ -5,11 +5,12 @@ using Rewired;
 using UnityEngine;
 using UnityEngine.UI;
 using Mirror;
+using Cinemachine;
 
 public class PlayerControls : NetworkBehaviour
 {
 	[Header("HACKS")]
-	[SerializeField] private int controlledRoll=-1;
+	[SerializeField] [Range(-1,20)] private int controlledRoll=-1;
 	[SerializeField] private bool freeShop;
 
 	
@@ -38,6 +39,7 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private Animator anim;
 	[SerializeField] private Transform vCam;
 	[SerializeField] private GameObject starCam;
+	[SerializeField] private CinemachineVirtualCamera nodeCam;
 	[SerializeField] private GameObject rangeObj;
 	[SerializeField] private Animator rangeAnim;
 
@@ -71,38 +73,25 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private float currencySpeedT=1;
 
 
+	#region UI
+
 	[Space] [Header("UI")]
 	[SerializeField] private GameObject canvas;
 	[SerializeField] private GameObject starUi;
 	[SerializeField] private GameObject shopUi;
 	[SerializeField] private GameObject spellUi;
+	[SerializeField] private GameObject backToBaseUi;
 	[SerializeField] private GameObject baseUi;
+
+	#endregion
 	
 	[Space] [SerializeField] private Transform dataUi;
 	[SerializeField] private Image dataImg;
 	[SerializeField] private TextMeshProUGUI coinTxt;
 	[SerializeField] private TextMeshProUGUI starTxt;
-	private BoardManager bm
-	{
-		get 
-		{
-			return BoardManager.Instance;
-		}
-	}
-	private GameNetworkManager nm
-	{
-		get 
-		{
-			return GameNetworkManager.Instance;
-		}
-	}
-	private GameManager gm
-	{
-		get 
-		{
-			return GameManager.Instance;
-		}
-	}
+	private BoardManager bm { get { return BoardManager.Instance; } }
+	private GameNetworkManager nm { get { return GameNetworkManager.Instance; } }
+	private GameManager gm { get { return GameManager.Instance; } }
 
 
 	#region States
@@ -115,7 +104,9 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private bool isStop;
 	[SerializeField] private bool isUsingSpell;
 	[SerializeField] private bool inMap;
+	[SerializeField] private bool isDashing;
 	[SerializeField] private bool inSpellAnimation;
+	bool usingFireSpell1;
 	private bool isCurrencyAsync;
 
 	#endregion
@@ -135,7 +126,8 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private Item[] items;
 	[SerializeField] private GameObject spellCam;
 	[SerializeField] private float spellCamSpeed=0.5f;
-	[SerializeField] private GameObject fireballObj;
+	[SerializeField] private GameObject fireSpell1;
+	[SerializeField] private GameObject dashSpell1;
 
 	#endregion
 
@@ -146,7 +138,7 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private float ragdollKb=15;
 
 
-	#region Methods
+	#region __Methods__
 
 	private void Awake() 
 	{
@@ -292,6 +284,8 @@ public class PlayerControls : NetworkBehaviour
 			spellCam.transform.position += new Vector3(moveX, 0, moveZ) * spellCamSpeed;
 		}
 
+		//if (usingFireSpell1) FireSpell();
+
 		if (isStop) {}
 		else if (inMap) {}
 		else if (isAtFork) {}
@@ -324,12 +318,26 @@ public class PlayerControls : NetworkBehaviour
 
 				movesLeft--;
 				CmdUpdateMovesLeft(movesLeft);
+
+				// end at space
 				if (movesLeft <= 0)
 				{
 					currNode = nextNode; 
 					movesLeftTxt.text = "";
 					if (anim != null) anim.SetFloat("moveSpeed", 0);
-					StartCoroutine( NodeEffectCo() );
+					if (!isDashing)
+						StartCoroutine( NodeEffectCo() );
+					// used dash spell
+					else
+					{
+						startPos = transform.position;
+						if (canvas != null)
+							canvas.SetActive(true);
+						CmdToggleDashVfx(false);
+						isDashing = false;
+						if (nextNode.nextNodes.Count == 1)
+							nextNode = nextNode.nextNodes[0];
+					}
 				}
 				else
 				{
@@ -366,7 +374,7 @@ public class PlayerControls : NetworkBehaviour
 		if (canvas != null)
 			canvas.SetActive(true);
 		this.enabled = true;
-		CmdShoveToggle(true);
+		//CmdShoveToggle(true);
 	}
 	public void EndTurn()
 	{
@@ -380,8 +388,8 @@ public class PlayerControls : NetworkBehaviour
 		//!Debug.Log($"<color=yellow>TURN ENDED</color>");
 	}
 
-	#region Saving data
 
+	#region Saving data
 	private void SaveData()
 	{
 		gm.SaveCurrNode(currNode.nodeId, id);
@@ -403,6 +411,14 @@ public class PlayerControls : NetworkBehaviour
 
 
 	#region BUTTONS
+	public void _BACK_TO_BASE_UI()
+	{
+		// show base ui
+		CmdUseSpell(false);
+		backToBaseUi.SetActive(false);
+		spellUi.SetActive(false);
+		baseUi.SetActive(true);
+	}
 	public void _TOGGLE_SPELLS_UI()
 	{
 		// show base ui
@@ -414,6 +430,7 @@ public class PlayerControls : NetworkBehaviour
 		// show spell ui
 		else
 		{
+			ToggleSpellUi(true);
 			spellUi.SetActive(true);
 			baseUi.SetActive(false);
 		}
@@ -712,13 +729,94 @@ public class PlayerControls : NetworkBehaviour
 	[Command(requiresAuthority=false)] private void CmdUseSpell(bool active) => RpcUseSpell(active);
 	[ClientRpc] private void RpcUseSpell(bool active)
 	{
-		if (currNode != null) currNode.SetCanSpellTarget(!active);
+		if (isOwned && currNode != null) currNode.SetCanSpellTarget(false);
 
 		if (active)
 			spellCam.transform.localPosition = new Vector3(0,25,-10);
 		spellCam.SetActive(active);
-		isUsingSpell = active;
 	 	rangeAnim.SetTrigger(active ? "on" : "off");
+		if (isOwned)
+		{
+			isUsingSpell = active;
+			backToBaseUi.SetActive(active);
+			ToggleSpellUi(false);
+		}
+	}
+	void ToggleSpellUi(bool active)
+	{
+		spellUi.SetActive(active);
+	}
+
+	//float spellTime;
+	//Vector3 spellPos;
+	//Vector3 spellEndPos;
+	Coroutine spellCo;
+	public void UseDashSpell()
+	{
+		isDashing = true;
+		ToggleSpellUi(false);
+		CmdToggleDashVfx(true);
+
+		if (currNode != null)
+		{
+			if (currNode.nextNodes.Count > 1)
+			{
+				StuckAtFork();
+				nextNode = currNode;
+			}
+			else
+			{
+				isAtFork = false;
+				nextNode = currNode.nextNodes[0];
+			}
+		}
+
+		movesLeft = 4;
+		CmdUpdateMovesLeft( movesLeft );
+
+		if (canvas != null)
+			canvas.SetActive(false);
+	}
+	[Command(requiresAuthority=false)] private void CmdToggleDashVfx(bool active) => RpcToggleDashVfx(active);
+	[ClientRpc] private void RpcToggleDashVfx(bool active) => dashSpell1.SetActive(active);
+	
+	public void UseFireSpell(Transform target)
+	{
+		//spellPos = fireballObj.transform.position;
+		//spellEndPos = target.position;
+		//spellTime = 0;
+		ToggleSpellUi(false);
+		//fireballObj.SetActive(true);
+		usingFireSpell1 = true;
+		if (spellCo == null)
+			spellCo = StartCoroutine( SpellCo(target) );
+	}
+	void FireSpell(Transform target)
+	{
+		//if (spellTime < 1)
+		//{
+		//	spellTime += Time.fixedDeltaTime;
+		//	fireballObj.transform.position = Vector3.Lerp(spellPos, spellEndPos, Mathf.SmoothStep(0,1,spellTime)) + Vector3.up;
+		//	if (spellTime >= 1)
+		//		usingFireSpell1 = false;
+		//}
+		if (spellCo == null)
+			spellCo = StartCoroutine( SpellCo(target) );
+	}
+	IEnumerator SpellCo(Transform target)
+	{
+		//yield return new WaitForSeconds(0.5f);
+		nodeCam.gameObject.SetActive(true);
+		nodeCam.m_Follow = target;
+
+		yield return new WaitForSeconds(1f);
+		fireSpell1.transform.position = target.transform.position;
+		fireSpell1.SetActive(false);
+		fireSpell1.SetActive(true);
+
+		yield return new WaitForSeconds(2.5f);
+		nodeCam.gameObject.SetActive(false);
+		spellCo = null;
 	}
 
 	#endregion

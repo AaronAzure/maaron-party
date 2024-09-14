@@ -40,6 +40,7 @@ public class GameNetworkManager : NetworkManager
 	[SerializeField] private List<NetworkConnectionToClient> conns = new();
 	//bool isInTransition;
 	[Space] [SerializeField] private int fixedGame=-1;
+	[SerializeField] private bool skipSideQuests;
 
 
 	[Space] [Header("Scenes")]
@@ -169,6 +170,21 @@ public class GameNetworkManager : NetworkManager
 			}
 			lobbyPlayers.Clear();
 		}
+		// transitioning from board to board
+		else if (SceneManager.GetActiveScene().name.Contains("Board") && newSceneName.Contains("Board"))
+		{
+			Debug.Log($"<color=yellow>RELOADING</color>");
+			for (int i = 0; i < boardControls.Count; i++)
+			{
+				var conn = boardControls[i].connectionToClient;
+				PlayerControls player = Instantiate(boardPlayerPrefab);
+				player.characterInd = boardControls[i].characterInd;
+				player.id = i;
+
+				NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
+			}
+			boardControls.Clear();
+		}
 		// transitioning from board to minigame
 		else if (SceneManager.GetActiveScene().name.Contains("Board"))
 		{
@@ -260,7 +276,16 @@ public class GameNetworkManager : NetworkManager
 		nPlayerOrder = 0;
 		//nTurn++;
 		gm.IncreaseTurnNum();
-		ServerChangeScene(minigameScenes[fixedGame == -1 ? nMinigame++ % minigameScenes.Length : fixedGame]);
+		if (skipSideQuests)
+		{
+			yield return new WaitForSeconds(0.5f);
+			ServerChangeScene("TestBoard");
+		}
+		else
+		{
+			yield return new WaitForSeconds(0.5f);
+			ServerChangeScene(minigameScenes[fixedGame == -1 ? nMinigame++ % minigameScenes.Length : fixedGame]);
+		}
 		
 		//while (NetworkServer.isLoadingScene)
 		//	yield return null;
