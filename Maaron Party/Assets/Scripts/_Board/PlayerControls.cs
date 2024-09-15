@@ -307,7 +307,7 @@ public class PlayerControls : NetworkBehaviour
 
 				transform.position = Vector3.Lerp(startPos, nextNode.transform.position, Mathf.SmoothStep(0,1,time));
 				if (time < 1)
-					time += Time.fixedDeltaTime * moveSpeed;
+					time += Time.fixedDeltaTime * moveSpeed * (isDashing ? 2 : 1);
 			}
 			else
 			{
@@ -420,7 +420,7 @@ public class PlayerControls : NetworkBehaviour
 	public void _BACK_TO_BASE_UI()
 	{
 		// show base ui
-		CmdUseSpell(false);
+		CmdUseSpell(false, currNode != null ? currNode.nodeId : -1);
 		backToBaseUi.SetActive(false);
 		spellUi.SetActive(false);
 		baseUi.SetActive(true);
@@ -736,12 +736,15 @@ public class PlayerControls : NetworkBehaviour
 	public void _USE_SPELL(int ind) 
 	{
 		_spellInd = ind;
-		CmdUseSpell(!rangeObj.activeSelf);
+		CmdUseSpell(!rangeObj.activeSelf, currNode != null ? currNode.nodeId : -1);
 	}
-	[Command(requiresAuthority=false)] private void CmdUseSpell(bool active) => RpcUseSpell(active);
-	[ClientRpc] private void RpcUseSpell(bool active)
+	[Command(requiresAuthority=false)] private void CmdUseSpell(bool active, int nodeId) => RpcUseSpell(active, nodeId);
+	[ClientRpc] private void RpcUseSpell(bool active, int nodeId)
 	{
-		if (isOwned && currNode != null) currNode.SetCanSpellTarget(false);
+		if (!active && nodeId != -1)
+			NodeManager.Instance.GetNode(nodeId).SetCanSpellTargetDelay(true);
+		else if (active && nodeId != -1) 
+			NodeManager.Instance.GetNode(nodeId).SetCanSpellTarget(false);
 
 		if (active)
 			spellCam.transform.localPosition = new Vector3(0,25,-10);

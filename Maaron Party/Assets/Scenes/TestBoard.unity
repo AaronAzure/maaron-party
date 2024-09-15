@@ -137,7 +137,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -315,7 +315,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -422,8 +422,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &25134368
@@ -564,8 +565,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &25742227
@@ -653,7 +655,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1030,8 +1032,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &104765877
@@ -1212,7 +1215,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1296,7 +1299,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1418,8 +1421,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 4
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &127639539
@@ -1909,8 +1913,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &147895506
@@ -2021,8 +2026,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &149691855
@@ -2227,8 +2233,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &158209112
@@ -2339,8 +2346,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &160978710
@@ -2638,7 +2646,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2722,7 +2730,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2830,8 +2838,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 2
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &180651361
@@ -2934,7 +2943,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -3110,7 +3119,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -3391,8 +3400,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &231745096
@@ -3518,8 +3528,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &236108454
@@ -3809,7 +3820,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -3932,8 +3943,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &260355020
@@ -4115,7 +4127,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -4386,7 +4398,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -4498,8 +4510,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &286477830
@@ -4699,7 +4712,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -5082,7 +5095,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -5247,7 +5260,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -5331,7 +5344,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -5415,7 +5428,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -5522,8 +5535,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &363018439
@@ -5649,8 +5663,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &386447133
@@ -5870,8 +5885,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &404549802
@@ -5974,7 +5990,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -6152,7 +6168,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -6259,8 +6275,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &417821891
@@ -6363,7 +6380,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -6447,7 +6464,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -11478,8 +11495,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &443942503
@@ -11690,8 +11708,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &461225751
@@ -11989,7 +12008,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -12096,8 +12115,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &473096500
@@ -12223,8 +12243,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &476096658
@@ -12327,7 +12348,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -12528,8 +12549,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &499749283
@@ -12655,8 +12677,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 1
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &501606877
@@ -12963,7 +12986,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -13070,8 +13093,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &553855010
@@ -13273,7 +13297,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -13357,7 +13381,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -13546,7 +13570,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -16463,8 +16487,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &623470072
@@ -16660,7 +16685,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -16744,7 +16769,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -17028,8 +17053,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 2
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &669076894
@@ -17132,7 +17158,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -17436,8 +17462,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &701117665
@@ -22600,7 +22627,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -22707,8 +22734,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &714813972
@@ -22811,7 +22839,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -22895,7 +22923,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -23189,8 +23217,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &745504827
@@ -23387,7 +23416,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -23471,7 +23500,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -23656,7 +23685,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -23855,8 +23884,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &783424067
@@ -24068,7 +24098,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -24152,7 +24182,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -24303,7 +24333,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -24410,8 +24440,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &817165365
@@ -24514,7 +24545,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -24692,7 +24723,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -24818,8 +24849,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 2
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &839697553
@@ -24907,7 +24939,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -24991,7 +25023,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -25098,8 +25130,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &880056177
@@ -25202,7 +25235,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -25286,7 +25319,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -25393,8 +25426,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &908376540
@@ -25614,8 +25648,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &920488449
@@ -25741,8 +25776,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &944015832
@@ -26057,7 +26093,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -26141,7 +26177,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -26676,7 +26712,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -26760,7 +26796,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -26844,7 +26880,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -27022,7 +27058,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -27560,7 +27596,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -27644,7 +27680,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -27728,7 +27764,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -27913,7 +27949,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -28093,7 +28129,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -28177,7 +28213,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -28261,7 +28297,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -28465,8 +28501,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1116166988
@@ -28757,7 +28794,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -28841,7 +28878,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -28948,8 +28985,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 2
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1165589639
@@ -29153,7 +29191,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -29331,7 +29369,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -29442,8 +29480,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1190486869
@@ -29759,8 +29798,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 2
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1205610124
@@ -29887,8 +29927,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1205820944
@@ -29999,8 +30040,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 2
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1206948966
@@ -30394,8 +30436,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1233478655
@@ -30498,7 +30541,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -30621,8 +30664,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1243938125
@@ -30905,8 +30949,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 2
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1268672716
@@ -31009,7 +31054,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -31231,7 +31276,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -31409,7 +31454,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -31609,8 +31654,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1321710709
@@ -31736,8 +31782,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 1
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1324328555
@@ -31972,8 +32019,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 2
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1386118996
@@ -32084,8 +32132,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1389163349
@@ -32211,8 +32260,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1396887184
@@ -32353,8 +32403,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1408222560
@@ -32535,7 +32586,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -32713,7 +32764,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -32835,8 +32886,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1428578453
@@ -32962,8 +33014,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1430246305
@@ -33051,7 +33104,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -33135,7 +33188,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -33257,8 +33310,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 2
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1493442143
@@ -33440,7 +33494,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -33524,7 +33578,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -33608,7 +33662,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -33692,7 +33746,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -33776,7 +33830,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -34049,8 +34103,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 2
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1549695598
@@ -34286,8 +34341,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1579293316
@@ -34413,8 +34469,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1590236450
@@ -34517,7 +34574,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -34624,8 +34681,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 1
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1605083312
@@ -34751,8 +34809,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1616208866
@@ -34878,8 +34937,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1624387318
@@ -35020,8 +35080,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1632119174
@@ -35186,7 +35247,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -35293,8 +35354,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 2
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1680083953
@@ -35397,7 +35459,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -35582,8 +35644,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 2
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1704378587
@@ -35709,8 +35772,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 2
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1723436787
@@ -35851,8 +35915,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 3
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1724494030
@@ -35940,7 +36005,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -36062,8 +36127,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1741425094
@@ -36151,7 +36217,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -36332,7 +36398,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -36440,8 +36506,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1759743651
@@ -36544,7 +36611,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -36651,8 +36718,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1789614076
@@ -36755,7 +36823,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -36956,8 +37024,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1799432916
@@ -37060,7 +37129,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -37144,7 +37213,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -37441,8 +37510,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1888288871
@@ -37921,8 +37991,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1902877821
@@ -38025,7 +38096,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -38132,8 +38203,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1908215912
@@ -38236,7 +38308,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -38581,8 +38653,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1936129282
@@ -38685,7 +38758,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -38949,8 +39022,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 2
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &1967129580
@@ -39053,7 +39127,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -44235,8 +44309,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &2031395632
@@ -44442,8 +44517,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &2044243858
@@ -44640,7 +44716,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -44841,8 +44917,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &2064952097
@@ -45038,7 +45115,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -45145,8 +45222,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 1
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &2084789255
@@ -45272,8 +45350,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &2113554574
@@ -45602,8 +45681,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &2117009389
@@ -45691,7 +45771,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -45813,8 +45893,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 0
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &2131703822
@@ -45956,8 +46037,9 @@ MonoBehaviour:
   nodeId: 0
   nodeSpace: 2
   targetObj: {fileID: 0}
-  thornObj: {fileID: 0}
   targetAnim: {fileID: 0}
+  thornObj: {fileID: 0}
+  thornExplosionObj: {fileID: 0}
   txt: {fileID: 0}
   n: 999
 --- !u!65 &2146978391
@@ -46142,7 +46224,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 174366177469866870, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: m_LocalPosition.z

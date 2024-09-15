@@ -23,6 +23,7 @@ public class Node : MonoBehaviour
 	private PlayerControls p { get { return PlayerControls.Instance; } }
 	List<PlayerControls> players;
 
+
 	private void OnDrawGizmosSelected() 
 	{
 		Gizmos.color = Color.magenta;
@@ -174,7 +175,24 @@ public class Node : MonoBehaviour
 						node.SetDistanceAway(x, movesLeft);
 		}
 	}
+
+	
+	Coroutine canTargetCo;
 	public void SetCanSpellTarget(bool canSpellTarget) => this.canSpellTarget = canSpellTarget;
+	public void SetCanSpellTargetDelay(bool canSpellTarget)
+	{
+		if (canTargetCo != null)
+			StopCoroutine(canTargetCo);
+		canTargetCo = StartCoroutine( SetCanSpellTargetCo(canSpellTarget) );
+	} 
+	IEnumerator SetCanSpellTargetCo(bool canSpellTarget)
+	{
+		yield return new WaitForSeconds(0.75f);
+		this.canSpellTarget = canSpellTarget;
+		canTargetCo = null;
+	} 
+
+	
 
 	public void ToggleThorn(bool active) 
 	{
