@@ -12,12 +12,16 @@ public class Node : MonoBehaviour
 	enum NodeSpace { blue, red, green, star, shop }
 	[SerializeField] private NodeSpace nodeSpace;
 	[SerializeField] private GameObject targetObj;
-	[SerializeField] private GameObject thornObj;
 	[SerializeField] private Animator targetAnim;
-	[SerializeField] private TextMeshPro txt;
+	
+	[Space] [SerializeField] private GameObject thornObj;
+	[SerializeField] private GameObject thornExplosionObj;
+	
+	[Space] [SerializeField] private TextMeshPro txt;
 	private bool canSpellTarget=true;
 	[HideInInspector] public int n=999;
 	private PlayerControls p { get { return PlayerControls.Instance; } }
+	List<PlayerControls> players;
 
 	private void OnDrawGizmosSelected() 
 	{
@@ -51,12 +55,51 @@ public class Node : MonoBehaviour
 		}
 	}
 
+	public void AddPlayer(PlayerControls p)
+	{
+		if (players == null)
+			players = new();
+		players.Add(p);
+	}
+	public void RemovePlayer(PlayerControls p)
+	{
+		if (players != null && players.Contains(p))
+		{
+			players.Remove(p);
+		}
+	}
+	//public void RagdollPlayers()
+	//{
+	//	foreach (PlayerControls player in players)
+	//	{
+	//		if (player != null)
+	//		{
+	//			player.CmdPlayerToggle(false);
+	//			player.CmdRagdollToggle(true);
+	//		}
+	//	}
+	//}
+	public void HitPlayers(int penalty)
+	{
+		if (players != null && players.Contains(p))
+		{
+			p.CmdPlayerToggle(false);
+			p.CmdRagdollToggle(true);
+			p.NodeEffect(penalty);
+		}
+	}
+
 	/// <summary>
 	/// Returns true if no event, else false
 	/// </summary>
 	/// <returns></returns>
 	public bool GetNodeLandEffect(PlayerControls p)
 	{
+		if (thornObj.activeSelf)
+		{
+			TriggerTrap();
+			return false;
+		}
 		switch (nodeSpace)
 		{
 			case NodeSpace.blue: 
@@ -71,7 +114,17 @@ public class Node : MonoBehaviour
 		}
 		return true;
 	}
-
+	public void TriggerTrap() => StartCoroutine(TriggerTrapCo());
+	IEnumerator TriggerTrapCo()
+	{
+		yield return new WaitForSeconds(0.75f);
+		thornExplosionObj.SetActive(false);
+		thornExplosionObj.SetActive(true);
+		p.CmdPlayerToggle(false);
+		p.CmdRagdollToggle(true);
+		p.NodeEffect(-10);
+	}
+	
 	/// <summary>
 	/// Returns true if movement decreases when reached, else false (e.g. shop, star)
 	/// </summary>
@@ -154,14 +207,22 @@ public class Node : MonoBehaviour
 						ToggleThorn(true);
 						PlayerControls.Instance.UseThornSpell(this);
 						break;
+					case 1: 
+						ToggleThorn(true);
+						PlayerControls.Instance.UseThornSpell(this);
+						break;
+					case 2: 
+						ToggleThorn(true);
+						PlayerControls.Instance.UseThornSpell(this);
+						break;
 					case 3:
-						PlayerControls.Instance.UseFireSpell(transform);
+						PlayerControls.Instance.UseFireSpell(this);
 						break;
 					case 4:
-						PlayerControls.Instance.UseFireSpell(transform);
+						PlayerControls.Instance.UseFireSpell(this);
 						break;
 					case 5:
-						PlayerControls.Instance.UseFireSpell(transform);
+						PlayerControls.Instance.UseFireSpell(this);
 						break;
 				}
 			}

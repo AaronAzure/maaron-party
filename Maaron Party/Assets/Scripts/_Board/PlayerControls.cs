@@ -62,6 +62,12 @@ public class PlayerControls : NetworkBehaviour
 	[Space] [SerializeField] private int movesLeft;
 	[SerializeField] private TextMeshPro movesLeftTxt;
 
+
+	[Space] [Header("Ragdoll")]
+	[SerializeField] private GameObject shoveObj;
+	[SerializeField] private GameObject[] ragdollObj;
+	[SerializeField] private Rigidbody[] ragdollRb;
+	[SerializeField] private float ragdollKb=15;
 	
 	
 	[Space] [Header("Stats")]
@@ -132,12 +138,6 @@ public class PlayerControls : NetworkBehaviour
 
 	#endregion
 
-	[Space] [Header("Ragdoll")]
-	[SerializeField] private GameObject shoveObj;
-	[SerializeField] private GameObject ragdollObj;
-	[SerializeField] private Rigidbody[] ragdollRb;
-	[SerializeField] private float ragdollKb=15;
-
 
 	#region __Methods__
 
@@ -173,6 +173,7 @@ public class PlayerControls : NetworkBehaviour
 			vCam.parent = null;
 		
 		CmdSetModel(characterInd);
+		model.rotation = Quaternion.LookRotation(Vector3.back);
 		if (gm.nTurn == 1)
 		{
 			transform.position = BoardManager.Instance.GetSpawnPos().position + new Vector3(-4 + 2*id,0,0);
@@ -188,6 +189,7 @@ public class PlayerControls : NetworkBehaviour
 		if (gm.nTurn > 1)
 		{
 			LoadData();
+			
 		}
 		// 第一名 
 		else
@@ -297,7 +299,7 @@ public class PlayerControls : NetworkBehaviour
 		{
 			if (transform.position != nextNode.transform.position)
 			{
-				var lookPos = nextNode.transform.position + - transform.position;
+				var lookPos = nextNode.transform.position - transform.position;
 				if (anim != null) anim.SetFloat("moveSpeed", moveSpeed);
 				lookPos.y = 0;
 				var rotation = Quaternion.LookRotation(lookPos);
@@ -324,6 +326,8 @@ public class PlayerControls : NetworkBehaviour
 				if (movesLeft <= 0)
 				{
 					currNode = nextNode; 
+					if (currNode != null)
+						currNode.AddPlayer(this);
 					movesLeftTxt.text = "";
 					if (anim != null) anim.SetFloat("moveSpeed", 0);
 					if (!isDashing)
@@ -401,6 +405,7 @@ public class PlayerControls : NetworkBehaviour
 	private void LoadData()
 	{
 		currNode = NodeManager.Instance.GetNode( gm.GetCurrNode(id) );
+		currNode.AddPlayer(this);
 		startPos = transform.position = currNode.transform.position;
 		transform.position = new Vector3(transform.position.x, 0, transform.position.z);
 		coinsT = coins = gm.GetCoins(id);
@@ -506,6 +511,8 @@ public class PlayerControls : NetworkBehaviour
 		int rng = controlledRoll != -1 ? controlledRoll : Random.Range(1, 11);
 		Debug.Log($"<color=magenta>ROLLED {rng}</color>");
 		movesLeft = rng;
+		if (currNode != null)
+			currNode.RemovePlayer(this);
 		CmdUpdateMovesLeft( movesLeft );
 
 		if (canvas != null)
@@ -598,7 +605,7 @@ public class PlayerControls : NetworkBehaviour
 		if (currNode.GetNodeLandEffect(this))
 			yield return new WaitForSeconds(0.5f);
 		else 
-			yield return new WaitForSeconds(0.5f);
+			yield return new WaitForSeconds(2f);
 
 		while (isCurrencyAsync)
 			yield return new WaitForSeconds(0.1f);
@@ -777,6 +784,8 @@ public class PlayerControls : NetworkBehaviour
 		}
 
 		movesLeft = dashMove;
+		if (currNode != null)
+			currNode.RemovePlayer(this);
 		CmdUpdateMovesLeft( movesLeft );
 
 		if (canvas != null)
@@ -804,7 +813,7 @@ public class PlayerControls : NetworkBehaviour
 		CmdSaveTrap(target.nodeId);
 		CmdToggleNodeCam(true);
 
-		yield return new WaitForSeconds(1f);
+		//yield return new WaitForSeconds(1f);
 		//CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera.VirtualCameraGameObject.name;
 		Debug.Log($"{CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera.VirtualCameraGameObject.name}");
 		
@@ -813,17 +822,17 @@ public class PlayerControls : NetworkBehaviour
 		spellCo = null;
 	}
 	[Command(requiresAuthority=false)] private void CmdSaveTrap(int nodeId) => gm.SaveTrap(nodeId, id);
-	public void UseFireSpell(Transform target)
+	public void UseFireSpell(Node target)
 	{
 		ToggleSpellUi(false);
 		usingFireSpell1 = true;
 		if (spellCo == null)
 			spellCo = StartCoroutine( SpellCo(target) );
 	}
-	IEnumerator SpellCo(Transform target)
+	IEnumerator SpellCo(Node target)
 	{
 		//yield return new WaitForSeconds(0.5f);
-		nodeCam.m_Follow = target;
+		nodeCam.m_Follow = target.transform;
 		CmdToggleNodeCam(true);
 		//nodeCam.gameObject.SetActive(true);
 
@@ -833,8 +842,8 @@ public class PlayerControls : NetworkBehaviour
 		//fireSpell1.SetActive(false);
 		//fireSpell1.SetActive(true);
 
-		yield return new WaitForSeconds(1f);
-		//CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera.VirtualCameraGameObject.name;
+		yield return new WaitForSeconds(0.5f);
+		gm.CmdHitPlayersAtNode(target.nodeId);
 		Debug.Log($"{CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera.VirtualCameraGameObject.name}");
 		
 		yield return new WaitForSeconds(1.5f);
@@ -873,11 +882,23 @@ public class PlayerControls : NetworkBehaviour
 	//		}
 	//	}
 	//}
-	[Command(requiresAuthority=false)] private void CmdRagdollToggle(bool active) => RpcRagdollToggle(active);
-	[ClientRpc] private void RpcRagdollToggle(bool active) => model.gameObject.SetActive(active);
+	[Command(requiresAuthority=false)] public void CmdPlayerToggle(bool active) => RpcPlayerToggle(active);
+	[ClientRpc] private void RpcPlayerToggle(bool active) => model.gameObject.SetActive(active);
 
-	[Command(requiresAuthority=false)] private void CmdPlayerToggle(bool active) => RpcPlayerToggle(active);
-	[ClientRpc] private void RpcPlayerToggle(bool active) => ragdollObj.SetActive(active);
+	[Command(requiresAuthority=false)] public void CmdRagdollToggle(bool active) => RpcRagdollToggle(active);
+	[ClientRpc] private void RpcRagdollToggle(bool active) 
+	{
+		if (active)
+		{
+			Rigidbody[] bones = ragdollObj[characterInd].GetComponentsInChildren<Rigidbody>();
+			foreach (Rigidbody bone in bones) {
+				bone.velocity = Vector3.up * ragdollKb;
+				bone.angularVelocity = Vector3.forward * ragdollKb;
+			}
+		}
+		ragdollObj[characterInd].transform.rotation = model.rotation;
+		ragdollObj[characterInd].SetActive(active);
+	}
 	//IEnumerator MoveCo()
 	//{
 	//	yield return new WaitForSeconds(2);

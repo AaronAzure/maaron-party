@@ -26,7 +26,7 @@ public class NodeManager : MonoBehaviour
 			nodes[trapId].ToggleThorn(true);
 	}
 
-	public Node GetNode(ushort ind)
+	public Node GetNode(int ind)
 	{
 		return ind >= 0 && ind < nodes.Length ? nodes[ind] : nodes[0];
 	}

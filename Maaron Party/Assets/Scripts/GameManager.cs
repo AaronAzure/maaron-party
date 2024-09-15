@@ -136,6 +136,13 @@ public class GameManager : NetworkBehaviour
 	//* ------- save -------
 	//* --------------------
 
+	#region Board
+
+	[Command(requiresAuthority=false)] public void CmdHitPlayersAtNode(int nodeId) => RpcHitPlayersAtNode(nodeId);
+	[ClientRpc] private void RpcHitPlayersAtNode(int nodeId) => NodeManager.Instance.GetNode(nodeId).HitPlayers(-10);
+
+	#endregion
+
 	public void TriggerTransition(bool fadeIn)
 	{
 		anim.SetTrigger(fadeIn ? "in" : "out");

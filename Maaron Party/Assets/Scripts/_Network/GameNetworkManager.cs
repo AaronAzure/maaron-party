@@ -278,7 +278,7 @@ public class GameNetworkManager : NetworkManager
 		gm.IncreaseTurnNum();
 		if (skipSideQuests)
 		{
-			yield return new WaitForSeconds(0.5f);
+			//yield return new WaitForSeconds(0.5f);
 			ServerChangeScene("TestBoard");
 		}
 		else

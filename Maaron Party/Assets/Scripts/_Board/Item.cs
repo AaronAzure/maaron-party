@@ -65,7 +65,7 @@ public class Item : MonoBehaviour
 				case 7: p.UseDashSpell(8); break;
 				case 8: p.UseDashSpell(12); break;
 
-				default: p._USE_SPELL(-1); break;
+				default: p._USE_SPELL(ind); break;
 			}
 		}
 	}
