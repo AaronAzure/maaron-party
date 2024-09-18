@@ -21,6 +21,7 @@ public class Item : MonoBehaviour
 	[SerializeField] private Sprite spellSpeed1;
 	[SerializeField] private Sprite spellSpeed2;
 	[SerializeField] private Sprite spellSpeed3;
+	[SerializeField] private Sprite spellShield1;
 
 	private void Awake() 
 	{
@@ -41,6 +42,7 @@ public class Item : MonoBehaviour
 			6 => spellSpeed1,
 			7 => spellSpeed2,
 			8 => spellSpeed3,
+			9 => spellShield1,
 			_ => null,
 		};
 	}
@@ -64,6 +66,8 @@ public class Item : MonoBehaviour
 				case 6: p.UseDashSpell(4); break;
 				case 7: p.UseDashSpell(8); break;
 				case 8: p.UseDashSpell(12); break;
+
+				case 9: p.UseShieldSpell(); break;
 
 				default: p._USE_SPELL(ind); break;
 			}

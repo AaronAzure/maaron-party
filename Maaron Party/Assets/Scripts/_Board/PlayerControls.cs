@@ -112,6 +112,7 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private bool inMap;
 	[SerializeField] private bool isDashing;
 	[SerializeField] private bool inSpellAnimation;
+	public bool isShield {get; private set;}
 	bool usingFireSpell1;
 	private bool isCurrencyAsync;
 
@@ -134,6 +135,7 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private float spellCamSpeed=0.5f;
 	[SerializeField] private GameObject fireSpell1;
 	[SerializeField] private ParticleSystem dashSpellPs1;
+	[SerializeField] private GameObject shieldSpell1;
 	public int _spellInd {get; private set;} 
 
 	#endregion
@@ -801,6 +803,21 @@ public class PlayerControls : NetworkBehaviour
 			dashSpellPs1.Play(true);
 		else
 			dashSpellPs1.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+	} 
+
+
+	public void UseShieldSpell()
+	{
+		ToggleSpellUi(false);
+		CmdShieldSpell(true);
+		//if (canvas != null)
+		//	canvas.SetActive(false);
+	}
+	[Command(requiresAuthority=false)] private void CmdShieldSpell(bool active) => RpcShieldSpell(active);
+	[ClientRpc] private void RpcShieldSpell(bool active)
+	{
+		shieldSpell1.SetActive(active);
+		isShield = active;
 	} 
 	
 	public void UseThornSpell(Node target)

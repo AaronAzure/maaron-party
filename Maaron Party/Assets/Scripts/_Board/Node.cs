@@ -82,7 +82,7 @@ public class Node : MonoBehaviour
 	//}
 	public void HitPlayers(int penalty)
 	{
-		if (players != null && players.Contains(p))
+		if (players != null && players.Contains(p) && !p.isShield)
 		{
 			p.CmdPlayerToggle(false);
 			p.CmdRagdollToggle(true);
@@ -121,9 +121,12 @@ public class Node : MonoBehaviour
 		yield return new WaitForSeconds(0.75f);
 		thornExplosionObj.SetActive(false);
 		thornExplosionObj.SetActive(true);
-		p.CmdPlayerToggle(false);
-		p.CmdRagdollToggle(true);
-		p.NodeEffect(-10);
+		if (!p.isShield)
+		{
+			p.CmdPlayerToggle(false);
+			p.CmdRagdollToggle(true);
+			p.NodeEffect(-10);
+		}
 	}
 	
 	/// <summary>
