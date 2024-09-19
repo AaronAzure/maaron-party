@@ -1350,7 +1350,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 2772546948580517997, guid: a732b42e364567a428c152d7ca5d1bc1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7845143465886625886}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 6540128866640755389, guid: a732b42e364567a428c152d7ca5d1bc1, type: 3}
       insertIndex: -1
@@ -1405,3 +1408,61 @@ MonoBehaviour:
   rotationSensitivity: 0.01
   positionPrecision: 0.01
   scalePrecision: 0.01
+--- !u!1001 &7845143465886295834
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1085682943880432794}
+    m_Modifications:
+    - target: {fileID: 195608, guid: 062235390ca49324d9d0f744b64fa902, type: 3}
+      propertyPath: m_Name
+      value: Spotlight_Magic_Circle
+      objectReference: {fileID: 0}
+    - target: {fileID: 464708, guid: 062235390ca49324d9d0f744b64fa902, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 464708, guid: 062235390ca49324d9d0f744b64fa902, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 464708, guid: 062235390ca49324d9d0f744b64fa902, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 464708, guid: 062235390ca49324d9d0f744b64fa902, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 464708, guid: 062235390ca49324d9d0f744b64fa902, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 464708, guid: 062235390ca49324d9d0f744b64fa902, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 464708, guid: 062235390ca49324d9d0f744b64fa902, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 464708, guid: 062235390ca49324d9d0f744b64fa902, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 464708, guid: 062235390ca49324d9d0f744b64fa902, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 062235390ca49324d9d0f744b64fa902, type: 3}
+--- !u!4 &7845143465886625886 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 464708, guid: 062235390ca49324d9d0f744b64fa902, type: 3}
+  m_PrefabInstance: {fileID: 7845143465886295834}
+  m_PrefabAsset: {fileID: 0}

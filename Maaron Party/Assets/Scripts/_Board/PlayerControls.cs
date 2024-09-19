@@ -10,7 +10,7 @@ using Cinemachine;
 public class PlayerControls : NetworkBehaviour
 {
 	[Header("HACKS")]
-	[SerializeField] [Range(-1,20)] private int controlledRoll=-1;
+	[SerializeField] [Range(-1,30)] private int controlledRoll=-1;
 	[SerializeField] private bool freeShop;
 
 	
@@ -274,9 +274,10 @@ public class PlayerControls : NetworkBehaviour
 			}
 			if (stars == starsT)
 			{
-				isBuyingStar = isCurrencyAsync = false;
+				isCurrencyAsync = false;
 				anim.SetBool("hasStar", false);
 				starCam.SetActive(false);
+				StartCoroutine(WaitForNewStarCo());
 				currencySpeedT = 1;
 			}
 		}
@@ -451,9 +452,10 @@ public class PlayerControls : NetworkBehaviour
 	}
 	public void _PURCHASE_STAR(bool purchase)
 	{
-		if (purchase && coins >= 20)
+		if (purchase && (freeShop || coins >= 20))
 		{
-			coins -= 20;
+			if (!freeShop)
+				coins -= 20;
 			currencySpeedT = 2;
 			stars++;
 			isBuyingStar = true;
@@ -622,6 +624,13 @@ public class PlayerControls : NetworkBehaviour
 
 		EndTurn();
 		bm.NextPlayerTurn();
+	}
+
+	private IEnumerator WaitForNewStarCo()
+	{
+		bm.ChooseStar();
+		yield return new WaitForSeconds(4.5f);
+		isBuyingStar = false;
 	}
 
 	void HidePaths()

@@ -96,10 +96,18 @@ public class BoardManager : NetworkBehaviour
 			gm.gameStarted = true;
 			yield return ChooseStarCo(0);
 		}
+		else
+			SetupStarNode(gm.prevStarInd);
 		nm.NextBoardPlayerTurn();
 	}
-	IEnumerator ChooseStarCo(int fixedInd=-1)
+
+
+	#region Star
+	public void ChooseStar() => StartCoroutine( ChooseStarCo() );
+	IEnumerator ChooseStarCo(int fixedInd=-1, bool changeLoc=false)
 	{
+		if (changeLoc)
+			CmdSetStarNode(gm.prevStarInd, false);
 		int rng = fixedInd == -1 ? Random.Range(0, starNodes.Length) : fixedInd;
 		while (rng == gm.prevStarInd || 
 			(gm.prevStarInd >= 0 && gm.prevStarInd < starNodes.Length &&
@@ -113,21 +121,26 @@ public class BoardManager : NetworkBehaviour
 		yield return new WaitForSeconds(1f);
 		CmdToggleStarCam(true);
 
-		yield return new WaitForSeconds(0.75f);
-		CmdSetStarNode(starNodes[rng].node.nodeId);
-		maaronAnim.gameObject.transform.position = starNodes[rng].node.maaronPos.position;
-		maaronAnim.transform.LookAt(starNodes[rng].node.transform.position, Vector3.up);
+		yield return new WaitForSeconds(1f);
+		SetupStarNode(rng);
 		
 		yield return new WaitForSeconds(2);
 		CmdToggleStarCam(false);
 	}
 	[Command(requiresAuthority=false)] void CmdToggleStarCam(bool active) => RpcToggleStarCam(active);
 	[ClientRpc] void RpcToggleStarCam(bool active) => starCam.gameObject.SetActive(active);
-	[Command(requiresAuthority=false)] void CmdSetStarNode(int nodeId) => RpcSetStarNode(nodeId);
-	[ClientRpc] void RpcSetStarNode(int nodeId) => NodeManager.Instance.GetNode(nodeId).ToggleStarVfx(true);
+	private void SetupStarNode(int ind)
+	{
+		CmdSetStarNode(starNodes[ind].node.nodeId, true);
+		maaronAnim.gameObject.transform.position = starNodes[ind].node.maaronPos.position;
+		maaronAnim.transform.LookAt(starNodes[ind].node.transform.position, Vector3.up);
+	}
+	[Command(requiresAuthority=false)] void CmdSetStarNode(int nodeId, bool isStarSpace) => RpcSetStarNode(nodeId, isStarSpace);
+	[ClientRpc] void RpcSetStarNode(int nodeId, bool isStarSpace) => NodeManager.Instance.GetNode(nodeId).ToggleStarNode(isStarSpace);
 	
+	#endregion
 
-	public void ChooseStar() => StartCoroutine( ChooseStarCo() );
+
 	public void NextPlayerTurn()
 	{
 		CmdNextPlayerTurn(); // calls to server

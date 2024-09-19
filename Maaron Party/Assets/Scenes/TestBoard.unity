@@ -9248,6 +9248,26 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: -14.571079
       objectReference: {fileID: 0}
+    - target: {fileID: 2851880036303563998, guid: cb3e16d45230cbf4293d68b3b28cdb4a, type: 3}
+      propertyPath: m_Intensity
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2851880036303563998, guid: cb3e16d45230cbf4293d68b3b28cdb4a, type: 3}
+      propertyPath: m_SpotAngle
+      value: 45
+      objectReference: {fileID: 0}
+    - target: {fileID: 2851880036303563998, guid: cb3e16d45230cbf4293d68b3b28cdb4a, type: 3}
+      propertyPath: m_RenderMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2851880036303563998, guid: cb3e16d45230cbf4293d68b3b28cdb4a, type: 3}
+      propertyPath: m_InnerSpotAngle
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2851880036303563998, guid: cb3e16d45230cbf4293d68b3b28cdb4a, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 4865184552239938852, guid: cb3e16d45230cbf4293d68b3b28cdb4a, type: 3}
       propertyPath: m_LocalPosition.x
       value: -35.5

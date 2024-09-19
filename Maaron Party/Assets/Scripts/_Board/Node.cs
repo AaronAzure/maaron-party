@@ -230,8 +230,9 @@ public class Node : MonoBehaviour
 
 	
 
-	public void ToggleStarVfx(bool active)
+	public void ToggleStarNode(bool active)
 	{
+		hasStar = active;
 		if (active)
 			starPs.Play();
 		else
