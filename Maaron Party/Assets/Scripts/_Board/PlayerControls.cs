@@ -10,7 +10,7 @@ using Cinemachine;
 public class PlayerControls : NetworkBehaviour
 {
 	[Header("HACKS")]
-	[SerializeField] [Range(-1,20)] private int controlledRoll=-1;
+	[SerializeField] [Range(-1,30)] private int controlledRoll=-1;
 	[SerializeField] private bool freeShop;
 
 	
@@ -112,6 +112,7 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private bool inMap;
 	[SerializeField] private bool isDashing;
 	[SerializeField] private bool inSpellAnimation;
+	public bool isShield {get; private set;}
 	bool usingFireSpell1;
 	private bool isCurrencyAsync;
 
@@ -134,6 +135,7 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private float spellCamSpeed=0.5f;
 	[SerializeField] private GameObject fireSpell1;
 	[SerializeField] private ParticleSystem dashSpellPs1;
+	[SerializeField] private GameObject shieldSpell1;
 	public int _spellInd {get; private set;} 
 
 	#endregion
@@ -272,9 +274,10 @@ public class PlayerControls : NetworkBehaviour
 			}
 			if (stars == starsT)
 			{
-				isBuyingStar = isCurrencyAsync = false;
+				isCurrencyAsync = false;
 				anim.SetBool("hasStar", false);
 				starCam.SetActive(false);
+				StartCoroutine(WaitForNewStarCo());
 				currencySpeedT = 1;
 			}
 		}
@@ -297,6 +300,7 @@ public class PlayerControls : NetworkBehaviour
 		else if (isBuyingStar) {}
 		else if (movesLeft > 0)
 		{
+			// moving to next node
 			if (transform.position != nextNode.transform.position)
 			{
 				var lookPos = nextNode.transform.position - transform.position;
@@ -305,13 +309,16 @@ public class PlayerControls : NetworkBehaviour
 				var rotation = Quaternion.LookRotation(lookPos);
 				model.rotation = Quaternion.Slerp(model.rotation, rotation, Time.fixedDeltaTime * rotateSpeed);
 
-				transform.position = Vector3.Lerp(startPos, nextNode.transform.position, Mathf.SmoothStep(0,1,time));
+				transform.position = Vector3.Lerp(startPos, nextNode.transform.position, time);
+				//transform.position = Vector3.Lerp(startPos, nextNode.transform.position, Mathf.SmoothStep(0,1,time));
 				if (time < 1)
 					time += Time.fixedDeltaTime * moveSpeed * (isDashing ? 2 : 1);
 			}
+			// landed on next node
 			else
 			{
 				time = 0;
+				// if shop or star
 				if (nextNode.GetNodeTraverseEffect(this))
 				{
 					isStop = true;
@@ -319,7 +326,9 @@ public class PlayerControls : NetworkBehaviour
 					return;
 				}
 
-				movesLeft--;
+				if (nextNode.DoesConsumeMovement())
+					movesLeft--;
+				CmdPlayNodeTraverseVfx(nextNode.nodeId);
 				CmdUpdateMovesLeft(movesLeft);
 
 				// end at space
@@ -443,9 +452,10 @@ public class PlayerControls : NetworkBehaviour
 	}
 	public void _PURCHASE_STAR(bool purchase)
 	{
-		if (purchase && coins >= 20)
+		if (purchase && (freeShop || coins >= 20))
 		{
-			coins -= 20;
+			if (!freeShop)
+				coins -= 20;
 			currencySpeedT = 2;
 			stars++;
 			isBuyingStar = true;
@@ -542,6 +552,8 @@ public class PlayerControls : NetworkBehaviour
 
 	#region Nodes
 
+	[Command(requiresAuthority=false)] void CmdPlayNodeTraverseVfx(int nodeId) => RpcPlayNodeTraverseVfx(nodeId);
+	[ClientRpc] void RpcPlayNodeTraverseVfx(int nodeId) => NodeManager.Instance.GetNode(nodeId).PlayGlowVfx();
 	private void StuckAtFork()
 	{
 		isAtFork = true;
@@ -612,6 +624,13 @@ public class PlayerControls : NetworkBehaviour
 
 		EndTurn();
 		bm.NextPlayerTurn();
+	}
+
+	private IEnumerator WaitForNewStarCo()
+	{
+		bm.ChooseStar();
+		yield return new WaitForSeconds(4.5f);
+		isBuyingStar = false;
 	}
 
 	void HidePaths()
@@ -801,6 +820,21 @@ public class PlayerControls : NetworkBehaviour
 			dashSpellPs1.Play(true);
 		else
 			dashSpellPs1.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+	} 
+
+
+	public void UseShieldSpell()
+	{
+		ToggleSpellUi(false);
+		CmdShieldSpell(true);
+		//if (canvas != null)
+		//	canvas.SetActive(false);
+	}
+	[Command(requiresAuthority=false)] private void CmdShieldSpell(bool active) => RpcShieldSpell(active);
+	[ClientRpc] private void RpcShieldSpell(bool active)
+	{
+		shieldSpell1.SetActive(active);
+		isShield = active;
 	} 
 	
 	public void UseThornSpell(Node target)

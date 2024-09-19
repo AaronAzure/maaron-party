@@ -24,6 +24,8 @@ public class GameManager : NetworkBehaviour
 	[SyncVar] [SerializeField] private List<int> stars;
 	[SyncVar] [SerializeField] private List<List<int>> items;
 	[SyncVar] public int nTurn=1; 
+	public bool gameStarted; 
+	public int prevStarInd=-1; 
 	[SyncVar] public int maxTurns=20; 
 	//private int nPlayers {get{return GameObject.FindGameObjectsWithTag("Player").Length;}}
 	//public bool hasStarted {get; private set;}
