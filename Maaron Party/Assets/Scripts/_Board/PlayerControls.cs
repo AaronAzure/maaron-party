@@ -299,6 +299,7 @@ public class PlayerControls : NetworkBehaviour
 		else if (isBuyingStar) {}
 		else if (movesLeft > 0)
 		{
+			// moving to next node
 			if (transform.position != nextNode.transform.position)
 			{
 				var lookPos = nextNode.transform.position - transform.position;
@@ -307,13 +308,16 @@ public class PlayerControls : NetworkBehaviour
 				var rotation = Quaternion.LookRotation(lookPos);
 				model.rotation = Quaternion.Slerp(model.rotation, rotation, Time.fixedDeltaTime * rotateSpeed);
 
-				transform.position = Vector3.Lerp(startPos, nextNode.transform.position, Mathf.SmoothStep(0,1,time));
+				transform.position = Vector3.Lerp(startPos, nextNode.transform.position, time);
+				//transform.position = Vector3.Lerp(startPos, nextNode.transform.position, Mathf.SmoothStep(0,1,time));
 				if (time < 1)
 					time += Time.fixedDeltaTime * moveSpeed * (isDashing ? 2 : 1);
 			}
+			// landed on next node
 			else
 			{
 				time = 0;
+				// if shop or star
 				if (nextNode.GetNodeTraverseEffect(this))
 				{
 					isStop = true;
@@ -321,7 +325,9 @@ public class PlayerControls : NetworkBehaviour
 					return;
 				}
 
-				movesLeft--;
+				if (nextNode.DoesConsumeMovement())
+					movesLeft--;
+				CmdPlayNodeTraverseVfx(nextNode.nodeId);
 				CmdUpdateMovesLeft(movesLeft);
 
 				// end at space
@@ -544,6 +550,8 @@ public class PlayerControls : NetworkBehaviour
 
 	#region Nodes
 
+	[Command(requiresAuthority=false)] void CmdPlayNodeTraverseVfx(int nodeId) => RpcPlayNodeTraverseVfx(nodeId);
+	[ClientRpc] void RpcPlayNodeTraverseVfx(int nodeId) => NodeManager.Instance.GetNode(nodeId).PlayGlowVfx();
 	private void StuckAtFork()
 	{
 		isAtFork = true;

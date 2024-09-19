@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using Mirror;
+using Cinemachine;
 
 public class BoardManager : NetworkBehaviour
 {
@@ -18,12 +19,16 @@ public class BoardManager : NetworkBehaviour
 	[Space] [Header("Universal")]
 	[SerializeField] private Transform dataUi;
 	[SerializeField] private TextMeshProUGUI turnTxt;
+	[SerializeField] private CinemachineVirtualCamera starCam;
+	[SerializeField] private Animator maaronAnim;
 	[SyncVar] public int nBmReady; 
 	[SyncVar] public int n;
+	bool isChoosingStar;
 
 
 	[Space] [Header("MUST REFERENCE PER BOARD")]
 	[SerializeField] private Node startNode;
+	[SerializeField] private starNodes[] starNodes;
 
 
 	private void Awake() 
@@ -86,12 +91,46 @@ public class BoardManager : NetworkBehaviour
 		//gm.CmdTriggerTransition(false);
 		
 		yield return new WaitForSeconds(1);
+		if (!gm.gameStarted)
+		{
+			gm.gameStarted = true;
+			yield return ChooseStarCo(0);
+		}
 		nm.NextBoardPlayerTurn();
 	}
+	IEnumerator ChooseStarCo(int fixedInd=-1)
+	{
+		int rng = fixedInd == -1 ? Random.Range(0, starNodes.Length) : fixedInd;
+		while (rng == gm.prevStarInd || 
+			(gm.prevStarInd >= 0 && gm.prevStarInd < starNodes.Length &&
+			starNodes[gm.prevStarInd].invalid != null && starNodes[gm.prevStarInd].invalid != starNodes[rng].node))
+		{
+			rng = Random.Range(0, starNodes.Length);
+		}
+		gm.prevStarInd = rng;
+		starCam.m_Follow = starNodes[rng].node.transform;
 
+		yield return new WaitForSeconds(1f);
+		CmdToggleStarCam(true);
+
+		yield return new WaitForSeconds(0.75f);
+		CmdSetStarNode(starNodes[rng].node.nodeId);
+		maaronAnim.gameObject.transform.position = starNodes[rng].node.maaronPos.position;
+		maaronAnim.transform.LookAt(starNodes[rng].node.transform.position, Vector3.up);
+		
+		yield return new WaitForSeconds(2);
+		CmdToggleStarCam(false);
+	}
+	[Command(requiresAuthority=false)] void CmdToggleStarCam(bool active) => RpcToggleStarCam(active);
+	[ClientRpc] void RpcToggleStarCam(bool active) => starCam.gameObject.SetActive(active);
+	[Command(requiresAuthority=false)] void CmdSetStarNode(int nodeId) => RpcSetStarNode(nodeId);
+	[ClientRpc] void RpcSetStarNode(int nodeId) => NodeManager.Instance.GetNode(nodeId).ToggleStarVfx(true);
+	
+
+	public void ChooseStar() => StartCoroutine( ChooseStarCo() );
 	public void NextPlayerTurn()
 	{
-		CmdNextPlayerTurn();
+		CmdNextPlayerTurn(); // calls to server
 	}
 	[Command(requiresAuthority=false)] private void CmdNextPlayerTurn()
 	{
@@ -111,4 +150,11 @@ public class BoardManager : NetworkBehaviour
 			//gm.CmdLoadMinigame();
 			//LoadMinigame("TestMinigame");
 	}
+}
+
+[System.Serializable]
+public class starNodes
+{
+	public Node node;
+	public Node invalid;
 }

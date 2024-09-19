@@ -7,12 +7,21 @@ public class Node : MonoBehaviour
 {
 	public List<Node> nextNodes;
 	private Vector3 offset = new Vector3(0,0.25f);
-	public ushort nodeId;
+	[HideInInspector] public ushort nodeId;
+
 
 	enum NodeSpace { blue, red, green, star, shop }
-	[SerializeField] private NodeSpace nodeSpace;
-	[SerializeField] private GameObject targetObj;
+	[Space] [SerializeField] private NodeSpace nodeSpace;
+	public bool hasStar {get; private set;}
+
+	
+	[Space] [SerializeField] ParticleSystem blueGlowPs;
+	[SerializeField] ParticleSystem redGlowPs;
+
+	[Space] [SerializeField] private GameObject targetObj;
 	[SerializeField] private Animator targetAnim;
+	[SerializeField] private ParticleSystem starPs;
+	public Transform maaronPos;
 	
 	[Space] [SerializeField] private GameObject thornObj;
 	[SerializeField] private GameObject thornExplosionObj;
@@ -26,7 +35,15 @@ public class Node : MonoBehaviour
 
 	private void OnDrawGizmosSelected() 
 	{
-		Gizmos.color = Color.magenta;
+		if (nodeSpace == NodeSpace.red)
+			Gizmos.color = new Color(1,0.6f,0);
+		else if (nodeSpace == NodeSpace.blue)
+			Gizmos.color = Color.magenta;
+		else if (nodeSpace == NodeSpace.shop)
+			Gizmos.color = Color.gray;
+		else if (nodeSpace == NodeSpace.star)
+			Gizmos.color = Color.yellow;
+
 		foreach (Node node in nextNodes)
 		{
 			if (node != null)
@@ -37,6 +54,21 @@ public class Node : MonoBehaviour
 		}
 	}
 
+
+	public void PlayGlowVfx()
+	{
+		switch (nodeSpace)
+		{
+			case NodeSpace.blue:
+				blueGlowPs.Play();
+				break;
+			case NodeSpace.red:
+				redGlowPs.Play();
+				break;
+		}
+
+	} 
+
 	/// <summary>
 	/// Returns true if no event, else false
 	/// </summary>
@@ -46,8 +78,9 @@ public class Node : MonoBehaviour
 		switch (nodeSpace)
 		{
 			case NodeSpace.star: 
-				p.OnStarNode();
-				return true;
+				if (hasStar)
+					p.OnStarNode();
+				return hasStar;
 			case NodeSpace.shop: 
 				p.OnShopNode();
 				return true;
@@ -197,10 +230,14 @@ public class Node : MonoBehaviour
 
 	
 
-	public void ToggleThorn(bool active) 
+	public void ToggleStarVfx(bool active)
 	{
-		thornObj.SetActive(active);
-	}
+		if (active)
+			starPs.Play();
+		else
+			starPs.Stop();
+	} 
+	public void ToggleThorn(bool active) => thornObj.SetActive(active);
 
 	private void OnTriggerEnter(Collider other) 
 	{
