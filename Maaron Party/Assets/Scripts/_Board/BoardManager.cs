@@ -19,8 +19,10 @@ public class BoardManager : NetworkBehaviour
 	[Space] [Header("Universal")]
 	[SerializeField] private Transform dataUi;
 	[SerializeField] private TextMeshProUGUI turnTxt;
+	[SerializeField] private GameObject newStockUi;
 	[SerializeField] private CinemachineVirtualCamera starCam;
 	[SerializeField] private Animator maaronAnim;
+	[SerializeField] private ParticleSystem maaronSpotlightPs;
 	[SyncVar] public int nBmReady; 
 	[SyncVar] public int n;
 	bool isChoosingStar;
@@ -96,9 +98,23 @@ public class BoardManager : NetworkBehaviour
 			gm.gameStarted = true;
 			yield return ChooseStarCo(0);
 		}
+		// turn 2+
 		else
-			SetupStarNode(gm.prevStarInd);
+			StartCoroutine( SetupStarNode(gm.prevStarInd) );
 		nm.NextBoardPlayerTurn();
+
+		if (gm.nTurn == 5)
+		{
+			yield return new WaitForSeconds(2);
+			Debug.Log("<color=cyan>gm.nTurn == 5</color>");
+			CmdNewStock();
+		}
+		if (gm.nTurn == gm.maxTurns - 5)
+		{
+			yield return new WaitForSeconds(2);
+			Debug.Log("<color=cyan>gm.nTurn == gm.maxTurns - 5</color>");
+			CmdNewStock();
+		}
 	}
 
 
@@ -122,21 +138,48 @@ public class BoardManager : NetworkBehaviour
 		CmdToggleStarCam(true);
 
 		yield return new WaitForSeconds(1f);
-		SetupStarNode(rng);
+		StartCoroutine( SetupStarNode(rng) );
 		
-		yield return new WaitForSeconds(2);
+		yield return new WaitForSeconds(4);
 		CmdToggleStarCam(false);
 	}
 	[Command(requiresAuthority=false)] void CmdToggleStarCam(bool active) => RpcToggleStarCam(active);
 	[ClientRpc] void RpcToggleStarCam(bool active) => starCam.gameObject.SetActive(active);
-	private void SetupStarNode(int ind)
+	private IEnumerator SetupStarNode(int ind)
 	{
+		CmdSetMaaron(ind, true);
+		
+		yield return new WaitForSeconds(2);
 		CmdSetStarNode(starNodes[ind].node.nodeId, true);
-		maaronAnim.gameObject.transform.position = starNodes[ind].node.maaronPos.position;
-		maaronAnim.transform.LookAt(starNodes[ind].node.transform.position, Vector3.up);
+		CmdToggleSpotlight(true);
 	}
+
+	// set maaron location
+	[Command(requiresAuthority=false)] void CmdSetMaaron(int nodeId, bool isStarSpace) => RpcSetMaaron(nodeId, isStarSpace);
+	[ClientRpc] void RpcSetMaaron(int nodeId, bool isStarSpace) 
+	{ 
+		maaronAnim.gameObject.SetActive(isStarSpace);
+		maaronAnim.gameObject.transform.position = starNodes[nodeId].node.maaronPos.position;
+		maaronAnim.transform.LookAt(starNodes[nodeId].node.transform.position, Vector3.up);
+	}
+
+	// toggle spotlight for maaron
+	[Command(requiresAuthority=false)] void CmdToggleSpotlight(bool active) => RpcToggleSpotlight(active);
+	[ClientRpc] void RpcToggleSpotlight(bool active) 
+	{
+		if (active)
+			maaronSpotlightPs.Play();
+		else
+			maaronSpotlightPs.Stop();
+	}
+
+	// set node space (star)
 	[Command(requiresAuthority=false)] void CmdSetStarNode(int nodeId, bool isStarSpace) => RpcSetStarNode(nodeId, isStarSpace);
 	[ClientRpc] void RpcSetStarNode(int nodeId, bool isStarSpace) => NodeManager.Instance.GetNode(nodeId).ToggleStarNode(isStarSpace);
+
+	// new stock text
+	[Command(requiresAuthority=false)] void CmdNewStock() => RpcNewStock();
+	[ClientRpc] void RpcNewStock() => newStockUi.SetActive(true);
 	
 	#endregion
 
