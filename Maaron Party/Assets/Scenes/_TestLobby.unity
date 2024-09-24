@@ -369,6 +369,7 @@ MonoBehaviour:
   lobbyPlayers: []
   boardControls: []
   minigameControls: []
+  nPlayerOrder: 0
 --- !u!4 &193865297
 Transform:
   m_ObjectHideFlags: 0

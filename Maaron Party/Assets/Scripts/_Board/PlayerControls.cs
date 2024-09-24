@@ -166,7 +166,7 @@ public class PlayerControls : NetworkBehaviour
 	{
 		TargetRemoteStart(netIdentity.connectionToClient);
 	}
-	[Command(requiresAuthority = false)] private void CmdPing() => Debug.Log($"<color=yellow>TargetRemoteStart {name}</color>");
+	//[Command(requiresAuthority = false)] private void CmdPing() => Debug.Log($"<color=yellow>TargetRemoteStart {name}</color>");
 	[TargetRpc] private void TargetRemoteStart(NetworkConnectionToClient target) 
 	{
 		//Debug.Log($"<color=yellow>TargetRemoteStart</color>");
@@ -210,8 +210,8 @@ public class PlayerControls : NetworkBehaviour
 	[ClientRpc] public void RpcSetModel(int ind)
 	{
 		name = $"__ PLAYER {id} __";
-		if (isOwned)
-			CmdPing();
+		//if (isOwned)
+		//	CmdPing();
 		transform.parent = bm.transform;
 		for (int i=0 ; i<models.Length ; i++)
 			models[i].SetActive(false);
@@ -375,7 +375,7 @@ public class PlayerControls : NetworkBehaviour
 
 	public void YourTurn()
 	{
-		Debug.Log("<color=magenta>YOUR TURN!!</color>");
+		//Debug.Log("<color=magenta>YOUR TURN!!</color>");
 		CmdCamToggle(true);
 		//CmdPlayerToggle(true);
 		TargetYourTurn(netIdentity.connectionToClient);

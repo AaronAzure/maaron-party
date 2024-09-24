@@ -2260,7 +2260,7 @@ MonoBehaviour:
   mainUi: {fileID: 3981091957135357725}
   dataUi: {fileID: 2541591487585698009}
   turnTxt: {fileID: 6783004385688767745}
-  newStockUi: {fileID: 8264994722834771567}
+  newStockUi: {fileID: 898094244014585556}
   starCam: {fileID: 7280899797991255291}
   maaronAnim: {fileID: 5993419155555639846}
   maaronSpotlightPs: {fileID: 7845143465901863428}

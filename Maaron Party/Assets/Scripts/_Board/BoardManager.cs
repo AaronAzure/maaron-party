@@ -64,6 +64,9 @@ public class BoardManager : NetworkBehaviour
 	{
 		CmdReadyUp();
 		turnTxt.text = $"Turn: {gm.nTurn}/{gm.maxTurns}";
+
+		if (isServer && !gm.gameStarted)
+			CmdToggleMainUi(false);
 		//string s = $"<color=#FF8D07>";
 		//s += $"NetworkServer.connections.Count = {NetworkServer.connections.Count} | ";
 		//s += $"GameNetworkManager.Instance.numPlayers = {GameNetworkManager.Instance.numPlayers} | ";
@@ -101,8 +104,6 @@ public class BoardManager : NetworkBehaviour
 	{
 		//yield return new WaitForSeconds(0.5f);
 		//gm.CmdTriggerTransition(false);
-		if (!gm.gameStarted)
-			CmdToggleMainUi(false);
 
 		yield return new WaitForSeconds(1);
 		// turn 1
@@ -128,14 +129,12 @@ public class BoardManager : NetworkBehaviour
 
 		if (gm.nTurn == 5)
 		{
-			yield return new WaitForSeconds(2);
-			Debug.Log("<color=cyan>gm.nTurn == 5</color>");
+			yield return new WaitForSeconds(1);
 			CmdNewStock();
 		}
 		if (gm.nTurn == gm.maxTurns - 5)
 		{
-			yield return new WaitForSeconds(2);
-			Debug.Log("<color=cyan>gm.nTurn == gm.maxTurns - 5</color>");
+			yield return new WaitForSeconds(1);
 			CmdNewStock();
 		}
 	}
@@ -170,7 +169,7 @@ public class BoardManager : NetworkBehaviour
 		RpcEndDialogue();
 		if (isIntro && isServer && teleportCo == null)
 		{
-			teleportCo = StartCoroutine( TeleportToStarCo(-1) );
+			teleportCo = StartCoroutine( TeleportToStarCo(0) );
 		}
 	}
 	[ClientRpc] void RpcEndDialogue() => dialogue.CloseDialogue();
@@ -197,7 +196,6 @@ public class BoardManager : NetworkBehaviour
 	//public void TeleportToStar(int fixedInd=-1) => StartCoroutine( TeleportToStarCo(fixedInd) );
 	IEnumerator TeleportToStarCo(int fixedInd=-1, bool changeLoc=false)
 	{
-		Debug.Log("TeleportToStarCo");
 		if (changeLoc)
 			CmdSetStarNode(gm.prevStarInd, false);
 		int rng = fixedInd == -1 ? Random.Range(0, starNodes.Length) : fixedInd;
@@ -221,10 +219,11 @@ public class BoardManager : NetworkBehaviour
 		yield return new WaitForSeconds(4);
 		CmdToggleStarCam(false);
 		
-		yield return new WaitForSeconds(1);
+		//yield return new WaitForSeconds(1);
 		isIntro = false;
 		nm.NextBoardPlayerTurn();
 		teleportCo = null;
+		CmdToggleMainUi(true);
 	}
 	public void ChooseStar() => StartCoroutine( ChooseStarCo() );
 	IEnumerator ChooseStarCo(int fixedInd=-1, bool changeLoc=false)
