@@ -9,14 +9,23 @@ public class BoardManager : NetworkBehaviour
 {
 	public static BoardManager Instance;
 	[SerializeField] private PlayerControls playerPrefab;
+	[SerializeField] private GameObject startCam;
 	[SerializeField] private Transform spawnPos;
+	[SerializeField] private Transform maaronSpawnPos;
 	[SerializeField] private PlayerControls[] players;
 	private PlayerControls _player;
 	GameManager gm {get{return GameManager.Instance;}}
 	GameNetworkManager nm {get{return GameNetworkManager.Instance;}}
+	//[SerializeField] UiDialogue dialogue;
+	UiDialogue dialogue {get{return UiDialogue.Instance;}}
+
+
+	[Space] [Header("Text")]
+	[TextArea(2, 5)] [SerializeField] string[] introSents;
 
 
 	[Space] [Header("Universal")]
+	[SerializeField] private GameObject mainUi;
 	[SerializeField] private Transform dataUi;
 	[SerializeField] private TextMeshProUGUI turnTxt;
 	[SerializeField] private GameObject newStockUi;
@@ -78,10 +87,7 @@ public class BoardManager : NetworkBehaviour
 		if (isServer)
 			StartCoroutine( StartGameCo() );
 	}
-	public Transform GetSpawnPos()
-	{
-		return spawnPos;
-	}
+	public Transform GetSpawnPos() => spawnPos;
 	public int GetNth()
 	{
 		return n++;
@@ -91,12 +97,25 @@ public class BoardManager : NetworkBehaviour
 	{
 		//yield return new WaitForSeconds(0.5f);
 		//gm.CmdTriggerTransition(false);
-		
+		if (!gm.gameStarted)
+			CmdToggleMainUi(false);
+
 		yield return new WaitForSeconds(1);
+		// turn 1
 		if (!gm.gameStarted)
 		{
 			gm.gameStarted = true;
-			yield return ChooseStarCo(0);
+			CmdToggleStartCam(true);
+			
+			yield return new WaitForSeconds(1.5f);
+			CmdMaaronIntro();
+
+			yield return new WaitForSeconds(2);
+			CmdToggleDialogue(true);
+			CmdToggleNextButton(true);
+
+			yield break;
+			//yield return ChooseStarCo(0);
 		}
 		// turn 2+
 		else
@@ -116,6 +135,50 @@ public class BoardManager : NetworkBehaviour
 			CmdNewStock();
 		}
 	}
+
+
+	#region introduction
+	
+	// ui = player data, turn
+	[Command(requiresAuthority=false)] public void CmdToggleMainUi(bool active) => RpcToggleMainUi(active);
+	[ClientRpc] void RpcToggleMainUi(bool active) => mainUi.gameObject.SetActive(active);
+	
+	// Dialogue
+	[Command(requiresAuthority=false)] public void CmdToggleDialogue(bool active) => RpcToggleDialogue(active);
+	[ClientRpc] void RpcToggleDialogue(bool active) => dialogue.SetSentence(active, "Maaron", introSents);
+
+	[Command(requiresAuthority=false)] public void CmdToggleNextButton(bool targeted) 
+	{
+		if (targeted)
+			TargetToggleNextButton(_player.netIdentity.connectionToClient);
+		else
+			RpcDisableNextButton();
+	}
+	[TargetRpc] void TargetToggleNextButton(NetworkConnectionToClient target) => dialogue.ToggleButton(true);
+	[ClientRpc] void RpcDisableNextButton() => dialogue.ToggleButton(false);
+	
+	[Command(requiresAuthority=false)] public void CmdNextDialogue() => RpcNextDialogue();
+	[ClientRpc] void RpcNextDialogue() => dialogue.NextSentence();
+
+	[Command(requiresAuthority=false)] public void CmdEndDialogue() => RpcEndDialogue();
+	[ClientRpc] void RpcEndDialogue() => dialogue.CloseDialogue();
+
+	// start location camera
+	[Command(requiresAuthority=false)] public void CmdToggleStartCam(bool active) => RpcToggleStartCam(active);
+	[ClientRpc] void RpcToggleStartCam(bool active) => startCam.SetActive(active);
+	
+	// spawn maaron at start location
+	[Command(requiresAuthority=false)] public void CmdMaaronIntro() => RpcMaaronIntro();
+	[ClientRpc] void RpcMaaronIntro() 
+	{ 
+		maaronAnim.gameObject.SetActive(false);
+		maaronAnim.gameObject.SetActive(true);
+		maaronAnim.gameObject.transform.position = maaronSpawnPos.position;
+		maaronAnim.transform.rotation = Quaternion.Euler(0,180,0);
+	}
+
+
+	#endregion
 
 
 	#region Star

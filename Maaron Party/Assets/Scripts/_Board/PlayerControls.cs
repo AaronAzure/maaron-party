@@ -178,7 +178,7 @@ public class PlayerControls : NetworkBehaviour
 		model.rotation = Quaternion.LookRotation(Vector3.back);
 		if (gm.nTurn == 1)
 		{
-			transform.position = BoardManager.Instance.GetSpawnPos().position + new Vector3(-4 + 2*id,0,0);
+			transform.position = BoardManager.Instance.GetSpawnPos().position + new Vector3(-4 + 2*id,0,-2);
 			startPos = this.transform.position;
 		}
 		
