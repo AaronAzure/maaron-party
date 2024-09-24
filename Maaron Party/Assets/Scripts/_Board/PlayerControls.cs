@@ -375,6 +375,7 @@ public class PlayerControls : NetworkBehaviour
 
 	public void YourTurn()
 	{
+		Debug.Log("<color=magenta>YOUR TURN!!</color>");
 		CmdCamToggle(true);
 		//CmdPlayerToggle(true);
 		TargetYourTurn(netIdentity.connectionToClient);

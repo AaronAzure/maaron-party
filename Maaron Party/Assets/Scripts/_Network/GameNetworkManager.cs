@@ -244,10 +244,10 @@ public class GameNetworkManager : NetworkManager
 		}
 	}
 
-	int nPlayerOrder; 
+	[SerializeField] int nPlayerOrder; 
 	public void NextBoardPlayerTurn()
 	{
-		//Debug.Log($"<color=white>NextBoardPlayerTurn() = {nPlayerOrder} < {boardControls.Count}</color>");
+		Debug.Log($"<color=white>NextBoardPlayerTurn() = {nPlayerOrder} < {boardControls.Count}</color>");
 		if (nPlayerOrder < boardControls.Count)
 			boardControls[nPlayerOrder++].YourTurn();
 		else

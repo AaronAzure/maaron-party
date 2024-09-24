@@ -42,6 +42,10 @@ public class BoardManager : NetworkBehaviour
 	[SerializeField] private starNodes[] starNodes;
 
 
+	[Space] [Header("States")]
+	[SerializeField] private bool isIntro;
+
+
 	private void Awake() 
 	{
 		Instance = this;		
@@ -104,7 +108,7 @@ public class BoardManager : NetworkBehaviour
 		// turn 1
 		if (!gm.gameStarted)
 		{
-			gm.gameStarted = true;
+			isIntro = gm.gameStarted = true;
 			CmdToggleStartCam(true);
 			
 			yield return new WaitForSeconds(1.5f);
@@ -160,7 +164,15 @@ public class BoardManager : NetworkBehaviour
 	[Command(requiresAuthority=false)] public void CmdNextDialogue() => RpcNextDialogue();
 	[ClientRpc] void RpcNextDialogue() => dialogue.NextSentence();
 
-	[Command(requiresAuthority=false)] public void CmdEndDialogue() => RpcEndDialogue();
+	Coroutine teleportCo;
+	[Command(requiresAuthority=false)] public void CmdEndDialogue() 
+	{
+		RpcEndDialogue();
+		if (isIntro && isServer && teleportCo == null)
+		{
+			teleportCo = StartCoroutine( TeleportToStarCo(-1) );
+		}
+	}
 	[ClientRpc] void RpcEndDialogue() => dialogue.CloseDialogue();
 
 	// start location camera
@@ -182,6 +194,38 @@ public class BoardManager : NetworkBehaviour
 
 
 	#region Star
+	//public void TeleportToStar(int fixedInd=-1) => StartCoroutine( TeleportToStarCo(fixedInd) );
+	IEnumerator TeleportToStarCo(int fixedInd=-1, bool changeLoc=false)
+	{
+		Debug.Log("TeleportToStarCo");
+		if (changeLoc)
+			CmdSetStarNode(gm.prevStarInd, false);
+		int rng = fixedInd == -1 ? Random.Range(0, starNodes.Length) : fixedInd;
+		while (rng == gm.prevStarInd || 
+			(gm.prevStarInd >= 0 && gm.prevStarInd < starNodes.Length &&
+			starNodes[gm.prevStarInd].invalid != null && starNodes[gm.prevStarInd].invalid != starNodes[rng].node))
+		{
+			rng = Random.Range(0, starNodes.Length);
+		}
+		gm.prevStarInd = rng;
+		starCam.m_Follow = starNodes[rng].node.transform;
+		CmdMaaronTeleport();
+
+		yield return new WaitForSeconds(2f);
+		CmdToggleStartCam(false);
+		CmdToggleStarCam(true);
+
+		yield return new WaitForSeconds(1f);
+		StartCoroutine( SetupStarNode(rng) );
+		
+		yield return new WaitForSeconds(4);
+		CmdToggleStarCam(false);
+		
+		yield return new WaitForSeconds(1);
+		isIntro = false;
+		nm.NextBoardPlayerTurn();
+		teleportCo = null;
+	}
 	public void ChooseStar() => StartCoroutine( ChooseStarCo() );
 	IEnumerator ChooseStarCo(int fixedInd=-1, bool changeLoc=false)
 	{
@@ -217,10 +261,15 @@ public class BoardManager : NetworkBehaviour
 		CmdToggleSpotlight(true);
 	}
 
+	// maaron teleports
+	[Command(requiresAuthority=false)] void CmdMaaronTeleport() => RpcMaaronTeleport();
+	[ClientRpc] void RpcMaaronTeleport() => maaronAnim.SetTrigger("teleport");
+
 	// set maaron location
 	[Command(requiresAuthority=false)] void CmdSetMaaron(int nodeId, bool isStarSpace) => RpcSetMaaron(nodeId, isStarSpace);
 	[ClientRpc] void RpcSetMaaron(int nodeId, bool isStarSpace) 
 	{ 
+		maaronAnim.gameObject.SetActive(false);
 		maaronAnim.gameObject.SetActive(isStarSpace);
 		maaronAnim.gameObject.transform.position = starNodes[nodeId].node.maaronPos.position;
 		maaronAnim.transform.LookAt(starNodes[nodeId].node.transform.position, Vector3.up);

@@ -2268,6 +2268,7 @@ MonoBehaviour:
   n: 0
   startNode: {fileID: 0}
   starNodes: []
+  isIntro: 0
 --- !u!114 &1144782064657783664
 MonoBehaviour:
   m_ObjectHideFlags: 0
