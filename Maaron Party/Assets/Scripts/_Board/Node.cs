@@ -226,7 +226,7 @@ public class Node : MonoBehaviour
 		{
 			if (queue[i].hasStar)
 			{
-				Debug.Log($"<color=yellow>NODE FOUND |{visited[queue[i]]}|</color>", queue[i].gameObject);
+				//Debug.Log($"<color=yellow>NODE FOUND |{visited[queue[i]]}|</color>", queue[i].gameObject);
 				return visited[queue[i]];
 			}
 			else
