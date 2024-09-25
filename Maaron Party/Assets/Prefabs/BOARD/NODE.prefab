@@ -62,6 +62,7 @@ MonoBehaviour:
   thornExplosionObj: {fileID: 8943955186707270363}
   txt: {fileID: 6912015489443780956}
   n: 999
+  m: 999
 --- !u!65 &2792903447503191607
 BoxCollider:
   m_ObjectHideFlags: 0

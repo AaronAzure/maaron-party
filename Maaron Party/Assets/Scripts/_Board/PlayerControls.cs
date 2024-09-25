@@ -93,6 +93,7 @@ public class PlayerControls : NetworkBehaviour
 	
 	[Space] [SerializeField] private Transform dataUi;
 	[SerializeField] private Image dataImg;
+	[SerializeField] private TextMeshProUGUI distanceTxt;
 	[SerializeField] private TextMeshProUGUI coinTxt;
 	[SerializeField] private TextMeshProUGUI starTxt;
 	private BoardManager bm { get { return BoardManager.Instance; } }
@@ -275,9 +276,6 @@ public class PlayerControls : NetworkBehaviour
 			if (stars == starsT)
 			{
 				isCurrencyAsync = false;
-				anim.SetBool("hasStar", false);
-				starCam.SetActive(false);
-				StartCoroutine(WaitForNewStarCo());
 				currencySpeedT = 1;
 			}
 		}
@@ -378,7 +376,15 @@ public class PlayerControls : NetworkBehaviour
 		//Debug.Log("<color=magenta>YOUR TURN!!</color>");
 		CmdCamToggle(true);
 		//CmdPlayerToggle(true);
+		if (currNode != null)
+			ShowDistanceAway(currNode.GetDistanceAway(0));
+		else if (nextNode != null)
+			ShowDistanceAway(nextNode.GetDistanceAway(1));
 		TargetYourTurn(netIdentity.connectionToClient);
+	}
+	private void ShowDistanceAway(int n)
+	{
+		distanceTxt.text = n == -1 ? "? spaces away" : n == 1 ? "1 space away" : $"{n} spaces away";
 	}
 	[Command(requiresAuthority=false)] private void CmdCamToggle(bool activate) => RpcCamToggle(activate);
 	[ClientRpc] private void RpcCamToggle(bool activate) => vCam.gameObject.SetActive(activate);
@@ -459,13 +465,12 @@ public class PlayerControls : NetworkBehaviour
 				coins -= 20;
 			currencySpeedT = 2;
 			stars++;
-			isBuyingStar = true;
-			anim.SetBool("hasStar", true);
+			StartCoroutine(PurchaseStarCo());
 			Vector3 dir = Camera.main.transform.position - transform.position;
 			model.rotation = Quaternion.LookRotation(new Vector3(dir.x, 0, dir.z).normalized);
 		}
 		else	
-			starCam.SetActive(false);
+			CmdToggleStarCam(false);
 
 		startPos = transform.position;
 		// more than one path
@@ -483,6 +488,20 @@ public class PlayerControls : NetworkBehaviour
 			starUi.SetActive(false);
 		isStop = isAtStar = false;
 	}
+	IEnumerator PurchaseStarCo()
+	{
+		isBuyingStar = true;
+		anim.SetBool("hasStar", true);
+
+		yield return new WaitForSeconds(2);
+		anim.SetBool("hasStar", false);
+		CmdToggleStarCam(false);
+		bm.CmdChooseStar();
+		//StartCoroutine(WaitForNewStarCo());
+		yield return new WaitForSeconds(6.5f);
+		isBuyingStar = false;
+	}
+
 	public void _CLOSE_SHOP()
 	{
 		startPos = transform.position;
@@ -595,7 +614,7 @@ public class PlayerControls : NetworkBehaviour
 		isAtStar = true;
 		if (anim != null) anim.SetFloat("moveSpeed", 0);
 		starUi.SetActive(true);
-		starCam.SetActive(true);
+		CmdToggleStarCam(true);
 		isStop = false;
 	}
 	public void NodeEffect(int bonus)
@@ -612,6 +631,9 @@ public class PlayerControls : NetworkBehaviour
 		bonusTxt.text = n > 0 ? $"+{n}" : $"{n}";
 	}
 
+	[Command(requiresAuthority=false)] private void CmdToggleStarCam(bool active) => RpcToggleStarCam(active);
+	[ClientRpc] private void RpcToggleStarCam(bool active) => starCam.SetActive(active);
+
 	private IEnumerator NodeEffectCo()
 	{
 		// no event
@@ -627,12 +649,12 @@ public class PlayerControls : NetworkBehaviour
 		bm.NextPlayerTurn();
 	}
 
-	private IEnumerator WaitForNewStarCo()
-	{
-		bm.ChooseStar();
-		yield return new WaitForSeconds(4.5f);
-		isBuyingStar = false;
-	}
+	//private IEnumerator WaitForNewStarCo()
+	//{
+	//	bm.ChooseStar();
+	//	yield return new WaitForSeconds(4.5f);
+	//	isBuyingStar = false;
+	//}
 
 	void HidePaths()
 	{

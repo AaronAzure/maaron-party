@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
+using Unity.Collections;
 using UnityEngine;
 
 public class Node : MonoBehaviour
@@ -29,6 +31,7 @@ public class Node : MonoBehaviour
 	[Space] [SerializeField] private TextMeshPro txt;
 	private bool canSpellTarget=true;
 	[HideInInspector] public int n=999;
+	[HideInInspector] public int m=999;
 	private PlayerControls p { get { return PlayerControls.Instance; } }
 	List<PlayerControls> players;
 
@@ -180,6 +183,7 @@ public class Node : MonoBehaviour
 	{
 		if (txt != null && n != 999)
 		{
+			m = 999;
 			n = 999;
 			txt.text = "";
 			txt.color = Color.white;
@@ -210,6 +214,38 @@ public class Node : MonoBehaviour
 					if (node != null)
 						node.SetDistanceAway(x, movesLeft);
 		}
+	}
+	public int GetDistanceAway(int x)
+	{
+		Dictionary<Node, int> visited = new();
+		List<Node> queue = new();
+		queue.Add(this);
+		visited.Add(this, x);
+
+		for (int i=0 ; i<queue.Count ; i++)
+		{
+			if (queue[i].hasStar)
+			{
+				Debug.Log($"<color=yellow>NODE FOUND |{visited[queue[i]]}|</color>", queue[i].gameObject);
+				return visited[queue[i]];
+			}
+			else
+			{
+				foreach (Node nextNode in queue[i].nextNodes)
+				{
+					// new node
+					if (!visited.ContainsKey(nextNode))
+					{
+						queue.Add(nextNode);
+						visited.Add(nextNode, queue[i].DoesConsumeMovement() ? 
+							visited[queue[i]] + 1 : visited[queue[i]]
+						);
+					}
+				}
+			}
+		}
+
+		return -1;
 	}
 
 	

@@ -22,6 +22,7 @@ public class BoardManager : NetworkBehaviour
 
 	[Space] [Header("Text")]
 	[TextArea(2, 5)] [SerializeField] string[] introSents;
+	[TextArea(2, 5)] [SerializeField] string[] lastSents;
 
 
 	[Space] [Header("Universal")]
@@ -65,7 +66,7 @@ public class BoardManager : NetworkBehaviour
 		CmdReadyUp();
 		turnTxt.text = $"Turn: {gm.nTurn}/{gm.maxTurns}";
 
-		if (isServer && !gm.gameStarted)
+		if (!gm.gameStarted)
 			CmdToggleMainUi(false);
 		//string s = $"<color=#FF8D07>";
 		//s += $"NetworkServer.connections.Count = {NetworkServer.connections.Count} | ";
@@ -116,7 +117,23 @@ public class BoardManager : NetworkBehaviour
 			CmdMaaronIntro();
 
 			yield return new WaitForSeconds(2);
-			CmdToggleDialogue(true);
+			CmdToggleDialogue(true, introSents);
+			CmdToggleNextButton(true);
+
+			yield break;
+			//yield return ChooseStarCo(0);
+		}
+		// last 5 turns
+		else if (gm.nTurn == gm.maxTurns - 4)
+		{
+			//isIntro = gm.gameStarted = true;
+			CmdToggleStartCam(true);
+			
+			yield return new WaitForSeconds(1.5f);
+			CmdMaaronIntro();
+
+			yield return new WaitForSeconds(2);
+			CmdToggleDialogue(true, lastSents);
 			CmdToggleNextButton(true);
 
 			yield break;
@@ -125,6 +142,8 @@ public class BoardManager : NetworkBehaviour
 		// turn 2+
 		else
 			StartCoroutine( SetupStarNode(gm.prevStarInd) );
+			
+		yield return new WaitForSeconds(0.5f);
 		nm.NextBoardPlayerTurn();
 
 		if (gm.nTurn == 5)
@@ -132,7 +151,7 @@ public class BoardManager : NetworkBehaviour
 			yield return new WaitForSeconds(1);
 			CmdNewStock();
 		}
-		if (gm.nTurn == gm.maxTurns - 5)
+		if (gm.nTurn == gm.maxTurns - 4)
 		{
 			yield return new WaitForSeconds(1);
 			CmdNewStock();
@@ -147,8 +166,8 @@ public class BoardManager : NetworkBehaviour
 	[ClientRpc] void RpcToggleMainUi(bool active) => mainUi.gameObject.SetActive(active);
 	
 	// Dialogue
-	[Command(requiresAuthority=false)] public void CmdToggleDialogue(bool active) => RpcToggleDialogue(active);
-	[ClientRpc] void RpcToggleDialogue(bool active) => dialogue.SetSentence(active, "Maaron", introSents);
+	[Command(requiresAuthority=false)] public void CmdToggleDialogue(bool active, string[] sents) => RpcToggleDialogue(active, sents);
+	[ClientRpc] void RpcToggleDialogue(bool active, string[] sents) => dialogue.SetSentence(active, "Maaron", sents);
 
 	[Command(requiresAuthority=false)] public void CmdToggleNextButton(bool targeted) 
 	{
@@ -225,7 +244,7 @@ public class BoardManager : NetworkBehaviour
 		teleportCo = null;
 		CmdToggleMainUi(true);
 	}
-	public void ChooseStar() => StartCoroutine( ChooseStarCo() );
+	[Command(requiresAuthority=false)] public void CmdChooseStar() => StartCoroutine( ChooseStarCo() );
 	IEnumerator ChooseStarCo(int fixedInd=-1, bool changeLoc=false)
 	{
 		if (changeLoc)
@@ -254,9 +273,9 @@ public class BoardManager : NetworkBehaviour
 	private IEnumerator SetupStarNode(int ind)
 	{
 		CmdSetMaaron(ind, true);
+		CmdSetStarNode(starNodes[ind].node.nodeId, true);
 		
 		yield return new WaitForSeconds(2);
-		CmdSetStarNode(starNodes[ind].node.nodeId, true);
 		CmdToggleSpotlight(true);
 	}
 

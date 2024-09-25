@@ -2257,6 +2257,10 @@ MonoBehaviour:
   introSents:
   - Welcome gamers!
   - Aight let's start!
+  lastSents:
+  - We're nearing the end!
+  - But who knows what will happen! Cause it's time for...
+  - '[Insert cool title here]'
   mainUi: {fileID: 3981091957135357725}
   dataUi: {fileID: 2541591487585698009}
   turnTxt: {fileID: 6783004385688767745}
