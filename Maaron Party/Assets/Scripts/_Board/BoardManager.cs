@@ -29,6 +29,7 @@ public class BoardManager : NetworkBehaviour
 	[SerializeField] private Transform dataUi;
 	[SerializeField] private TextMeshProUGUI turnTxt;
 	[SerializeField] private GameObject newStockUi;
+	[SerializeField] private GameObject finalFiveUi;
 	[SerializeField] private CinemachineVirtualCamera starCam;
 	[SerializeField] private Animator maaronAnim;
 	[SerializeField] private ParticleSystem maaronSpotlightPs;
@@ -102,6 +103,7 @@ public class BoardManager : NetworkBehaviour
 		return n++;
 	}
 	
+	#region Start game
 	IEnumerator StartGameCo()
 	{
 		//yield return new WaitForSeconds(0.5f);
@@ -130,8 +132,11 @@ public class BoardManager : NetworkBehaviour
 			//isIntro = gm.gameStarted = true;
 			isLast5 = true;
 			CmdToggleStartCam(true);
+
+			yield return new WaitForSeconds(1f);
+			CmdFinalFive();
 			
-			yield return new WaitForSeconds(1.5f);
+			yield return new WaitForSeconds(0.5f);
 			CmdMaaronIntro();
 
 			yield return new WaitForSeconds(2);
@@ -159,7 +164,7 @@ public class BoardManager : NetworkBehaviour
 			CmdNewStock();
 		}
 	}
-
+	#endregion
 
 	#region Dialogue
 	
@@ -265,7 +270,7 @@ public class BoardManager : NetworkBehaviour
 		yield return new WaitForSeconds(2);
 		//CmdSetMaaron(gm.prevStarInd, true);
 		yield return StartCoroutine( SetupStarNode(gm.prevStarInd) );
-		
+
 		CmdToggleStartCam(false);
 		nm.NextBoardPlayerTurn();
 		CmdToggleMainUi(true);
@@ -374,6 +379,10 @@ public class BoardManager : NetworkBehaviour
 	// new stock text
 	[Command(requiresAuthority=false)] void CmdNewStock() => RpcNewStock();
 	[ClientRpc] void RpcNewStock() => newStockUi.SetActive(true);
+
+	// new stock text
+	[Command(requiresAuthority=false)] void CmdFinalFive() => RpcFinalFive();
+	[ClientRpc] void RpcFinalFive() => finalFiveUi.SetActive(true);
 	
 	#endregion
 
