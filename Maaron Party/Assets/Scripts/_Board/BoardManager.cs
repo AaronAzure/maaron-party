@@ -161,7 +161,7 @@ public class BoardManager : NetworkBehaviour
 	}
 
 
-	#region introduction
+	#region Dialogue
 	
 	// ui = player data, turn
 	[Command(requiresAuthority=false)] public void CmdToggleMainUi(bool active) => RpcToggleMainUi(active);
@@ -185,6 +185,7 @@ public class BoardManager : NetworkBehaviour
 	[ClientRpc] void RpcNextDialogue() => dialogue.NextSentence();
 
 	Coroutine teleportCo;
+	//~ --------------------------------------------------------
 	[Command(requiresAuthority=false)] public void CmdEndDialogue() 
 	{
 		RpcEndDialogue();
@@ -200,6 +201,12 @@ public class BoardManager : NetworkBehaviour
 	}
 	[ClientRpc] void RpcEndDialogue() => dialogue.CloseDialogue();
 
+	#endregion
+
+
+
+	#region Introduction
+
 	// start location camera
 	[Command(requiresAuthority=false)] public void CmdToggleStartCam(bool active) => RpcToggleStartCam(active);
 	[ClientRpc] void RpcToggleStartCam(bool active) => startCam.SetActive(active);
@@ -214,6 +221,11 @@ public class BoardManager : NetworkBehaviour
 		maaronAnim.transform.rotation = Quaternion.Euler(0,180,0);
 	}
 	
+	#endregion
+
+
+	#region Chest
+
 	// spawn chests
 	[Command(requiresAuthority=false)] public void CmdSpawnChests()
 	{
@@ -223,18 +235,44 @@ public class BoardManager : NetworkBehaviour
 	[ClientRpc] void RpcSpawnChests() 
 	{ 
 		maaronAnim.SetTrigger("magic");
-		foreach (TreasureChest chest in chests)
-			chest.gameObject.SetActive(true);
+		//foreach (TreasureChest chest in chests)
+		for (int i=0 ; i<chests.Length ; i++)
+		{
+			chests[i].gameObject.SetActive(true);
+			chests[i].ind = i;
+		}
 	}
 	[TargetRpc] void TargetChooseChest(NetworkConnectionToClient target) 
 	{ 
-		Debug.Log("<color=yellow>CHOOSE CHEST</color>");
 		foreach (TreasureChest chest in chests)
 			chest.ToggleChooseable(true);
 	}
 
+	[Command(requiresAuthority=false)] public void CmdSelectChest(int n) 
+	{
+		RpcSelectChest(n);
+		StartCoroutine( OpenChestCo() );
+	}
+	[ClientRpc] private void RpcSelectChest(int n)
+	{
+		chests[n].OpenChest();
+	}
+	IEnumerator OpenChestCo()
+	{
+		yield return new WaitForSeconds(2);
+		CmdMaaronTeleport();
+
+		yield return new WaitForSeconds(2);
+		//CmdSetMaaron(gm.prevStarInd, true);
+		yield return StartCoroutine( SetupStarNode(gm.prevStarInd) );
+		
+		CmdToggleStartCam(false);
+		nm.NextBoardPlayerTurn();
+		CmdToggleMainUi(true);
+	}
 
 	#endregion
+
 
 
 	#region Star
@@ -267,8 +305,8 @@ public class BoardManager : NetworkBehaviour
 		//yield return new WaitForSeconds(1);
 		isIntro = false;
 		nm.NextBoardPlayerTurn();
-		teleportCo = null;
 		CmdToggleMainUi(true);
+		teleportCo = null;
 	}
 	[Command(requiresAuthority=false)] public void CmdChooseStar() => StartCoroutine( ChooseStarCo() );
 	IEnumerator ChooseStarCo(int fixedInd=-1, bool changeLoc=false)

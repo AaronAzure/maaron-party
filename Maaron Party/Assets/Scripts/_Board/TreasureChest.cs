@@ -9,6 +9,8 @@ public class TreasureChest : MonoBehaviour
 	[SerializeField] Collider col;
 	private bool canChoose;
 	[SerializeField] private TreasureChest[] otherChests;
+	[HideInInspector] public int ind;
+	BoardManager bm {get{return BoardManager.Instance;}}
 
 	public void ToggleChooseable(bool active) 
 	{
@@ -16,6 +18,11 @@ public class TreasureChest : MonoBehaviour
 		col.enabled = active;
 		this.enabled = active;
 		highlightObj.SetActive(false);
+	}
+
+	public void OpenChest()
+	{
+		anim.SetTrigger("open");
 	}
 
 
@@ -26,7 +33,7 @@ public class TreasureChest : MonoBehaviour
 			highlightObj.SetActive(true);
 			if (Input.GetMouseButtonDown(0))
 			{
-				anim.SetTrigger("open");
+				bm.CmdSelectChest(ind);
 				foreach (TreasureChest chest in otherChests)
 					chest.ToggleChooseable(false);
 			}
