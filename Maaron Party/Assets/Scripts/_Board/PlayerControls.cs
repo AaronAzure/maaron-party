@@ -236,6 +236,11 @@ public class PlayerControls : NetworkBehaviour
 	[Command(requiresAuthority=false)] private void CmdSetStarText(int n) => RpcSetStarText(n);
 	[ClientRpc] private void RpcSetStarText(int n) => starTxt.text = $"{n}";
 
+	private void RotateDirection(Vector3 dir)
+	{
+		model.rotation = Quaternion.LookRotation(new Vector3(dir.x, 0, dir.z));
+	}
+
 	#endregion
 
 
@@ -518,6 +523,7 @@ public class PlayerControls : NetworkBehaviour
 
 		if (shopUi != null)
 			shopUi.SetActive(false);
+		CmdToggleStarCam(false);
 		isStop = isAtShop = false;
 	}
 	public void _ROLL_DICE()
@@ -606,6 +612,12 @@ public class PlayerControls : NetworkBehaviour
 	{
 		isAtShop = true;
 		if (anim != null) anim.SetFloat("moveSpeed", 0);
+		if (nextNode != null && nextNode.target != null)
+		{
+			Vector3 dir = (nextNode.target.position - transform.position).normalized;
+			RotateDirection(dir);
+		}
+		CmdToggleStarCam(true);
 		shopUi.SetActive(true);
 		isStop = false;
 	}
@@ -614,6 +626,11 @@ public class PlayerControls : NetworkBehaviour
 		isAtStar = true;
 		if (anim != null) anim.SetFloat("moveSpeed", 0);
 		starUi.SetActive(true);
+		if (nextNode != null)
+		{
+			Vector3 dir = (nextNode.GetTargetTransform().position - transform.position).normalized;
+			RotateDirection(dir);
+		}
 		CmdToggleStarCam(true);
 		isStop = false;
 	}

@@ -33,6 +33,7 @@ public class BoardManager : NetworkBehaviour
 	[SerializeField] private CinemachineVirtualCamera starCam;
 	[SerializeField] private Animator maaronAnim;
 	[SerializeField] private ParticleSystem maaronSpotlightPs;
+	[Space] [SerializeField] private TreasureChest[] chests;
 	[SyncVar] public int nBmReady; 
 	[SyncVar] public int n;
 	bool isChoosingStar;
@@ -45,6 +46,7 @@ public class BoardManager : NetworkBehaviour
 
 	[Space] [Header("States")]
 	[SerializeField] private bool isIntro;
+	[SerializeField] private bool isLast5;
 
 
 	private void Awake() 
@@ -127,6 +129,7 @@ public class BoardManager : NetworkBehaviour
 		else if (gm.nTurn == gm.maxTurns - 4)
 		{
 			//isIntro = gm.gameStarted = true;
+			isLast5 = true;
 			CmdToggleStartCam(true);
 			
 			yield return new WaitForSeconds(1.5f);
@@ -142,7 +145,7 @@ public class BoardManager : NetworkBehaviour
 		// turn 2+
 		else
 			StartCoroutine( SetupStarNode(gm.prevStarInd) );
-			
+
 		yield return new WaitForSeconds(0.5f);
 		nm.NextBoardPlayerTurn();
 
@@ -186,9 +189,16 @@ public class BoardManager : NetworkBehaviour
 	[Command(requiresAuthority=false)] public void CmdEndDialogue() 
 	{
 		RpcEndDialogue();
+		Debug.Log("<color=yellow>End Dialogue</color>");
 		if (isIntro && isServer && teleportCo == null)
 		{
 			teleportCo = StartCoroutine( TeleportToStarCo(0) );
+		}
+		if (isLast5 && isServer)
+		{
+			Debug.Log("<color=yellow>SPAWNING CHESTS</color>");
+			CmdSpawnChests();
+			//teleportCo = StartCoroutine( TeleportToStarCo(0) );
 		}
 	}
 	[ClientRpc] void RpcEndDialogue() => dialogue.CloseDialogue();
@@ -205,6 +215,15 @@ public class BoardManager : NetworkBehaviour
 		maaronAnim.gameObject.SetActive(true);
 		maaronAnim.gameObject.transform.position = maaronSpawnPos.position;
 		maaronAnim.transform.rotation = Quaternion.Euler(0,180,0);
+	}
+	
+	// spawn chests
+	[Command(requiresAuthority=false)] public void CmdSpawnChests() => RpcSpawnChests();
+	[ClientRpc] void RpcSpawnChests() 
+	{ 
+		maaronAnim.SetTrigger("magic");
+		foreach (TreasureChest chest in chests)
+			chest.gameObject.SetActive(true);
 	}
 
 

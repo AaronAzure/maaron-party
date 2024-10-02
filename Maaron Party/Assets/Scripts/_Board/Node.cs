@@ -21,6 +21,7 @@ public class Node : MonoBehaviour
 	[SerializeField] ParticleSystem redGlowPs;
 
 	[Space] [SerializeField] private GameObject targetObj;
+	public Transform target;
 	[SerializeField] private Animator targetAnim;
 	[SerializeField] private ParticleSystem starPs;
 	public Transform maaronPos;
@@ -248,6 +249,11 @@ public class Node : MonoBehaviour
 		return -1;
 	}
 
+
+	public Transform GetTargetTransform()
+	{
+		return maaronPos != null ? maaronPos.transform : null;
+	}
 	
 	Coroutine canTargetCo;
 	public void SetCanSpellTarget(bool canSpellTarget) => this.canSpellTarget = canSpellTarget;
