@@ -254,6 +254,13 @@ public class GameNetworkManager : NetworkManager
 			StartCoroutine(StartMiniGameCo());
 	}
 
+	public NetworkConnectionToClient GetLosingPlayer()
+	{
+		if (boardControls != null && boardControls.Count > 0)
+			return boardControls[boardControls.Count - 1] != null ? boardControls[boardControls.Count - 1].netIdentity.connectionToClient : null;
+		return null;
+	}
+
 	public override void OnServerSceneChanged(string sceneName)
 	{
 		base.OnServerSceneChanged(sceneName);

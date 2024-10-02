@@ -8,11 +8,10 @@ using Cinemachine;
 public class BoardManager : NetworkBehaviour
 {
 	public static BoardManager Instance;
-	[SerializeField] private PlayerControls playerPrefab;
+	//[SerializeField] private PlayerControls playerPrefab;
 	[SerializeField] private GameObject startCam;
 	[SerializeField] private Transform spawnPos;
 	[SerializeField] private Transform maaronSpawnPos;
-	[SerializeField] private PlayerControls[] players;
 	private PlayerControls _player;
 	GameManager gm {get{return GameManager.Instance;}}
 	GameNetworkManager nm {get{return GameNetworkManager.Instance;}}
@@ -189,14 +188,12 @@ public class BoardManager : NetworkBehaviour
 	[Command(requiresAuthority=false)] public void CmdEndDialogue() 
 	{
 		RpcEndDialogue();
-		Debug.Log("<color=yellow>End Dialogue</color>");
 		if (isIntro && isServer && teleportCo == null)
 		{
 			teleportCo = StartCoroutine( TeleportToStarCo(0) );
 		}
 		if (isLast5 && isServer)
 		{
-			Debug.Log("<color=yellow>SPAWNING CHESTS</color>");
 			CmdSpawnChests();
 			//teleportCo = StartCoroutine( TeleportToStarCo(0) );
 		}
@@ -218,12 +215,22 @@ public class BoardManager : NetworkBehaviour
 	}
 	
 	// spawn chests
-	[Command(requiresAuthority=false)] public void CmdSpawnChests() => RpcSpawnChests();
+	[Command(requiresAuthority=false)] public void CmdSpawnChests()
+	{
+		RpcSpawnChests();
+		TargetChooseChest(nm.GetLosingPlayer());
+	} 
 	[ClientRpc] void RpcSpawnChests() 
 	{ 
 		maaronAnim.SetTrigger("magic");
 		foreach (TreasureChest chest in chests)
 			chest.gameObject.SetActive(true);
+	}
+	[TargetRpc] void TargetChooseChest(NetworkConnectionToClient target) 
+	{ 
+		Debug.Log("<color=yellow>CHOOSE CHEST</color>");
+		foreach (TreasureChest chest in chests)
+			chest.ToggleChooseable(true);
 	}
 
 

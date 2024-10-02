@@ -10,6 +10,11 @@ public class Direction : MonoBehaviour
 	[SerializeField] private Material normalMat;
 	[SerializeField] private Material highlightMat;
 
+	private void OnDisable() 
+	{
+		meshRenderer.material = normalMat;
+	}
+
     private void OnMouseOver() 
 	{
 		meshRenderer.material = highlightMat;
