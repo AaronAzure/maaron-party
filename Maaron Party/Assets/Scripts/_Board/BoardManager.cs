@@ -80,7 +80,7 @@ public class BoardManager : NetworkBehaviour
 	[Command(requiresAuthority=false)] public void CmdReadyUp()
 	{
 		++nBmReady;
-		Debug.Log($"<color=white>{nBmReady} >= {nm.numPlayers}</color>");
+		//Debug.Log($"<color=white>{nBmReady} >= {nm.numPlayers}</color>");
 		if (nBmReady >= nm.numPlayers)
 		{
 			RpcSetUpPlayer();
@@ -269,11 +269,16 @@ public class BoardManager : NetworkBehaviour
 
 		yield return new WaitForSeconds(2);
 		//CmdSetMaaron(gm.prevStarInd, true);
-		yield return StartCoroutine( SetupStarNode(gm.prevStarInd) );
-
+		CmdSetMaaron(gm.prevStarInd, true);
+		CmdSetStarNode(starNodes[gm.prevStarInd].node.nodeId, true);
+		
+		yield return new WaitForSeconds(1);
 		CmdToggleStartCam(false);
 		nm.NextBoardPlayerTurn();
 		CmdToggleMainUi(true);
+
+		yield return new WaitForSeconds(1);
+		CmdToggleSpotlight(true);
 	}
 
 	#endregion
