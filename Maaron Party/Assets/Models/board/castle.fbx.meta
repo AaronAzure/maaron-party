@@ -3,7 +3,37 @@ guid: d03db63b2e7bdc84e97bcc6744108a72
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: CastleMat
+    second: {fileID: 2100000, guid: 8dd6b6b0c77f74b4999486c5a4db4e94, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: turret.power.001.Mat
+    second: {fileID: 2100000, guid: 27c1afaac285cef42b513b25f7938c4a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: turret.power.002.Mat
+    second: {fileID: 2100000, guid: fbdf0fd2e5603c94097a2efbba846d7b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: turret.power.003.Mat
+    second: {fileID: 2100000, guid: 3708e5d90d90d744394b21fe7bbe75dc, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: turret.power.004.Mat
+    second: {fileID: 2100000, guid: 98dba14202554d949b1d6638d449bf6d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: turret.power.005.Mat
+    second: {fileID: 2100000, guid: c96bd0100c4a80f469a03f92f9f1eea5, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
