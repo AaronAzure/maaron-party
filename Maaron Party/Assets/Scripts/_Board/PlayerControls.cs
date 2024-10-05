@@ -657,7 +657,7 @@ public class PlayerControls : NetworkBehaviour
 		if (currNode.GetNodeLandEffect(this))
 			yield return new WaitForSeconds(0.5f);
 		else 
-			yield return new WaitForSeconds(2f);
+			yield return new WaitForSeconds(3.5f);
 
 		while (isCurrencyAsync)
 			yield return new WaitForSeconds(0.1f);

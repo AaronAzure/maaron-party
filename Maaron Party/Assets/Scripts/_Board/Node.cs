@@ -147,10 +147,10 @@ public class Node : MonoBehaviour
 				p.NodeEffect(-3);
 				return true;
 			case NodeSpace.green_rotate: 
-
+				BoardManager.Instance.CmdTurretRotateCo();
 				return false;
 			case NodeSpace.green_speed: 
-
+				BoardManager.Instance.CmdTurretTurnCo();
 				return false;
 		}
 		return true;

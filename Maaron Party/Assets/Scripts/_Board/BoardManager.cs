@@ -430,25 +430,40 @@ public class BoardManager : NetworkBehaviour
 	}
 
 	#region Turret
-	IEnumerator TurretCo()
+	IEnumerator TurretCo(bool goToNextPlayer=true)
 	{
-		turretTurnDone = true;
-
-		yield return new WaitForSeconds(1);
 		CmdToggleTurretCam(true);
-		CmdTurretTurn();
-		gm.turretReady = gm.turretReady + 1 % 5;
 
-		yield return new WaitForSeconds(2);
+		yield return new WaitForSeconds(1f);
+		CmdTurretTurn();
+		//gm.turretReady = gm.turretReady + 1 % 5;
+
+		yield return new WaitForSeconds(1.5f);
 		CmdToggleTurretCam(false);
-		nm.NextBoardPlayerTurn();
+		if (goToNextPlayer)
+			nm.NextBoardPlayerTurn();
+	}
+	IEnumerator TurretRotateCo()
+	{
+		CmdToggleTurretCam(true);
+
+		yield return new WaitForSeconds(1f);
+		RpcTurretRotate(++gm.turretRot);
+
+		yield return new WaitForSeconds(1.5f);
+		CmdToggleTurretCam(false);
 	}
 
-	[Command(requiresAuthority=false)] public void CmdTurretStart() => RpcTurretStart(gm.turretReady);
-	[ClientRpc] void RpcTurretStart(int x) => turret.RemoteStart(x);
+	[Command(requiresAuthority=false)] public void CmdTurretStart() => RpcTurretStart(gm.turretReady, gm.turretRot);
+	[ClientRpc] void RpcTurretStart(int x, int y) => turret.RemoteStart(x, y);
 
-	[Command(requiresAuthority=false)] public void CmdTurretTurn() => RpcTurretTurn(gm.turretReady);
+	[Command(requiresAuthority=false)] public void CmdTurretTurnCo() => StartCoroutine( TurretCo(false) );
+	[Command(requiresAuthority=false)] public void CmdTurretTurn() => RpcTurretTurn(gm.turretReady++ % 5);
 	[ClientRpc] void RpcTurretTurn(int x) => turret.IncreaseReady(x);
+
+	[Command(requiresAuthority=false)] public void CmdTurretRotateCo() => StartCoroutine( TurretRotateCo() );
+	//[Command(requiresAuthority=false)] public void CmdTurretRotate() { gm.turretRot++; RpcTurretRotate(gm.turretRot); }
+	[ClientRpc] void RpcTurretRotate(int x) => turret.RotateTurret(x);
 
 	[Command(requiresAuthority=false)] public void CmdToggleTurretCam(bool active) => RpcToggleTurretCam(active);
 	[ClientRpc] void RpcToggleTurretCam(bool active) => turret.ToggleCam(active);

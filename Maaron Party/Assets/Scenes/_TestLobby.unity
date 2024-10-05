@@ -1728,7 +1728,7 @@ PrefabInstance:
       objectReference: {fileID: 552371406}
     - target: {fileID: 1394956670957801121, guid: 8e6c6d2c05137ca408b79d8a7e2b266a, type: 3}
       propertyPath: maxTurns
-      value: 6
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 1394956670957801121, guid: 8e6c6d2c05137ca408b79d8a7e2b266a, type: 3}
       propertyPath: startBtn
