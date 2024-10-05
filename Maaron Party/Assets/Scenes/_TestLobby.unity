@@ -356,7 +356,7 @@ MonoBehaviour:
   skipSideQuests: 1
   minPlayers: 2
   lobbyScene: Assets/Scenes/_TestLobby.unity
-  boardScene: Assets/Scenes/TestBoard.unity
+  boardScene: Assets/Scenes/TestBoard 1.unity
   practiceScene: Assets/Scenes/TestPreview.unity
   minigameScenes:
   - Assets/Scenes/TestMinigame 1.unity

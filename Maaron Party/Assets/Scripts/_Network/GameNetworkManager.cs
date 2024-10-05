@@ -230,7 +230,7 @@ public class GameNetworkManager : NetworkManager
 		gm.CmdTriggerTransition(true);
 		
 		yield return new WaitForSeconds(0.5f);
-		ServerChangeScene("TestBoard");
+		ServerChangeScene(boardScene);
 		//SceneManager.LoadScene("TestBoard", LoadSceneMode.Single);
 		//NetworkManager.Singleton.SceneManager.LoadScene("TestBoard", LoadSceneMode.Single);
 	}
@@ -245,9 +245,9 @@ public class GameNetworkManager : NetworkManager
 	}
 
 	[SerializeField] int nPlayerOrder; 
+	public bool StillHavePlayerTurns() => nPlayerOrder < boardControls.Count;
 	public void NextBoardPlayerTurn()
 	{
-		//Debug.Log($"<color=white>NextBoardPlayerTurn() = {nPlayerOrder} < {boardControls.Count}</color>");
 		if (nPlayerOrder < boardControls.Count)
 			boardControls[nPlayerOrder++].YourTurn();
 		else
@@ -286,7 +286,7 @@ public class GameNetworkManager : NetworkManager
 		if (skipSideQuests)
 		{
 			//yield return new WaitForSeconds(0.5f);
-			ServerChangeScene("TestBoard");
+			ServerChangeScene(boardScene);
 		}
 		else
 		{

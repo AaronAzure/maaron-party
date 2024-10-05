@@ -27,6 +27,8 @@ public class GameManager : NetworkBehaviour
 	public bool gameStarted; 
 	public int prevStarInd=-1; 
 	[SyncVar] public int maxTurns=20; 
+	[SyncVar] public int turretReady; 
+	[SyncVar] public int turretRot; 
 	//private int nPlayers {get{return GameObject.FindGameObjectsWithTag("Player").Length;}}
 	//public bool hasStarted {get; private set;}
 	//public bool lobbyCreated {get; private set;}

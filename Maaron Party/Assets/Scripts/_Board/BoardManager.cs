@@ -42,6 +42,8 @@ public class BoardManager : NetworkBehaviour
 	[Space] [Header("MUST REFERENCE PER BOARD")]
 	[SerializeField] private Node startNode;
 	[SerializeField] private starNodes[] starNodes;
+	[SerializeField] private BoardTurret turret;
+	private bool turretTurnDone;
 
 
 	[Space] [Header("States")]
@@ -108,6 +110,8 @@ public class BoardManager : NetworkBehaviour
 	{
 		//yield return new WaitForSeconds(0.5f);
 		//gm.CmdTriggerTransition(false);
+		if (turret != null)
+			CmdTurretStart();
 
 		yield return new WaitForSeconds(1);
 		// turn 1
@@ -398,8 +402,18 @@ public class BoardManager : NetworkBehaviour
 	}
 	[Command(requiresAuthority=false)] private void CmdNextPlayerTurn()
 	{
-		Debug.Log($"<color=cyan>CmdNextPlayerTurn()</color>");
-		nm.NextBoardPlayerTurn();
+		//Debug.Log($"<color=cyan>CmdNextPlayerTurn()</color>");
+		if (turret != null)
+		{
+			if (nm.StillHavePlayerTurns())
+				nm.NextBoardPlayerTurn();
+			else
+				StartCoroutine(TurretCo());
+			//else
+			//	nm.NextBoardPlayerTurn();
+		}
+		else
+			nm.NextBoardPlayerTurn();
 		//if (!firstTurn)
 		//	nPlayerOrder = ++nPlayerOrder;
 		//	//nPlayerOrder = ++nPlayerOrder % nPlayers;
@@ -414,6 +428,32 @@ public class BoardManager : NetworkBehaviour
 			//gm.CmdLoadMinigame();
 			//LoadMinigame("TestMinigame");
 	}
+
+	#region Turret
+	IEnumerator TurretCo()
+	{
+		turretTurnDone = true;
+
+		yield return new WaitForSeconds(1);
+		CmdToggleTurretCam(true);
+		CmdTurretTurn();
+		gm.turretReady = gm.turretReady + 1 % 5;
+
+		yield return new WaitForSeconds(2);
+		CmdToggleTurretCam(false);
+		nm.NextBoardPlayerTurn();
+	}
+
+	[Command(requiresAuthority=false)] public void CmdTurretStart() => RpcTurretStart(gm.turretReady);
+	[ClientRpc] void RpcTurretStart(int x) => turret.RemoteStart(x);
+
+	[Command(requiresAuthority=false)] public void CmdTurretTurn() => RpcTurretTurn(gm.turretReady);
+	[ClientRpc] void RpcTurretTurn(int x) => turret.IncreaseReady(x);
+
+	[Command(requiresAuthority=false)] public void CmdToggleTurretCam(bool active) => RpcToggleTurretCam(active);
+	[ClientRpc] void RpcToggleTurretCam(bool active) => turret.ToggleCam(active);
+
+	#endregion
 }
 
 [System.Serializable]

@@ -12,7 +12,7 @@ public class Node : MonoBehaviour
 	[HideInInspector] public ushort nodeId;
 
 
-	enum NodeSpace { blue, red, green, star, shop }
+	enum NodeSpace { blue, red, green_rotate, green_speed, star, shop }
 	[Space] [SerializeField] private NodeSpace nodeSpace;
 	public bool hasStar {get; private set;}
 
@@ -146,7 +146,10 @@ public class Node : MonoBehaviour
 			case NodeSpace.red: 
 				p.NodeEffect(-3);
 				return true;
-			case NodeSpace.green: 
+			case NodeSpace.green_rotate: 
+
+				return false;
+			case NodeSpace.green_speed: 
 
 				return false;
 		}
