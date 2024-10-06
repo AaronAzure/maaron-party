@@ -2436,6 +2436,7 @@ MonoBehaviour:
   n: 0
   startNode: {fileID: 0}
   starNodes: []
+  turret: {fileID: 0}
   isIntro: 0
   isLast5: 0
 --- !u!114 &1144782064657783664
@@ -2785,7 +2786,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4877900779685976967, guid: ca528e0dfe636fc41ab740876866a4e1, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -3031,7 +3033,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4877900779685976967, guid: ca528e0dfe636fc41ab740876866a4e1, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -3136,7 +3139,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4877900779685976967, guid: ca528e0dfe636fc41ab740876866a4e1, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

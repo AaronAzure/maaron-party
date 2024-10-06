@@ -221,6 +221,7 @@ public class Node : MonoBehaviour
 	}
 	public int GetDistanceAway(int x)
 	{
+		//Debug.Log("<color=cyan>Getting Distance Away</color>");
 		Dictionary<Node, int> visited = new();
 		List<Node> queue = new();
 		queue.Add(this);
@@ -230,7 +231,7 @@ public class Node : MonoBehaviour
 		{
 			if (queue[i].hasStar)
 			{
-				//Debug.Log($"<color=yellow>NODE FOUND |{visited[queue[i]]}|</color>", queue[i].gameObject);
+				//Debug.Log($"<color=magenta>{queue[i].name} FOUND |{visited[queue[i]]}|</color>", queue[i].gameObject);
 				return visited[queue[i]];
 			}
 			else
@@ -277,6 +278,7 @@ public class Node : MonoBehaviour
 
 	public void ToggleStarNode(bool active)
 	{
+		Debug.Log($"<color=yellow>STAR == {name}</color>");
 		hasStar = active;
 		if (active)
 			starPs.Play();
@@ -289,6 +291,18 @@ public class Node : MonoBehaviour
 	{
 		if (other.CompareTag("Range") && canSpellTarget && DoesConsumeMovement())
 			targetObj.SetActive(true);
+		if (other.CompareTag("Death"))
+		{
+			Debug.Log("<color=red>NODE HIT!!</color>");
+			if (players != null && players.Contains(p) && !p.isShield)
+			{
+				Debug.Log("<color=red>PLAYER HIT!!</color>");
+				p.CmdPlayerToggle(false);
+				p.CmdRagdollToggle(true);
+				p.LoseAllCoins();
+			}
+		}
+
 	}
 	private void OnTriggerExit(Collider other) 
 	{

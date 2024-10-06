@@ -152,7 +152,10 @@ public class BoardManager : NetworkBehaviour
 		}
 		// turn 2+
 		else
+		{
+			CmdToggleMainUi(true);
 			StartCoroutine( SetupStarNode(gm.prevStarInd) );
+		}
 
 		yield return new WaitForSeconds(0.5f);
 		nm.NextBoardPlayerTurn();
@@ -432,25 +435,32 @@ public class BoardManager : NetworkBehaviour
 	#region Turret
 	IEnumerator TurretCo(bool goToNextPlayer=true)
 	{
+		yield return new WaitForSeconds(goToNextPlayer ? 1 : 0.5f);
 		CmdToggleTurretCam(true);
 
 		yield return new WaitForSeconds(1f);
-		CmdTurretTurn();
-		//gm.turretReady = gm.turretReady + 1 % 5;
+		CmdTurretTurn(++gm.turretReady);
+		if (gm.turretReady == 5)
+		{
+			CmdToggleTurretCam(false);
+			yield return new WaitForSeconds(7);
+		}
+		gm.turretReady = gm.turretReady == 5 ? 0 : gm.turretReady;
 
-		yield return new WaitForSeconds(1.5f);
+		yield return new WaitForSeconds(1);
 		CmdToggleTurretCam(false);
 		if (goToNextPlayer)
 			nm.NextBoardPlayerTurn();
 	}
 	IEnumerator TurretRotateCo()
 	{
+		yield return new WaitForSeconds(0.5f);
 		CmdToggleTurretCam(true);
 
 		yield return new WaitForSeconds(1f);
 		RpcTurretRotate(++gm.turretRot);
 
-		yield return new WaitForSeconds(1.5f);
+		yield return new WaitForSeconds(1);
 		CmdToggleTurretCam(false);
 	}
 
@@ -458,7 +468,7 @@ public class BoardManager : NetworkBehaviour
 	[ClientRpc] void RpcTurretStart(int x, int y) => turret.RemoteStart(x, y);
 
 	[Command(requiresAuthority=false)] public void CmdTurretTurnCo() => StartCoroutine( TurretCo(false) );
-	[Command(requiresAuthority=false)] public void CmdTurretTurn() => RpcTurretTurn(gm.turretReady++ % 5);
+	[Command(requiresAuthority=false)] public void CmdTurretTurn(int x) => RpcTurretTurn(x);
 	[ClientRpc] void RpcTurretTurn(int x) => turret.IncreaseReady(x);
 
 	[Command(requiresAuthority=false)] public void CmdTurretRotateCo() => StartCoroutine( TurretRotateCo() );

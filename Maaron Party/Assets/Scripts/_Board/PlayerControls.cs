@@ -378,13 +378,8 @@ public class PlayerControls : NetworkBehaviour
 
 	public void YourTurn()
 	{
-		//Debug.Log("<color=magenta>YOUR TURN!!</color>");
+		//Debug.Log("<color=cyan>YOUR TURN!!\n currNode != null => {currNode != null} nextNode != null => {nextNode != null}</color>");
 		CmdCamToggle(true);
-		//CmdPlayerToggle(true);
-		if (currNode != null)
-			ShowDistanceAway(currNode.GetDistanceAway(0));
-		else if (nextNode != null)
-			ShowDistanceAway(nextNode.GetDistanceAway(1));
 		TargetYourTurn(netIdentity.connectionToClient);
 	}
 	private void ShowDistanceAway(int n)
@@ -399,6 +394,10 @@ public class PlayerControls : NetworkBehaviour
 	{
 		if (canvas != null)
 			canvas.SetActive(true);
+		if (currNode != null)
+			ShowDistanceAway(currNode.GetDistanceAway(0));
+		else if (nextNode != null)
+			ShowDistanceAway(nextNode.GetDistanceAway(1));
 		this.enabled = true;
 		//CmdShoveToggle(true);
 	}
@@ -639,6 +638,13 @@ public class PlayerControls : NetworkBehaviour
 		coins = Mathf.Clamp(coins + bonus, 0, 999);
 		isCurrencyAsync = true;
 		CmdShowBonusTxt(bonus);
+	}
+	public void LoseAllCoins()
+	{
+		int temp = coins;
+		coins = 0;
+		isCurrencyAsync = true;
+		CmdShowBonusTxt(-temp);
 	}
 	[Command] private void CmdShowBonusTxt(int n) => RpcShowBonusTxt(n);
 	[ClientRpc] private void RpcShowBonusTxt(int n)
