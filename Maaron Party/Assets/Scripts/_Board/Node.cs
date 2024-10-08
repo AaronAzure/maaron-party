@@ -29,6 +29,10 @@ public class Node : MonoBehaviour
 	[Space] [SerializeField] private GameObject thornObj;
 	[SerializeField] private GameObject thornExplosionObj;
 	
+	[Space] [SerializeField] private MeshRenderer mesh;
+	[SerializeField] private Material starMat;
+	[SerializeField] private Material starFadeMat;
+	
 	[Space] [SerializeField] private TextMeshPro txt;
 	private bool canSpellTarget=true;
 	[HideInInspector] public int n=999;
@@ -131,29 +135,29 @@ public class Node : MonoBehaviour
 	/// Returns true if no event, else false
 	/// </summary>
 	/// <returns></returns>
-	public bool GetNodeLandEffect(PlayerControls p)
+	public float GetNodeLandEffect(PlayerControls p)
 	{
 		if (thornObj.activeSelf)
 		{
 			TriggerTrap();
-			return false;
+			return 3.5f;
 		}
 		switch (nodeSpace)
 		{
 			case NodeSpace.blue: 
 				p.NodeEffect(3);
-				return true;
+				return 0.5f;
 			case NodeSpace.red: 
 				p.NodeEffect(-3);
-				return true;
+				return 0.5f;
 			case NodeSpace.green_rotate: 
 				BoardManager.Instance.CmdTurretRotateCo();
-				return false;
+				return 4.5f;
 			case NodeSpace.green_speed: 
 				BoardManager.Instance.CmdTurretTurnCo();
-				return false;
+				return 3.5f;
 		}
-		return true;
+		return 0.5f;
 	}
 	public void TriggerTrap() => StartCoroutine(TriggerTrapCo());
 	IEnumerator TriggerTrapCo()
@@ -280,6 +284,7 @@ public class Node : MonoBehaviour
 	{
 		Debug.Log($"<color=yellow>STAR == {name}</color>");
 		hasStar = active;
+		if (mesh != null) mesh.material = active ? starMat : starFadeMat;
 		if (active)
 			starPs.Play();
 		else
@@ -293,10 +298,9 @@ public class Node : MonoBehaviour
 			targetObj.SetActive(true);
 		if (other.CompareTag("Death"))
 		{
-			Debug.Log("<color=red>NODE HIT!!</color>");
 			if (players != null && players.Contains(p) && !p.isShield)
 			{
-				Debug.Log("<color=red>PLAYER HIT!!</color>");
+				Debug.Log($"<color=red>{p.name} HIT!!</color>");
 				p.CmdPlayerToggle(false);
 				p.CmdRagdollToggle(true);
 				p.LoseAllCoins();

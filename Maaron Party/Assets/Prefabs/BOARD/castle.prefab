@@ -33755,7 +33755,7 @@ ParticleSystemRenderer:
   m_SortingFudge: 0
   m_NormalDirection: 1
   m_ShadowBias: 0
-  m_RenderAlignment: 1
+  m_RenderAlignment: 4
   m_Pivot: {x: 0, y: 0, z: 0}
   m_Flip: {x: 0, y: 0, z: 0}
   m_EnableGPUInstancing: 0
@@ -38616,7 +38616,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2369473486038913018}
   - component: {fileID: 9046161187161643101}
-  m_Layer: 0
+  - component: {fileID: 6606397420422896959}
+  m_Layer: 6
   m_Name: DEATH
   m_TagString: Death
   m_Icon: {fileID: 0}
@@ -38659,6 +38660,33 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!54 &6606397420422896959
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7464507218501745903}
+  serializedVersion: 4
+  m_Mass: 0.0000001
+  m_Drag: 0
+  m_AngularDrag: 0
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &8323004830581368496
 GameObject:
   m_ObjectHideFlags: 0
@@ -48443,23 +48471,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -3538711507533350337, guid: d03db63b2e7bdc84e97bcc6744108a72, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.7071068
+      value: -0.5000002
       objectReference: {fileID: 0}
     - target: {fileID: -3538711507533350337, guid: d03db63b2e7bdc84e97bcc6744108a72, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0.49999982
       objectReference: {fileID: 0}
     - target: {fileID: -3538711507533350337, guid: d03db63b2e7bdc84e97bcc6744108a72, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.7071068
+      value: -0.5000002
       objectReference: {fileID: 0}
     - target: {fileID: -3538711507533350337, guid: d03db63b2e7bdc84e97bcc6744108a72, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: 0.49999982
       objectReference: {fileID: 0}
     - target: {fileID: -3538711507533350337, guid: d03db63b2e7bdc84e97bcc6744108a72, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
+      value: 450
       objectReference: {fileID: 0}
     - target: {fileID: -3538711507533350337, guid: d03db63b2e7bdc84e97bcc6744108a72, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
@@ -48637,7 +48665,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5790456045657518171}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a8fb631936ca1d0429ceb6660a37ca26, type: 3}
   m_Name: 

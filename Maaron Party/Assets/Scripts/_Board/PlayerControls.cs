@@ -113,6 +113,7 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private bool inMap;
 	[SerializeField] private bool isDashing;
 	[SerializeField] private bool inSpellAnimation;
+	bool yourTurn;
 	public bool isShield {get; private set;}
 	bool usingFireSpell1;
 	private bool isCurrencyAsync;
@@ -264,6 +265,11 @@ public class PlayerControls : NetworkBehaviour
 			{
 				isCurrencyAsync = false;
 				currencySpeedT = 1;
+				if (!yourTurn)
+				{
+					SaveData();
+					this.enabled = false;
+				}
 			}
 		}
 		else if (stars != starsT)
@@ -398,7 +404,7 @@ public class PlayerControls : NetworkBehaviour
 			ShowDistanceAway(currNode.GetDistanceAway(0));
 		else if (nextNode != null)
 			ShowDistanceAway(nextNode.GetDistanceAway(1));
-		this.enabled = true;
+		this.enabled = yourTurn = true;
 		//CmdShoveToggle(true);
 	}
 	public void EndTurn()
@@ -408,7 +414,7 @@ public class PlayerControls : NetworkBehaviour
 		if (canvas != null)
 			canvas.SetActive(false);
 		CmdShoveToggle(false);
-		this.enabled = false;
+		this.enabled = yourTurn = false;
 		SaveData();
 		//!Debug.Log($"<color=yellow>TURN ENDED</color>");
 	}
@@ -641,9 +647,10 @@ public class PlayerControls : NetworkBehaviour
 	}
 	public void LoseAllCoins()
 	{
+		Debug.Log($"<color=white>{name} LOST ALL COINS</color>");
 		int temp = coins;
 		coins = 0;
-		isCurrencyAsync = true;
+		this.enabled = isCurrencyAsync = true;
 		CmdShowBonusTxt(-temp);
 	}
 	[Command] private void CmdShowBonusTxt(int n) => RpcShowBonusTxt(n);
@@ -659,11 +666,11 @@ public class PlayerControls : NetworkBehaviour
 
 	private IEnumerator NodeEffectCo()
 	{
+		yield return new WaitForSeconds(currNode.GetNodeLandEffect(this));
 		// no event
-		if (currNode.GetNodeLandEffect(this))
-			yield return new WaitForSeconds(0.5f);
-		else 
-			yield return new WaitForSeconds(3.5f);
+		//if (currNode.GetNodeLandEffect(this))
+		//else 
+		//	yield return new WaitForSeconds(3.5f);
 
 		while (isCurrencyAsync)
 			yield return new WaitForSeconds(0.1f);

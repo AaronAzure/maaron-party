@@ -55,11 +55,15 @@ MonoBehaviour:
   blueGlowPs: {fileID: 4251832928342190203}
   redGlowPs: {fileID: 7103946632684980278}
   targetObj: {fileID: 9209997044384849430}
+  target: {fileID: 0}
   targetAnim: {fileID: 8911947893234113306}
   starPs: {fileID: 1338333484465968922}
   maaronPos: {fileID: 2466011118093362928}
   thornObj: {fileID: 930303586874183292}
   thornExplosionObj: {fileID: 8943955186707270363}
+  mesh: {fileID: 4598600711050986658}
+  starMat: {fileID: 2100000, guid: 90a5a3c17a7f97d47aa1f4914cb3d1ac, type: 2}
+  starFadeMat: {fileID: 2100000, guid: 7c720473c61624848a9a632c85ad8566, type: 2}
   txt: {fileID: 6912015489443780956}
   n: 999
   m: 999

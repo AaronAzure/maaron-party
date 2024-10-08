@@ -15,10 +15,25 @@ public class BoardTurret : MonoBehaviour
 	[SerializeField] private Animator anim;
 
 	[Space] [SerializeField] private SkinnedMeshRenderer turretRenderer;
+	[SerializeField] private Material turretMat;
 	[SerializeField] private Material turretEmissionMat;
 
 
+	float _t;
+	float init;
+	float end;
+
 	
+	private void FixedUpdate() 
+	{
+		if (_t < 1)
+		{
+			_t += Time.fixedDeltaTime;
+			turret.localRotation = Quaternion.Euler(45 - 90 * Mathf.Lerp(init, end, Mathf.SmoothStep(0,1,_t)), 90, 0);
+		}
+		else
+			this.enabled = false;
+	}
 	public void RemoteStart(int n, int rot) 
 	{
 		for (int i=0 ; i<n ; i++)
@@ -28,12 +43,13 @@ public class BoardTurret : MonoBehaviour
 			if (i<lightnings.Length)
 				lightnings[i].Play();
 		}
-		RotateTurret(rot);
+		turret.localRotation = Quaternion.Euler(45 - 90 * rot, 90, 0);
+		//RotateTurret(rot);
 	}
 
 	public void IncreaseReady(int n)
 	{
-		Debug.Log($"<color=yellow>== TURRET {n-1}</color>");
+		//Debug.Log($"<color=yellow>== TURRET {n-1}</color>");
 		if (n-1 < renderers.Length && renderers[n-1] != null &&
 			n-1 < emissionMats.Length && emissionMats[n-1] != null)
 			renderers[n-1].material = emissionMats[n-1];
@@ -56,11 +72,16 @@ public class BoardTurret : MonoBehaviour
 			if (i<lightnings.Length)
 				lightnings[i].Stop(true, ParticleSystemStopBehavior.StopEmitting);
 		}
+		turretRenderer.material = turretMat;
 	}
 
-	public void RotateTurret(int n)
+	public void RotateTurret(int n, int m)
 	{
-		turret.localRotation = Quaternion.Euler(45 - 90 * n, 90, 0);
+		_t = 0;
+		init = n;
+		end = m;
+		this.enabled = true;
+		//turret.localRotation = Quaternion.Euler(45 - 90 * n, 90, 0);
 	}
 
 	public void ToggleCam(bool active) => cam.SetActive(active);

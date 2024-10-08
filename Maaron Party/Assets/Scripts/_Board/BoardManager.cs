@@ -458,9 +458,10 @@ public class BoardManager : NetworkBehaviour
 		CmdToggleTurretCam(true);
 
 		yield return new WaitForSeconds(1f);
-		RpcTurretRotate(++gm.turretRot);
+		RpcTurretRotate(gm.turretRot, gm.turretRot+1);
+		++gm.turretRot;
 
-		yield return new WaitForSeconds(1);
+		yield return new WaitForSeconds(2);
 		CmdToggleTurretCam(false);
 	}
 
@@ -473,7 +474,7 @@ public class BoardManager : NetworkBehaviour
 
 	[Command(requiresAuthority=false)] public void CmdTurretRotateCo() => StartCoroutine( TurretRotateCo() );
 	//[Command(requiresAuthority=false)] public void CmdTurretRotate() { gm.turretRot++; RpcTurretRotate(gm.turretRot); }
-	[ClientRpc] void RpcTurretRotate(int x) => turret.RotateTurret(x);
+	[ClientRpc] void RpcTurretRotate(int n, int m) => turret.RotateTurret(n, m);
 
 	[Command(requiresAuthority=false)] public void CmdToggleTurretCam(bool active) => RpcToggleTurretCam(active);
 	[ClientRpc] void RpcToggleTurretCam(bool active) => turret.ToggleCam(active);
