@@ -28,6 +28,7 @@ public class Node : MonoBehaviour
 	
 	[Space] [SerializeField] private GameObject thornObj;
 	[SerializeField] private GameObject thornExplosionObj;
+	[SerializeField] private int thornId;
 	
 	[Space] [SerializeField] private MeshRenderer mesh;
 	[SerializeField] private Material starMat;
@@ -139,8 +140,12 @@ public class Node : MonoBehaviour
 	{
 		if (thornObj.activeSelf)
 		{
-			TriggerTrap();
-			return 3.5f;
+			// own trap
+			if (p.id == thornId)
+				p.NodeEffect(5);
+			else
+				TriggerTrap();
+			return p.id == thornId ? 0.5f : 3.5f;
 		}
 		switch (nodeSpace)
 		{
@@ -282,7 +287,7 @@ public class Node : MonoBehaviour
 
 	public void ToggleStarNode(bool active)
 	{
-		Debug.Log($"<color=yellow>STAR == {name}</color>");
+		//Debug.Log($"<color=yellow>STAR == {name}</color>");
 		hasStar = active;
 		if (mesh != null) mesh.material = active ? starMat : starFadeMat;
 		if (active)
@@ -290,7 +295,11 @@ public class Node : MonoBehaviour
 		else
 			starPs.Stop();
 	} 
-	public void ToggleThorn(bool active) => thornObj.SetActive(active);
+	public void ToggleThorn(bool active, int playerId) 
+	{
+		thornObj.SetActive(active);
+		thornId = playerId;
+	}
 
 	private void OnTriggerEnter(Collider other) 
 	{
@@ -326,15 +335,15 @@ public class Node : MonoBehaviour
 				switch (p._spellInd)
 				{
 					case 0: 
-						ToggleThorn(true);
+						ToggleThorn(true, PlayerControls.Instance.id);
 						PlayerControls.Instance.UseThornSpell(this);
 						break;
 					case 1: 
-						ToggleThorn(true);
+						ToggleThorn(true, PlayerControls.Instance.id);
 						PlayerControls.Instance.UseThornSpell(this);
 						break;
 					case 2: 
-						ToggleThorn(true);
+						ToggleThorn(true, PlayerControls.Instance.id);
 						PlayerControls.Instance.UseThornSpell(this);
 						break;
 					case 3:

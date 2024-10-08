@@ -76,7 +76,7 @@ public class PlayerControls : NetworkBehaviour
 	[SyncVar] private int stars;
 	private int starsT;
 	[SerializeField] private float currencyT;
-	[SerializeField] private float currencySpeedT=1;
+	private float currencySpeedT=0.5f;
 
 
 	#region UI
@@ -251,9 +251,9 @@ public class PlayerControls : NetworkBehaviour
 		if (!isOwned) return;
 		if (coins != coinsT)
 		{
-			if (currencyT < 0.1f)
+			if (currencyT < currencySpeedT)
 			{
-				currencyT += Time.fixedDeltaTime * currencySpeedT;
+				currencyT += Time.fixedDeltaTime;
 			} 
 			else
 			{
@@ -264,7 +264,6 @@ public class PlayerControls : NetworkBehaviour
 			if (coins == coinsT)
 			{
 				isCurrencyAsync = false;
-				currencySpeedT = 1;
 				if (!yourTurn)
 				{
 					SaveData();
@@ -274,9 +273,9 @@ public class PlayerControls : NetworkBehaviour
 		}
 		else if (stars != starsT)
 		{
-			if (currencyT < 0.1f)
+			if (currencyT < currencySpeedT)
 			{
-				currencyT += Time.fixedDeltaTime * currencySpeedT;
+				currencyT += Time.fixedDeltaTime;
 			} 
 			else
 			{
@@ -287,7 +286,6 @@ public class PlayerControls : NetworkBehaviour
 			if (stars == starsT)
 			{
 				isCurrencyAsync = false;
-				currencySpeedT = 1;
 			}
 		}
 
@@ -473,8 +471,8 @@ public class PlayerControls : NetworkBehaviour
 		{
 			if (!freeShop)
 				coins -= 20;
-			currencySpeedT = 2;
 			stars++;
+			currencySpeedT = 0.5f / 20;
 			StartCoroutine(PurchaseStarCo());
 			Vector3 dir = Camera.main.transform.position - transform.position;
 			model.rotation = Quaternion.LookRotation(new Vector3(dir.x, 0, dir.z).normalized);
@@ -641,6 +639,7 @@ public class PlayerControls : NetworkBehaviour
 	}
 	public void NodeEffect(int bonus)
 	{
+		if (bonus != 0) currencySpeedT = 0.5f / Mathf.Abs(bonus);
 		coins = Mathf.Clamp(coins + bonus, 0, 999);
 		isCurrencyAsync = true;
 		CmdShowBonusTxt(bonus);
@@ -648,6 +647,7 @@ public class PlayerControls : NetworkBehaviour
 	public void LoseAllCoins()
 	{
 		Debug.Log($"<color=white>{name} LOST ALL COINS</color>");
+		if (coins != 0) currencySpeedT = 0.5f / coins;
 		int temp = coins;
 		coins = 0;
 		this.enabled = isCurrencyAsync = true;
