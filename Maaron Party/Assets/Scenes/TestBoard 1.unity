@@ -7520,6 +7520,33 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 90e28d825559ea543b2aa937f1dfe961, type: 3}
+--- !u!1 &1258704958 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4983116986140426212, guid: d03db63b2e7bdc84e97bcc6744108a72, type: 3}
+  m_PrefabInstance: {fileID: 3180006331528541705}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &1258704959
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1258704958}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 726112268055120517, guid: d03db63b2e7bdc84e97bcc6744108a72, type: 3}
 --- !u!1 &1277628482
 GameObject:
   m_ObjectHideFlags: 0
@@ -13975,6 +14002,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: castle
       objectReference: {fileID: 0}
+    - target: {fileID: 4983116986140426212, guid: d03db63b2e7bdc84e97bcc6744108a72, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 7546322377833227084, guid: d03db63b2e7bdc84e97bcc6744108a72, type: 3}
       propertyPath: m_LocalRotation.w
       value: 0.8898035
@@ -14047,6 +14078,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -1395503276871383847, guid: d03db63b2e7bdc84e97bcc6744108a72, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4722052873523973891}
+    - targetCorrespondingSourceObject: {fileID: 4983116986140426212, guid: d03db63b2e7bdc84e97bcc6744108a72, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1258704959}
   m_SourcePrefab: {fileID: 100100000, guid: d03db63b2e7bdc84e97bcc6744108a72, type: 3}
 --- !u!1 &3180006331528541706 stripped
 GameObject:
@@ -23691,7 +23725,7 @@ MonoBehaviour:
   turret: {fileID: 3180006331528541709}
   anim: {fileID: 4722052873523973891}
   turretRenderer: {fileID: 3180006331528541707}
-  turretMat: {fileID: 0}
+  turretMat: {fileID: -876546973899608171, guid: d03db63b2e7bdc84e97bcc6744108a72, type: 3}
   turretEmissionMat: {fileID: 2100000, guid: 5baccf6d0b0d95d4ea16999538a9f6d9, type: 2}
 --- !u!198 &5445589349605640952
 ParticleSystem:

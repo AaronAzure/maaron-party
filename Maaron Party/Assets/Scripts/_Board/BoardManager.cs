@@ -236,6 +236,25 @@ public class BoardManager : NetworkBehaviour
 	#endregion
 
 
+	#region Trap
+
+	[Command(requiresAuthority=false)] public void CmdTrapReward(int atkId, int stolen) => StartCoroutine(TrapCo(atkId, stolen));
+	IEnumerator TrapCo(int atkId, int stolen)
+	{
+		yield return new WaitForSeconds(1);
+		nm.ToggleBoardControlCam(atkId, true);
+
+		yield return new WaitForSeconds(1);
+		nm.RewardBoardControl(atkId, stolen);
+
+		yield return new WaitForSeconds(1);
+		nm.ToggleBoardControlCam(atkId, false);
+	}
+
+	[Command(requiresAuthority=false)] public void CmdThornNode(int nodeId, int playerId) => RpcThornNode(nodeId, playerId);
+	[ClientRpc] private void RpcThornNode(int nodeId, int playerId) => NodeManager.Instance.GetNode(nodeId).ToggleThorn(true, playerId);
+	#endregion
+
 	#region Chest
 
 	// spawn chests

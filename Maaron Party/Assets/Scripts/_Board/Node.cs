@@ -144,8 +144,8 @@ public class Node : MonoBehaviour
 			if (p.id == thornId)
 				p.NodeEffect(5);
 			else
-				TriggerTrap();
-			return p.id == thornId ? 0.5f : 3.5f;
+				TriggerTrap(thornId);
+			return p.id == thornId ? 0.5f : 5f;
 		}
 		switch (nodeSpace)
 		{
@@ -164,8 +164,11 @@ public class Node : MonoBehaviour
 		}
 		return 0.5f;
 	}
-	public void TriggerTrap() => StartCoroutine(TriggerTrapCo());
-	IEnumerator TriggerTrapCo()
+	
+	
+	#region Trap
+	public void TriggerTrap(int atkId) => StartCoroutine(TriggerTrapCo(atkId));
+	IEnumerator TriggerTrapCo(int atkId)
 	{
 		yield return new WaitForSeconds(0.75f);
 		thornExplosionObj.SetActive(false);
@@ -174,10 +177,14 @@ public class Node : MonoBehaviour
 		{
 			p.CmdPlayerToggle(false);
 			p.CmdRagdollToggle(true);
-			p.NodeEffect(-10);
+			int stolenCoins = p.GetCoins() < 10 ? p.GetCoins() : 10;
+			BoardManager.Instance.CmdTrapReward(atkId, stolenCoins);
+			p.NodeEffect(-stolenCoins);
 		}
 	}
-	
+	#endregion
+
+
 	/// <summary>
 	/// Returns true if movement decreases when reached, else false (e.g. shop, star)
 	/// </summary>
@@ -192,6 +199,8 @@ public class Node : MonoBehaviour
 		};
 	}
 
+
+	#region Distance
 	public void ClearDistanceAway()
 	{
 		if (txt != null && n != 999)
@@ -261,6 +270,7 @@ public class Node : MonoBehaviour
 
 		return -1;
 	}
+	#endregion
 
 
 	public Transform GetTargetTransform()
@@ -307,7 +317,8 @@ public class Node : MonoBehaviour
 			targetObj.SetActive(true);
 		if (other.CompareTag("Death"))
 		{
-			if (players != null && players.Contains(p) && !p.isShield)
+			if (players != null && players.Contains(p))
+			//if (players != null && players.Contains(p) && !p.isShield)
 			{
 				Debug.Log($"<color=red>{p.name} HIT!!</color>");
 				p.CmdPlayerToggle(false);
@@ -335,15 +346,18 @@ public class Node : MonoBehaviour
 				switch (p._spellInd)
 				{
 					case 0: 
-						ToggleThorn(true, PlayerControls.Instance.id);
+						BoardManager.Instance.CmdThornNode(nodeId, p.id);
+						//ToggleThorn(true, PlayerControls.Instance.id);
 						PlayerControls.Instance.UseThornSpell(this);
 						break;
 					case 1: 
-						ToggleThorn(true, PlayerControls.Instance.id);
+						BoardManager.Instance.CmdThornNode(nodeId, p.id);
+						//ToggleThorn(true, PlayerControls.Instance.id);
 						PlayerControls.Instance.UseThornSpell(this);
 						break;
 					case 2: 
-						ToggleThorn(true, PlayerControls.Instance.id);
+						BoardManager.Instance.CmdThornNode(nodeId, p.id);
+						//ToggleThorn(true, PlayerControls.Instance.id);
 						PlayerControls.Instance.UseThornSpell(this);
 						break;
 					case 3:

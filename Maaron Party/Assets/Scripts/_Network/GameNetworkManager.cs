@@ -111,6 +111,17 @@ public class GameNetworkManager : NetworkManager
 		if (lobbyPlayers.Contains(lo))
 			lobbyPlayers.Remove(lo);
 	}
+
+	public void ToggleBoardControlCam(int id, bool active)
+	{
+		if (boardControls != null && id >= 0 && id < boardControls.Count)
+			boardControls[id].CmdCamToggle(active);
+	}
+	public void RewardBoardControl(int id, int reward)
+	{
+		if (boardControls != null && id >= 0 && id < boardControls.Count)
+			boardControls[id].CmdNodeEffect(reward);
+	}
 	public void AddBoardConnection(PlayerControls pc)
 	{
 		if (!boardControls.Contains(pc))
@@ -121,6 +132,7 @@ public class GameNetworkManager : NetworkManager
 		if (boardControls.Contains(pc))
 			boardControls.Remove(pc);
 	}
+
 	public void AddMinigameConnection(MinigameControls mc)
 	{
 		if (!minigameControls.Contains(mc))

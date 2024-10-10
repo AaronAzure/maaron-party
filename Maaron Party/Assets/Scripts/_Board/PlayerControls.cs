@@ -390,7 +390,7 @@ public class PlayerControls : NetworkBehaviour
 	{
 		distanceTxt.text = n == -1 ? "? spaces away" : n == 1 ? "1 space away" : $"{n} spaces away";
 	}
-	[Command(requiresAuthority=false)] private void CmdCamToggle(bool activate) => RpcCamToggle(activate);
+	[Command(requiresAuthority=false)] public void CmdCamToggle(bool activate) => RpcCamToggle(activate);
 	[ClientRpc] private void RpcCamToggle(bool activate) => vCam.gameObject.SetActive(activate);
 	[Command(requiresAuthority=false)] private void CmdShoveToggle(bool activate) => RpcShoveToggle(activate);
 	[ClientRpc(includeOwner=false)] private void RpcShoveToggle(bool activate) => shoveObj.SetActive(activate);
@@ -472,7 +472,7 @@ public class PlayerControls : NetworkBehaviour
 			if (!freeShop)
 				coins -= 20;
 			stars++;
-			currencySpeedT = 0.5f / 20;
+			currencySpeedT = 0.025f;
 			StartCoroutine(PurchaseStarCo());
 			Vector3 dir = Camera.main.transform.position - transform.position;
 			model.rotation = Quaternion.LookRotation(new Vector3(dir.x, 0, dir.z).normalized);
@@ -637,16 +637,19 @@ public class PlayerControls : NetworkBehaviour
 		CmdToggleStarCam(true);
 		isStop = false;
 	}
+	public int GetCoins() => coins;
+	[Command(requiresAuthority=false)] public void CmdNodeEffect(int bonus) => TargetNodeEffect(netIdentity.connectionToClient, bonus);
+	[TargetRpc] public void TargetNodeEffect(NetworkConnectionToClient target, int bonus) => NodeEffect(bonus);
 	public void NodeEffect(int bonus)
 	{
 		if (bonus != 0) currencySpeedT = 0.5f / Mathf.Abs(bonus);
 		coins = Mathf.Clamp(coins + bonus, 0, 999);
-		isCurrencyAsync = true;
+		this.enabled = isCurrencyAsync = true;
 		CmdShowBonusTxt(bonus);
 	}
 	public void LoseAllCoins()
 	{
-		Debug.Log($"<color=white>{name} LOST ALL COINS</color>");
+		//Debug.Log($"<color=white>{name} LOST ALL COINS</color>");
 		if (coins != 0) currencySpeedT = 0.5f / coins;
 		int temp = coins;
 		coins = 0;
