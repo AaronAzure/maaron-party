@@ -7525,28 +7525,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4983116986140426212, guid: d03db63b2e7bdc84e97bcc6744108a72, type: 3}
   m_PrefabInstance: {fileID: 3180006331528541705}
   m_PrefabAsset: {fileID: 0}
---- !u!64 &1258704959
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1258704958}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 726112268055120517, guid: d03db63b2e7bdc84e97bcc6744108a72, type: 3}
 --- !u!1 &1277628482
 GameObject:
   m_ObjectHideFlags: 0
@@ -7952,6 +7930,32 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d03db63b2e7bdc84e97bcc6744108a72, type: 3}
+--- !u!23 &1354558051 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 8812657248247539513, guid: d03db63b2e7bdc84e97bcc6744108a72, type: 3}
+  m_PrefabInstance: {fileID: 3180006331528541705}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &1354558052
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1258704958}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 36.000465, y: 35.972736, z: 16}
+  m_Center: {x: -5.293956e-23, y: 0.0000009536744, z: -4.000001}
 --- !u!1 &1385270171
 GameObject:
   m_ObjectHideFlags: 0
@@ -8705,7 +8709,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &857698680925511152
 Transform:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -14004,7 +14008,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4983116986140426212, guid: d03db63b2e7bdc84e97bcc6744108a72, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4983116986140426212, guid: d03db63b2e7bdc84e97bcc6744108a72, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     - target: {fileID: 7546322377833227084, guid: d03db63b2e7bdc84e97bcc6744108a72, type: 3}
       propertyPath: m_LocalRotation.w
@@ -14037,7 +14045,7 @@ PrefabInstance:
     - target: {fileID: 8812657248247539513, guid: d03db63b2e7bdc84e97bcc6744108a72, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: e0880a064d3596a46bc2f2cc12f5dce5, type: 2}
+      objectReference: {fileID: 2100000, guid: 78336f34815399d45b6a4d2644867254, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -14080,7 +14088,7 @@ PrefabInstance:
       addedObject: {fileID: 4722052873523973891}
     - targetCorrespondingSourceObject: {fileID: 4983116986140426212, guid: d03db63b2e7bdc84e97bcc6744108a72, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1258704959}
+      addedObject: {fileID: 1354558052}
   m_SourcePrefab: {fileID: 100100000, guid: d03db63b2e7bdc84e97bcc6744108a72, type: 3}
 --- !u!1 &3180006331528541706 stripped
 GameObject:
@@ -18812,7 +18820,7 @@ ParticleSystem:
     vectorLabel1_3: W
 --- !u!114 &3717684586279922725
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -23727,6 +23735,12 @@ MonoBehaviour:
   turretRenderer: {fileID: 3180006331528541707}
   turretMat: {fileID: -876546973899608171, guid: d03db63b2e7bdc84e97bcc6744108a72, type: 3}
   turretEmissionMat: {fileID: 2100000, guid: 5baccf6d0b0d95d4ea16999538a9f6d9, type: 2}
+  castleRend: {fileID: 1354558051}
+  castleEmissionMats:
+  - {fileID: 2100000, guid: 78336f34815399d45b6a4d2644867254, type: 2}
+  - {fileID: 2100000, guid: 2c9fd90e5360b664399ccca0a39f0140, type: 2}
+  - {fileID: 2100000, guid: 85591b000229d9f43a74fddd25400d1c, type: 2}
+  - {fileID: 2100000, guid: ae5f64585624f1047a40d6d10aae192b, type: 2}
 --- !u!198 &5445589349605640952
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -42804,7 +42818,7 @@ GameObject:
   m_IsActive: 0
 --- !u!1 &8052868846913095104
 GameObject:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -52534,7 +52548,7 @@ GameObject:
   m_IsActive: 0
 --- !u!114 &8743027073126803510
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}

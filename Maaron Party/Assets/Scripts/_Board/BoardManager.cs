@@ -46,6 +46,10 @@ public class BoardManager : NetworkBehaviour
 	private bool turretTurnDone;
 
 
+	[Space] [Header("HACKS")]
+	[SerializeField] private bool fireTurret;
+
+
 	[Space] [Header("States")]
 	[SerializeField] private bool isIntro;
 	[SerializeField] private bool isLast5;
@@ -459,7 +463,7 @@ public class BoardManager : NetworkBehaviour
 
 		yield return new WaitForSeconds(1f);
 		CmdTurretTurn(++gm.turretReady);
-		if (gm.turretReady == 5)
+		if (gm.turretReady == 5 || fireTurret)
 		{
 			CmdToggleTurretCam(false);
 			yield return new WaitForSeconds(7);
@@ -489,7 +493,11 @@ public class BoardManager : NetworkBehaviour
 
 	[Command(requiresAuthority=false)] public void CmdTurretTurnCo() => StartCoroutine( TurretCo(false) );
 	[Command(requiresAuthority=false)] public void CmdTurretTurn(int x) => RpcTurretTurn(x);
-	[ClientRpc] void RpcTurretTurn(int x) => turret.IncreaseReady(x);
+	[ClientRpc] void RpcTurretTurn(int x)
+	{
+		if (fireTurret) turret.JustFire();
+		else turret.IncreaseReady(x);
+	} 
 
 	[Command(requiresAuthority=false)] public void CmdTurretRotateCo() => StartCoroutine( TurretRotateCo() );
 	//[Command(requiresAuthority=false)] public void CmdTurretRotate() { gm.turretRot++; RpcTurretRotate(gm.turretRot); }
@@ -497,6 +505,9 @@ public class BoardManager : NetworkBehaviour
 
 	[Command(requiresAuthority=false)] public void CmdToggleTurretCam(bool active) => RpcToggleTurretCam(active);
 	[ClientRpc] void RpcToggleTurretCam(bool active) => turret.ToggleCam(active);
+
+	[Command(requiresAuthority=false)] public void CmdShakeCam(float intensity, float duration) => RpcShakeCam(intensity, duration);
+	[ClientRpc] void RpcShakeCam(float intensity, float duration) => CinemachineShake.Instance.ShakeCam(intensity, duration);
 
 	#endregion
 }

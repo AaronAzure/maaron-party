@@ -261,7 +261,15 @@ public class GameNetworkManager : NetworkManager
 	public void NextBoardPlayerTurn()
 	{
 		if (nPlayerOrder < boardControls.Count)
-			boardControls[nPlayerOrder++].YourTurn();
+		{
+			if (boardControls[nPlayerOrder] != null)
+				boardControls[nPlayerOrder++].YourTurn();
+			else
+			{
+				++nPlayerOrder;
+				NextBoardPlayerTurn();
+			}
+		}
 		else
 			StartCoroutine(StartMiniGameCo());
 	}
