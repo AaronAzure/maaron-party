@@ -908,7 +908,7 @@ public class PlayerControls : NetworkBehaviour
 
 		//yield return new WaitForSeconds(1f);
 		//CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera.VirtualCameraGameObject.name;
-		Debug.Log($"{CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera.VirtualCameraGameObject.name}");
+		//Debug.Log($"{CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera.VirtualCameraGameObject.name}");
 		
 		yield return new WaitForSeconds(1.5f);
 		CmdToggleNodeCam(false);

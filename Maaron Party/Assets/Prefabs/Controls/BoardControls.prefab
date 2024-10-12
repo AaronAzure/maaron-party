@@ -19233,7 +19233,6 @@ MonoBehaviour:
   - {fileID: 4069303690602607947}
   ragdollKb: 7.5
   currencyT: 0
-  currencySpeedT: 1
   canvas: {fileID: 8987175816818211784}
   starUi: {fileID: 4627529635837305345}
   shopUi: {fileID: 6066256176107711188}
@@ -29804,7 +29803,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: bdb6df6f236f88347acaecaf7810e670, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3249036800136534216, guid: bdb6df6f236f88347acaecaf7810e670, type: 3}
       propertyPath: m_LocalPosition.x

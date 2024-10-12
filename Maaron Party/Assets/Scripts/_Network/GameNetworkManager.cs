@@ -171,58 +171,83 @@ public class GameNetworkManager : NetworkManager
 		// transitioning from lobby to board
 		if (lobbyScene.Contains(SceneManager.GetActiveScene().name))
 		{
+			//* Add board controls
 			for (int i = 0; i < lobbyPlayers.Count; i++)
 			{
-				var conn = lobbyPlayers[i].connectionToClient;
-				PlayerControls player = Instantiate(boardPlayerPrefab);
-				player.characterInd = lobbyPlayers[i].characterInd;
-				player.id = i;
+				if (lobbyPlayers[i] != null)
+				{
+					var conn = lobbyPlayers[i].connectionToClient;
+					PlayerControls player = Instantiate(boardPlayerPrefab);
+					player.characterInd = lobbyPlayers[i].characterInd;
+					player.id = i;
 
-				NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
+					NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
+				}
+				else
+					boardControls.Add(null);
 			}
 			lobbyPlayers.Clear();
 		}
 		// transitioning from board to board
 		else if (SceneManager.GetActiveScene().name.Contains("Board") && newSceneName.Contains("Board"))
 		{
-			Debug.Log($"<color=yellow>RELOADING</color>");
-			for (int i = 0; i < boardControls.Count; i++)
+			//Debug.Log($"<color=yellow>RELOADING</color>");
+			//* Add board controls
+			int temp = boardControls.Count;
+			for (int i = 0; i < temp; i++)
 			{
-				var conn = boardControls[i].connectionToClient;
-				PlayerControls player = Instantiate(boardPlayerPrefab);
-				player.characterInd = boardControls[i].characterInd;
-				player.id = i;
+				if (boardControls[i] != null)
+				{
+					var conn = boardControls[i].connectionToClient;
+					PlayerControls player = Instantiate(boardPlayerPrefab);
+					player.characterInd = boardControls[i].characterInd;
+					player.id = i;
 
-				NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
+					NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
+				}
+				else
+					boardControls.Add(null);
 			}
 			boardControls.Clear();
 		}
 		// transitioning from board to minigame
 		else if (SceneManager.GetActiveScene().name.Contains("Board"))
 		{
-			Debug.Log($"<color=yellow>STARTING MINIGAME</color>");
+			//Debug.Log($"<color=yellow>STARTING MINIGAME</color>");
+			//* Add minigame controls
 			for (int i = 0; i < boardControls.Count; i++)
 			{
-				var conn = boardControls[i].connectionToClient;
-				MinigameControls player = Instantiate(gamePlayerPrefab);
-				player.characterInd = boardControls[i].characterInd;
-				player.id = i;
+				if (boardControls[i] != null)
+				{
+					var conn = boardControls[i].connectionToClient;
+					MinigameControls player = Instantiate(gamePlayerPrefab);
+					player.characterInd = boardControls[i].characterInd;
+					player.id = i;
 
-				NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
+					NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
+				}
+				else
+					minigameControls.Add(null);
 			}
 			boardControls.Clear();
 		}
 		// transitioning from minigame to board
 		else if (SceneManager.GetActiveScene().name.Contains("Minigame"))
 		{
+			//* Add board controls
 			for (int i = 0; i < minigameControls.Count; i++)
 			{
-				var conn = minigameControls[i].connectionToClient;
-				PlayerControls player = Instantiate(boardPlayerPrefab);
-				player.characterInd = minigameControls[i].characterInd;
-				player.id = i;
+				if (minigameControls[i] != null)
+				{
+					var conn = minigameControls[i].connectionToClient;
+					PlayerControls player = Instantiate(boardPlayerPrefab);
+					player.characterInd = minigameControls[i].characterInd;
+					player.id = i;
 
-				NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
+					NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
+				}
+				else
+					boardControls.Add(null);
 			}
 			minigameControls.Clear();
 		}
@@ -267,7 +292,8 @@ public class GameNetworkManager : NetworkManager
 			else
 			{
 				++nPlayerOrder;
-				NextBoardPlayerTurn();
+				//NextBoardPlayerTurn();
+				BoardManager.Instance.NextPlayerTurn();
 			}
 		}
 		else
