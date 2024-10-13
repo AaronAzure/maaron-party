@@ -92,6 +92,7 @@ public class PlayerControls : NetworkBehaviour
 	#endregion
 	
 	[Space] [SerializeField] private Transform dataUi;
+	[SerializeField] private GameObject[] profileUis;
 	[SerializeField] private Image dataImg;
 	[SerializeField] private TextMeshProUGUI distanceTxt;
 	[SerializeField] private TextMeshProUGUI coinTxt;
@@ -231,8 +232,10 @@ public class PlayerControls : NetworkBehaviour
 		if (bm != null)
 			bm.SetUiLayout(dataUi);
 		dataUi.gameObject.SetActive(true);
-		dataImg.color = ind == 0 ? new Color(0,1,0) : ind == 1 ? new Color(1,0.6f,0) 
-			: ind == 2 ? new Color(1,0.5f,0.8f) : Color.blue;
+		dataImg.color = ind == 0 ? new Color(0.7f,0.13f,0.13f) : ind == 1 ? new Color(0.4f,0.7f,0.3f) 
+				: ind == 2 ? new Color(0.85f,0.85f,0.5f) : new Color(0.7f,0.5f,0.8f);
+		for (int i=0 ; i<profileUis.Length ; i++)
+			profileUis[i].SetActive(i == ind);
 	}
 
 	public void SetStartNode(Node startNode) => nextNode = startNode;

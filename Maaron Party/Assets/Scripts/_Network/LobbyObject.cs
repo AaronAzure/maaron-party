@@ -16,6 +16,7 @@ public class LobbyObject : NetworkBehaviour
 	[SerializeField] private int maxCharacters=4;
 	[SerializeField] private Image pfp;
 	[SerializeField] private Image bg;
+	[SerializeField] private GameObject[] profileUis;
 	[SerializeField] private GameObject readyUi;
 	[SerializeField] private Button readyBtn;
 	[SyncVar] public int characterInd=-1;
@@ -49,6 +50,7 @@ public class LobbyObject : NetworkBehaviour
 		if (isLocalPlayer)
 		{
 			Instance = this;
+			profileUis[0].SetActive(true);
 			bg.color = new Color(0.25f, 0.25f, 0.25f, 0.7843f);
 			buttons.SetActive(true);
 			readyBtn.onClick.AddListener(() => {
@@ -74,20 +76,22 @@ public class LobbyObject : NetworkBehaviour
 		switch (ind)
 		{
 			case 0: 
-				characterTxt.text = "Green";
+				characterTxt.text = "Red";
 				break;
 			case 1: 
-				characterTxt.text = "Orange";
+				characterTxt.text = "Green";
 				break;
 			case 2: 
-				characterTxt.text = "Pink";
+				characterTxt.text = "Yellow";
 				break;
 			case 3: 
-				characterTxt.text = "Blue";
+				characterTxt.text = "Periwinkle";
 				break;
 		}
-		pfp.color = ind == 0 ? new Color(0,1,0) : ind == 1 ? new Color(1,0.6f,0) 
-				: ind == 2 ? new Color(1,0.5f,0.8f) : Color.blue;
+		for (int i=0 ; i<profileUis.Length ; i++)
+			profileUis[i].SetActive(i == ind);
+		pfp.color = ind == 0 ? new Color(0.7f,0.13f,0.13f) : ind == 1 ? new Color(0.4f,0.7f,0.3f) 
+				: ind == 2 ? new Color(0.85f,0.85f,0.5f) : new Color(0.7f,0.5f,0.8f);
 	}
 
 	[Command(requiresAuthority=false)] public void CmdSendPlayerModel()
