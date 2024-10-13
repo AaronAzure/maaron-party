@@ -89,6 +89,12 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private GameObject backToBaseUi;
 	[SerializeField] private GameObject baseUi;
 
+	[Space] [SerializeField] private Animator introAnim;
+	[SerializeField] private Button introBtn;
+	[SerializeField] private Image introImg;
+	[SerializeField] private TextMeshProUGUI introTxt;
+	[SerializeField] private GameObject[] profilePics;
+
 	#endregion
 	
 	[Space] [SerializeField] private Transform dataUi;
@@ -236,6 +242,20 @@ public class PlayerControls : NetworkBehaviour
 				: ind == 2 ? new Color(0.85f,0.85f,0.5f) : new Color(0.7f,0.5f,0.8f);
 		for (int i=0 ; i<profileUis.Length ; i++)
 			profileUis[i].SetActive(i == ind);
+		for (int i=0 ; i<profilePics.Length ; i++)
+			profilePics[i].SetActive(i == ind);
+		introTxt.color = ind == 0 ? new Color(0.7f,0.13f,0.13f) : ind == 1 ? new Color(0.4f,0.7f,0.3f) 
+				: ind == 2 ? new Color(0.85f,0.85f,0.5f) : new Color(0.7f,0.5f,0.8f);
+		switch (ind)
+		{
+			case 0: introTxt.text = "Red's Turn!"; break;
+			case 1: introTxt.text = "Green's Turn!"; break;
+			case 2: introTxt.text = "Yellow's Turn!"; break;
+			case 3: introTxt.text = "Periwinkle's Turn!"; break;
+			default: introTxt.text = "Someone's Turn!"; break;
+		}
+		introImg.color = ind == 0 ? new Color(0.7f,0.13f,0.13f) : ind == 1 ? new Color(0.4f,0.7f,0.3f) 
+				: ind == 2 ? new Color(0.85f,0.85f,0.5f) : new Color(0.7f,0.5f,0.8f);
 	}
 
 	public void SetStartNode(Node startNode) => nextNode = startNode;
@@ -404,14 +424,20 @@ public class PlayerControls : NetworkBehaviour
 	[ClientRpc(includeOwner=false)] private void RpcShoveToggle(bool activate) => shoveObj.SetActive(activate);
 	[TargetRpc] public void TargetYourTurn(NetworkConnectionToClient target)
 	{
-		if (canvas != null)
-			canvas.SetActive(true);
+		//if (canvas != null)
+		//	canvas.SetActive(true);
 		if (currNode != null)
 			ShowDistanceAway(currNode.GetDistanceAway(0));
 		else if (nextNode != null)
 			ShowDistanceAway(nextNode.GetDistanceAway(1));
 		this.enabled = true;
-		ToggleYourTurn(true);
+		CmdToggleYourTurn(true);
+		CmdToggleIntroUi(true, characterInd);
+		if (ragdollObj[characterInd].activeSelf)
+		{
+			CmdPlayerToggle(true);
+			CmdRagdollToggle(false);
+		}
 		//CmdShoveToggle(true);
 	}
 	public void EndTurn()
@@ -422,10 +448,20 @@ public class PlayerControls : NetworkBehaviour
 			canvas.SetActive(false);
 		CmdShoveToggle(false);
 		this.enabled = false;
-		ToggleYourTurn(false);
+		CmdToggleYourTurn(false);
 		SaveData();
 	}
-	[Command(requiresAuthority=false)] private void ToggleYourTurn(bool active) => yourTurn = active;
+	[Command(requiresAuthority=false)] private void CmdToggleYourTurn(bool active) => yourTurn = active;
+	[Command(requiresAuthority=false)] void CmdToggleIntroUi(bool active, int id) => RpcToggleIntroUi(active, id);
+	[ClientRpc] void RpcToggleIntroUi(bool active, int id)
+	{
+		introBtn.interactable = isOwned;
+
+		if (active)
+			introAnim.gameObject.SetActive(active);
+		else
+			introAnim.SetTrigger("close");
+	}
 
 
 	#region Saving data
@@ -451,6 +487,12 @@ public class PlayerControls : NetworkBehaviour
 
 
 	#region BUTTONS
+	public void _START_PLAYER()
+	{
+		CmdToggleIntroUi(false, characterInd);
+		if (canvas != null)
+			canvas.SetActive(true);
+	}
 	public void _BACK_TO_BASE_UI()
 	{
 		// show base ui

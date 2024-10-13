@@ -33,6 +33,7 @@ public class BoardManager : NetworkBehaviour
 	[SerializeField] private CinemachineVirtualCamera starCam;
 	[SerializeField] private Animator maaronAnim;
 	[SerializeField] private ParticleSystem maaronSpotlightPs;
+
 	[Space] [SerializeField] private TreasureChest[] chests;
 	[SyncVar] public int nBmReady; 
 	[SyncVar] public int n;
@@ -43,6 +44,7 @@ public class BoardManager : NetworkBehaviour
 	[SerializeField] private Node startNode;
 	[SerializeField] private starNodes[] starNodes;
 	[SerializeField] private BoardTurret turret;
+	[SerializeField] private Animator turretIntro;
 	private bool turretTurnDone;
 
 
@@ -460,6 +462,13 @@ public class BoardManager : NetworkBehaviour
 	{
 		yield return new WaitForSeconds(goToNextPlayer ? 1 : 0.5f);
 		CmdToggleTurretCam(true);
+		if (goToNextPlayer)
+		{
+			turretIntro.gameObject.SetActive(true);
+			
+			yield return new WaitForSeconds(1f);
+			turretIntro.SetTrigger("close");
+		}
 
 		yield return new WaitForSeconds(1f);
 		CmdTurretTurn(++gm.turretReady);
