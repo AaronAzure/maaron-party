@@ -17,6 +17,10 @@ public class Node : MonoBehaviour
 	public bool hasStar {get; private set;}
 
 	
+	[Space] [SerializeField] GameObject blueLandVfx;
+	[SerializeField] private GameObject redLandVfx;
+	[SerializeField] private GameObject greenLandVfx;
+
 	[Space] [SerializeField] ParticleSystem blueGlowPs;
 	[SerializeField] ParticleSystem redGlowPs;
 
@@ -163,6 +167,25 @@ public class Node : MonoBehaviour
 				return 3.5f;
 		}
 		return 0.5f;
+	}
+	public void TriggerNodeLandVfx()
+	{
+		//Debug.Log("<color=#FF9900>NODE LAND</color>");
+		switch (nodeSpace)
+		{
+			case NodeSpace.blue: 
+				blueLandVfx.SetActive(true);
+				break;
+			case NodeSpace.red: 
+				redLandVfx.SetActive(true);
+				break;
+			case NodeSpace.green_rotate: 
+				greenLandVfx.SetActive(true);
+				break;
+			case NodeSpace.green_speed: 
+				greenLandVfx.SetActive(true);
+				break;
+		}
 	}
 	
 	

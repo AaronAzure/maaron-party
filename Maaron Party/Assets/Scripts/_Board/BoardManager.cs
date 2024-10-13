@@ -464,10 +464,10 @@ public class BoardManager : NetworkBehaviour
 		CmdToggleTurretCam(true);
 		if (goToNextPlayer)
 		{
-			turretIntro.gameObject.SetActive(true);
+			CmdTurretIntro(true);
 			
 			yield return new WaitForSeconds(1f);
-			turretIntro.SetTrigger("close");
+			CmdTurretIntro(false);
 		}
 
 		yield return new WaitForSeconds(1f);
@@ -499,6 +499,13 @@ public class BoardManager : NetworkBehaviour
 
 	[Command(requiresAuthority=false)] public void CmdTurretStart() => RpcTurretStart(gm.turretReady, gm.turretRot);
 	[ClientRpc] void RpcTurretStart(int x, int y) => turret.RemoteStart(x, y);
+
+	[Command(requiresAuthority=false)] public void CmdTurretIntro(bool active) => RpcTurretIntro(active);
+	[ClientRpc] void RpcTurretIntro(bool active)
+	{
+		if (active) turretIntro.gameObject.SetActive(true);
+		else turretIntro.SetTrigger("close");
+	}
 
 	[Command(requiresAuthority=false)] public void CmdTurretTurnCo() => StartCoroutine( TurretCo(false) );
 	[Command(requiresAuthority=false)] public void CmdTurretTurn(int x) => RpcTurretTurn(x);

@@ -165,7 +165,7 @@ public class PlayerControls : NetworkBehaviour
 	}
 	public override void OnStopClient()
 	{
-		Debug.Log($"<color=#FF9900>PLAYER DISCONNECT ({isOwned}) | {isServer} | {yourTurn}</color>");
+		//Debug.Log($"<color=#FF9900>PLAYER DISCONNECT ({isOwned}) | {isServer} | {yourTurn}</color>");
 		base.OnStopClient();
 		if (isOwned)
 		{
@@ -721,6 +721,7 @@ public class PlayerControls : NetworkBehaviour
 
 	private IEnumerator NodeEffectCo()
 	{
+		CmdTriggerNodeVfx(currNode.nodeId);
 		yield return new WaitForSeconds(currNode.GetNodeLandEffect(this));
 		// no event
 		//if (currNode.GetNodeLandEffect(this))
@@ -733,6 +734,8 @@ public class PlayerControls : NetworkBehaviour
 		EndTurn();
 		bm.NextPlayerTurn();
 	}
+	[Command(requiresAuthority=false)] void CmdTriggerNodeVfx(int nodeId) => RpcTriggerNodeVfx(nodeId);
+	[ClientRpc] void RpcTriggerNodeVfx(int nodeId) => NodeManager.Instance.GetNode(nodeId).TriggerNodeLandVfx();
 
 	//private IEnumerator WaitForNewStarCo()
 	//{
