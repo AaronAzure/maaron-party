@@ -113,7 +113,7 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private bool inMap;
 	[SerializeField] private bool isDashing;
 	[SerializeField] private bool inSpellAnimation;
-	bool yourTurn;
+	[SyncVar] bool yourTurn;
 	public bool isShield {get; private set;}
 	bool usingFireSpell1;
 	private bool isCurrencyAsync;
@@ -158,9 +158,14 @@ public class PlayerControls : NetworkBehaviour
 	}
 	public override void OnStopClient()
 	{
+		Debug.Log($"<color=#FF9900>PLAYER DISCONNECT ({isOwned}) | {isServer} | {yourTurn}</color>");
 		base.OnStopClient();
 		if (isOwned)
+		{
 			nm.RemoveBoardConnection(this);
+		}
+		if (isServer && yourTurn)
+			bm.NextPlayerTurn();
 	}
 
 
@@ -402,7 +407,8 @@ public class PlayerControls : NetworkBehaviour
 			ShowDistanceAway(currNode.GetDistanceAway(0));
 		else if (nextNode != null)
 			ShowDistanceAway(nextNode.GetDistanceAway(1));
-		this.enabled = yourTurn = true;
+		this.enabled = true;
+		ToggleYourTurn(true);
 		//CmdShoveToggle(true);
 	}
 	public void EndTurn()
@@ -412,10 +418,11 @@ public class PlayerControls : NetworkBehaviour
 		if (canvas != null)
 			canvas.SetActive(false);
 		CmdShoveToggle(false);
-		this.enabled = yourTurn = false;
+		this.enabled = false;
+		ToggleYourTurn(false);
 		SaveData();
-		//!Debug.Log($"<color=yellow>TURN ENDED</color>");
 	}
+	[Command(requiresAuthority=false)] private void ToggleYourTurn(bool active) => yourTurn = active;
 
 
 	#region Saving data

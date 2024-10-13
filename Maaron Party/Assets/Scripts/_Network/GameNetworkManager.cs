@@ -129,6 +129,7 @@ public class GameNetworkManager : NetworkManager
 	}
 	public void RemoveBoardConnection(PlayerControls pc)
 	{
+		Debug.Log($"<color=#FF9900>PLAYER LOST</color>");
 		if (boardControls.Contains(pc))
 			boardControls.Remove(pc);
 	}
