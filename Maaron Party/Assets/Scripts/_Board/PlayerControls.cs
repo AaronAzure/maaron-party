@@ -92,6 +92,7 @@ public class PlayerControls : NetworkBehaviour
 	[Space] [SerializeField] private Animator introAnim;
 	[SerializeField] private Button introBtn;
 	[SerializeField] private Image introImg;
+	[SerializeField] private GameObject clickAnywhereUi;
 	[SerializeField] private TextMeshProUGUI introTxt;
 	[SerializeField] private GameObject[] profilePics;
 
@@ -456,6 +457,7 @@ public class PlayerControls : NetworkBehaviour
 	[ClientRpc] void RpcToggleIntroUi(bool active, int id)
 	{
 		introBtn.interactable = isOwned;
+		clickAnywhereUi.SetActive(isOwned);
 
 		if (active)
 			introAnim.gameObject.SetActive(active);
