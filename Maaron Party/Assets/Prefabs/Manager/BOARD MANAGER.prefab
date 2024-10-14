@@ -3139,6 +3139,9 @@ MonoBehaviour:
   - But who knows what will happen! Cause it's time for...
   - '[Insert cool title here]'
   - Choose a box.
+  gameOverSents:
+  - That's all folks! Hope it wasn't too one-sided.
+  - Cuz it's time to reveal the winner!
   mainUi: {fileID: 3981091957135357725}
   dataUi: {fileID: 2541591487585698009}
   turnTxt: {fileID: 6783004385688767745}
@@ -3160,6 +3163,7 @@ MonoBehaviour:
   fireTurret: 0
   isIntro: 0
   isLast5: 0
+  gameOver: 0
 --- !u!114 &1144782064657783664
 MonoBehaviour:
   m_ObjectHideFlags: 0

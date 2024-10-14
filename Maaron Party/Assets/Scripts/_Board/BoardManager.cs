@@ -22,6 +22,7 @@ public class BoardManager : NetworkBehaviour
 	[Space] [Header("Text")]
 	[TextArea(2, 5)] [SerializeField] string[] introSents;
 	[TextArea(2, 5)] [SerializeField] string[] lastSents;
+	[TextArea(2, 5)] [SerializeField] string[] gameOverSents;
 
 
 	[Space] [Header("Universal")]
@@ -55,6 +56,7 @@ public class BoardManager : NetworkBehaviour
 	[Space] [Header("States")]
 	[SerializeField] private bool isIntro;
 	[SerializeField] private bool isLast5;
+	[SerializeField] private bool gameOver;
 
 
 	private void Awake() 
@@ -136,6 +138,25 @@ public class BoardManager : NetworkBehaviour
 			yield break;
 			//yield return ChooseStarCo(0);
 		}
+		// Game Over
+		else if (gm.nTurn > gm.maxTurns)
+		{
+			//isIntro = gm.gameStarted = true;
+			gameOver = true;
+			CmdToggleStartCam(true);
+
+			//yield return new WaitForSeconds(1f);
+			//CmdFinalFive();
+			
+			yield return new WaitForSeconds(0.5f);
+			CmdMaaronIntro();
+
+			yield return new WaitForSeconds(2);
+			CmdToggleDialogue(true, gameOverSents);
+			CmdToggleNextButton(true);
+
+			yield break;
+		}
 		// last 5 turns
 		else if (gm.nTurn == gm.maxTurns - 4)
 		{
@@ -154,7 +175,6 @@ public class BoardManager : NetworkBehaviour
 			CmdToggleNextButton(true);
 
 			yield break;
-			//yield return ChooseStarCo(0);
 		}
 		// turn 2+
 		else
@@ -215,6 +235,10 @@ public class BoardManager : NetworkBehaviour
 		{
 			CmdSpawnChests();
 			//teleportCo = StartCoroutine( TeleportToStarCo(0) );
+		}
+		if (gameOver && isServer)
+		{
+			StartCoroutine( WinnerCo() );
 		}
 	}
 	[ClientRpc] void RpcEndDialogue() => dialogue.CloseDialogue();
@@ -423,6 +447,15 @@ public class BoardManager : NetworkBehaviour
 	
 	#endregion
 
+
+
+	#region Winner
+	IEnumerator WinnerCo()
+	{
+		yield return new WaitForSeconds(2);
+		int winnerId = nm.GetWinningPlayer();
+	}
+	#endregion
 
 	public void NextPlayerTurn()
 	{

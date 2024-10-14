@@ -29,6 +29,7 @@ public class GameNetworkManager : NetworkManager
 	private GameManager gm {get{return GameManager.Instance;}}
 	//GameObject ball;
 	[SerializeField] private GameObject buttons;
+	[SerializeField] private GameObject hostLostUi;
 	[SerializeField] private Button hostBtn;
 	[SerializeField] private Button clientBtn;
 	[SerializeField] private Button startBtn;
@@ -99,6 +100,10 @@ public class GameNetworkManager : NetworkManager
 		boardControls.Clear();
 		minigameControls.Clear();
 		conns.Clear();
+	}
+	public override void OnClientDisconnect()
+	{
+		hostLostUi.SetActive(true);
 	}
 
 	public void AddConnection(LobbyObject lo)
@@ -303,9 +308,48 @@ public class GameNetworkManager : NetworkManager
 
 	public NetworkConnectionToClient GetLosingPlayer()
 	{
+		int lowest = 99999;
+		int id = 0;
+		for (int i=0 ; i<boardControls.Count ; i++)
+		{
+			if (boardControls[i] != null)
+			{
+				if (boardControls[i].GetCoins() + boardControls[i].GetStars() * 1000 < lowest)
+				{
+					lowest = boardControls[i].GetCoins() + boardControls[i].GetStars() * 1000;
+					id = i;
+				}
+			}
+		}
 		if (boardControls != null && boardControls.Count > 0)
-			return boardControls[boardControls.Count - 1] != null ? boardControls[boardControls.Count - 1].netIdentity.connectionToClient : null;
+			return boardControls[id] != null ? boardControls[id].netIdentity.connectionToClient : null;
 		return null;
+	}
+	public int GetWinningPlayer()
+	{
+		int highest = -1;
+		int id = 0;
+		for (int i=0 ; i<boardControls.Count ; i++)
+		{
+			if (boardControls[i] != null)
+			{
+				if (boardControls[i].GetCoins() + boardControls[i].GetStars() * 1000 > highest)
+				{
+					highest = boardControls[i].GetCoins() + boardControls[i].GetStars() * 1000;
+					id = i;
+				}
+			}
+		}
+		for (int i=0 ; i<boardControls.Count ; i++)
+		{
+			if (boardControls[i] != null)
+				if (id != i)
+					boardControls[i].CmdLose();
+		}
+		return id;
+		//if (boardControls != null && boardControls.Count > 0)
+		//	return boardControls[id] != null ? boardControls[id].netIdentity.connectionToClient : null;
+		//return null;
 	}
 
 	public override void OnServerSceneChanged(string sceneName)

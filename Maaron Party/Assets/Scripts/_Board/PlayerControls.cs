@@ -63,6 +63,10 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private TextMeshPro movesLeftTxt;
 
 
+	[Space] [Header("Vfx")]
+	[SerializeField] private GameObject maaronFireVfx;
+
+
 	[Space] [Header("Ragdoll")]
 	[SerializeField] private GameObject shoveObj;
 	[SerializeField] private GameObject[] ragdollObj;
@@ -195,6 +199,13 @@ public class PlayerControls : NetworkBehaviour
 		{
 			transform.position = BoardManager.Instance.GetSpawnPos().position + new Vector3(-4 + 2*id,0,-2);
 			startPos = this.transform.position;
+		}
+		else if (gm.nTurn > gm.maxTurns)
+		{
+			transform.position = BoardManager.Instance.GetSpawnPos().position + new Vector3(-4 + 2*id,0,-2);
+			coinsT = coins = gm.GetCoins(id);
+			starsT = stars = gm.GetStars(id);
+			return;
 		}
 		
 		if (!isOwned) {
@@ -692,6 +703,7 @@ public class PlayerControls : NetworkBehaviour
 		isStop = false;
 	}
 	public int GetCoins() => coins;
+	public int GetStars() => stars;
 	[Command(requiresAuthority=false)] public void CmdNodeEffect(int bonus) => TargetNodeEffect(netIdentity.connectionToClient, bonus);
 	[TargetRpc] public void TargetNodeEffect(NetworkConnectionToClient target, int bonus) => NodeEffect(bonus);
 	public void NodeEffect(int bonus)
@@ -1048,6 +1060,25 @@ public class PlayerControls : NetworkBehaviour
 		}
 		ragdollObj[characterInd].transform.rotation = model.rotation;
 		ragdollObj[characterInd].SetActive(active);
+	}
+
+	[Command(requiresAuthority=false)] public void CmdLose() => RpcLose();
+	[ClientRpc] private void RpcLose() => StartCoroutine(LoseCo());
+
+	IEnumerator LoseCo()
+	{
+		maaronFireVfx.SetActive(true);
+
+		yield return new WaitForSeconds(0.5f);
+		model.gameObject.SetActive(false);
+
+		Rigidbody[] bones = ragdollObj[characterInd].GetComponentsInChildren<Rigidbody>();
+		foreach (Rigidbody bone in bones) {
+			bone.velocity = Vector3.up * ragdollKb * 2;
+			//bone.angularVelocity = Vector3.forward * ragdollKb * 3;
+		}
+		ragdollObj[characterInd].transform.rotation = model.rotation;
+		ragdollObj[characterInd].SetActive(true);
 	}
 	//IEnumerator MoveCo()
 	//{
