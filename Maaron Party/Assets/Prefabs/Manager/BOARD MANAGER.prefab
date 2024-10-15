@@ -3140,8 +3140,8 @@ MonoBehaviour:
   - '[Insert cool title here]'
   - Choose a box.
   gameOverSents:
-  - That's all folks! Hope it wasn't too one-sided.
-  - Cuz it's time to reveal the winner!
+  - That's all folks! Hope that was fun drama.
+  - Anyways it's time to reveal the winner!
   mainUi: {fileID: 3981091957135357725}
   dataUi: {fileID: 2541591487585698009}
   turnTxt: {fileID: 6783004385688767745}
@@ -3603,7 +3603,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6540128866640755389, guid: a732b42e364567a428c152d7ca5d1bc1, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

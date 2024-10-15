@@ -24,10 +24,12 @@ public class GameManager : NetworkBehaviour
 	[SyncVar] [SerializeField] private List<int> coins;
 	[SyncVar] [SerializeField] private List<int> stars;
 	[SyncVar] [SerializeField] private List<List<int>> items;
-	[SyncVar] public int nTurn=1; 
-	public bool gameStarted; 
-	public int prevStarInd=-1; 
+	
+	[Space] [SyncVar] public int nTurn=1; 
 	[SyncVar] public int maxTurns=20; 
+
+	[Space] public bool gameStarted; 
+	public int prevStarInd=-1; 
 	[SyncVar] public int turretReady; 
 	[SyncVar] public int turretRot; 
 	//private int nPlayers {get{return GameObject.FindGameObjectsWithTag("Player").Length;}}

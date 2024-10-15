@@ -575,7 +575,7 @@ public class PlayerControls : NetworkBehaviour
 		CmdToggleStarCam(false);
 		bm.CmdChooseStar();
 		//StartCoroutine(WaitForNewStarCo());
-		yield return new WaitForSeconds(6.5f);
+		yield return new WaitForSeconds(9.5f);
 		isBuyingStar = false;
 	}
 
@@ -1114,9 +1114,7 @@ public class PlayerControls : NetworkBehaviour
 		ragdollObj[characterInd].transform.rotation = model.rotation;
 		ragdollObj[characterInd].SetActive(true);
 	}
-	//IEnumerator MoveCo()
-	//{
-	//	yield return new WaitForSeconds(2);
-	//	UpdateMovesLeft( Random.Range(1, 11) );
-	//}
+
+	[Command(requiresAuthority=false)] public void CmdWin() => RpcWin();
+	[ClientRpc] private void RpcWin() => maaronSpotlightVfx.SetActive(true);
 }

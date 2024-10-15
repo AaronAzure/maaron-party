@@ -374,11 +374,21 @@ public class BoardManager : NetworkBehaviour
 		CmdToggleMainUi(true);
 		teleportCo = null;
 	}
-	[Command(requiresAuthority=false)] public void CmdChooseStar() => StartCoroutine( ChooseStarCo() );
+	[Command(requiresAuthority=false)] public void CmdChooseStar() => StartCoroutine( ChooseStarCo(-1, true) );
 	IEnumerator ChooseStarCo(int fixedInd=-1, bool changeLoc=false)
 	{
 		if (changeLoc)
-			CmdSetStarNode(gm.prevStarInd, false);
+		{
+			CmdToggleSpotlight(false);
+			
+			yield return new WaitForSeconds(1f);
+			RpcMaaronTeleport();
+
+			yield return new WaitForSeconds(1f);
+			CmdSetStarNode(starNodes[gm.prevStarInd].node.nodeId, false);
+
+			yield return new WaitForSeconds(0.5f);
+		}
 		int rng = fixedInd == -1 ? Random.Range(0, starNodes.Length) : fixedInd;
 		while (rng == gm.prevStarInd || 
 			(gm.prevStarInd >= 0 && gm.prevStarInd < starNodes.Length &&
@@ -452,9 +462,15 @@ public class BoardManager : NetworkBehaviour
 	#region Winner
 	IEnumerator WinnerCo()
 	{
+		CmdMaaronMagic();
 		yield return new WaitForSeconds(2);
-		int winnerId = nm.GetWinningPlayer();
+		nm.PunishNonWinners();
+
+		yield return new WaitForSeconds(1);
+		nm.ShowWinner();
 	}
+	[Command(requiresAuthority=false)] void CmdMaaronMagic() => RpcMaaronMagic();
+	[ClientRpc] void RpcMaaronMagic() => maaronAnim.SetTrigger("magicOnly");
 	#endregion
 
 	public void NextPlayerTurn()

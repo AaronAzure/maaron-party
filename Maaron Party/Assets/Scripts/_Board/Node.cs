@@ -54,6 +54,9 @@ public class Node : MonoBehaviour
 	private PlayerControls p { get { return PlayerControls.Instance; } }
 	List<PlayerControls> players;
 
+	
+
+	#region Methods
 
 	private void OnDrawGizmosSelected() 
 	{
@@ -122,6 +125,8 @@ public class Node : MonoBehaviour
 			}
 		}
 	}
+	#endregion
+
 
 	public void PlayGlowVfx()
 	{
@@ -365,7 +370,7 @@ public class Node : MonoBehaviour
 
 	public void ToggleStarNode(bool active)
 	{
-		//Debug.Log($"<color=yellow>STAR == {name}</color>");
+		Debug.Log($"<color=yellow>STAR == {name} |{active}| = {mesh != null}</color>");
 		hasStar = active;
 		if (mesh != null) mesh.material = active ? starMat : starFadeMat;
 		if (active)

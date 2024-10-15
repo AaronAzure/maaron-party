@@ -1332,8 +1332,8 @@ MonoBehaviour:
   characterInd: 0
   id: 0
   models:
-  - {fileID: 4491741340278475053}
   - {fileID: 1509222468927208759}
+  - {fileID: 4491741340278475053}
   - {fileID: 1648878401731686754}
   - {fileID: 2632183410823803837}
   anim: {fileID: 0}
@@ -2502,8 +2502,8 @@ Transform:
   - {fileID: 4208867334580737774}
   - {fileID: 8711510278128623335}
   - {fileID: 1487079599775116422}
-  - {fileID: 3827512538666111895}
   - {fileID: 2286145783491323789}
+  - {fileID: 3827512538666111895}
   - {fileID: 2137572130759879640}
   - {fileID: 3444326213989198087}
   m_Father: {fileID: 8734967698997926269}
@@ -2712,6 +2712,10 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 26da40e9197d0384490a9fa6abc657db, type: 2}
+    - target: {fileID: -4713537920544088603, guid: bdb6df6f236f88347acaecaf7810e670, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 385836771883447889, guid: bdb6df6f236f88347acaecaf7810e670, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -2840,9 +2844,17 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 7769714ccfc68a84cb6e57ced7f7d934, type: 2}
+    - target: {fileID: -4713537920544088603, guid: bdb6df6f236f88347acaecaf7810e670, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -910295218816444601, guid: bdb6df6f236f88347acaecaf7810e670, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: dea985570438dd74bba10e81dcc1d940, type: 2}
     - target: {fileID: 919132149155446097, guid: bdb6df6f236f88347acaecaf7810e670, type: 3}
       propertyPath: m_Name
-      value: chibi (pink)
+      value: chibi (yellow)
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: bdb6df6f236f88347acaecaf7810e670, type: 3}
       propertyPath: m_IsActive
@@ -2960,9 +2972,17 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 4fea43c0f55f7c644bcf94b199cea626, type: 2}
+    - target: {fileID: -4713537920544088603, guid: bdb6df6f236f88347acaecaf7810e670, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -910295218816444601, guid: bdb6df6f236f88347acaecaf7810e670, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 1ee470b7ffb743e409e27e846ea4fec1, type: 2}
     - target: {fileID: 919132149155446097, guid: bdb6df6f236f88347acaecaf7810e670, type: 3}
       propertyPath: m_Name
-      value: chibi (blue)
+      value: chibi (periwinkle)
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: bdb6df6f236f88347acaecaf7810e670, type: 3}
       propertyPath: m_IsActive
@@ -3080,6 +3100,14 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 1ab7c239274a01e468f773ef54fb88eb, type: 2}
+    - target: {fileID: -4713537920544088603, guid: bdb6df6f236f88347acaecaf7810e670, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -910295218816444601, guid: bdb6df6f236f88347acaecaf7810e670, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: fdd0fce4192564c47bfd755c32a1a8ee, type: 2}
     - target: {fileID: 919132149155446097, guid: bdb6df6f236f88347acaecaf7810e670, type: 3}
       propertyPath: m_Name
       value: chibi (green)

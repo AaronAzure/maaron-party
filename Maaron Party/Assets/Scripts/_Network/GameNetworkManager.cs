@@ -325,7 +325,7 @@ public class GameNetworkManager : NetworkManager
 			return boardControls[id] != null ? boardControls[id].netIdentity.connectionToClient : null;
 		return null;
 	}
-	public int GetWinningPlayer()
+	public void PunishNonWinners()
 	{
 		int highest = -1;
 		int id = 0;
@@ -346,10 +346,40 @@ public class GameNetworkManager : NetworkManager
 				if (id != i)
 					boardControls[i].CmdLose();
 		}
+	}
+	public void ShowWinner()
+	{
+		int highest = -1;
+		int id = 0;
+		for (int i=0 ; i<boardControls.Count ; i++)
+		{
+			if (boardControls[i] != null)
+			{
+				if (boardControls[i].GetCoins() + boardControls[i].GetStars() * 1000 > highest)
+				{
+					highest = boardControls[i].GetCoins() + boardControls[i].GetStars() * 1000;
+					id = i;
+				}
+			}
+		}
+		boardControls[id].CmdWin();
+	}
+	public int GetWinningPlayer()
+	{
+		int highest = -1;
+		int id = 0;
+		for (int i=0 ; i<boardControls.Count ; i++)
+		{
+			if (boardControls[i] != null)
+			{
+				if (boardControls[i].GetCoins() + boardControls[i].GetStars() * 1000 > highest)
+				{
+					highest = boardControls[i].GetCoins() + boardControls[i].GetStars() * 1000;
+					id = i;
+				}
+			}
+		}
 		return id;
-		//if (boardControls != null && boardControls.Count > 0)
-		//	return boardControls[id] != null ? boardControls[id].netIdentity.connectionToClient : null;
-		//return null;
 	}
 
 	public override void OnServerSceneChanged(string sceneName)
