@@ -5,6 +5,8 @@ using TMPro;
 using Unity.Collections;
 using UnityEngine;
 
+public enum NodeSpace { blue, red, green_rotate, green_speed, star, shop }
+
 public class Node : MonoBehaviour
 {
 	public List<Node> nextNodes;
@@ -12,9 +14,18 @@ public class Node : MonoBehaviour
 	[HideInInspector] public ushort nodeId;
 
 
-	enum NodeSpace { blue, red, green_rotate, green_speed, star, shop }
-	[Space] [SerializeField] private NodeSpace nodeSpace;
+	[Space] [HideInInspector] public NodeSpace nodeSpace;
 	public bool hasStar {get; private set;}
+
+	[Space] [Header("Node Type")]
+	[Space] [SerializeField] MeshRenderer mesh;
+	[SerializeField] Material blueMat;
+	[SerializeField] Material redMat;
+	[SerializeField] Material greenRotateMat;
+	[SerializeField] Material greenSpeedMat;
+	[SerializeField] Material shopMat;
+	[SerializeField] Material starMat;
+	[SerializeField] Material starFadeMat;
 
 	
 	[Space] [SerializeField] GameObject blueLandVfx;
@@ -23,6 +34,7 @@ public class Node : MonoBehaviour
 
 	[Space] [SerializeField] ParticleSystem blueGlowPs;
 	[SerializeField] ParticleSystem redGlowPs;
+	[SerializeField] private GameObject[] arrows;
 
 	[Space] [SerializeField] private GameObject targetObj;
 	public Transform target;
@@ -33,10 +45,6 @@ public class Node : MonoBehaviour
 	[Space] [SerializeField] private GameObject thornObj;
 	[SerializeField] private GameObject thornExplosionObj;
 	[SerializeField] private int thornId;
-	
-	[Space] [SerializeField] private MeshRenderer mesh;
-	[SerializeField] private Material starMat;
-	[SerializeField] private Material starFadeMat;
 	
 	[Space] [SerializeField] private TextMeshPro txt;
 	private bool canSpellTarget=true;
@@ -51,11 +59,15 @@ public class Node : MonoBehaviour
 		if (nodeSpace == NodeSpace.red)
 			Gizmos.color = new Color(1,0.6f,0);
 		else if (nodeSpace == NodeSpace.blue)
-			Gizmos.color = Color.magenta;
+			Gizmos.color = Color.cyan;
 		else if (nodeSpace == NodeSpace.shop)
 			Gizmos.color = Color.gray;
 		else if (nodeSpace == NodeSpace.star)
 			Gizmos.color = Color.yellow;
+		else if (nodeSpace == NodeSpace.green_rotate)
+			Gizmos.color = Color.green;
+		else if (nodeSpace == NodeSpace.green_speed)
+			Gizmos.color = Color.green;
 
 		foreach (Node node in nextNodes)
 		{
@@ -67,6 +79,48 @@ public class Node : MonoBehaviour
 		}
 	}
 
+	public void ChangeNodeSpace()
+	{
+		switch (nodeSpace)
+		{
+			case NodeSpace.blue: 
+				mesh.material = blueMat;
+				break;
+			case NodeSpace.red: 
+				mesh.material = redMat;
+				break;
+			case NodeSpace.green_speed: 
+				mesh.material = greenSpeedMat;
+				break;
+			case NodeSpace.green_rotate: 
+				mesh.material = greenRotateMat;
+				break;
+			case NodeSpace.shop: 
+				mesh.material = shopMat;
+				break;
+			case NodeSpace.star: 
+				mesh.material = starFadeMat;
+				break;
+		}
+	}
+
+	private void Start() 
+	{
+		if (nextNodes != null && arrows != null)
+		{
+			for (int i=0 ; i<nextNodes.Count && i<arrows.Length ; i++)
+			{
+				if (nextNodes[i] != null && arrows[i] != null)
+				{
+					arrows[i].SetActive(true);
+					arrows[i].transform.SetPositionAndRotation(
+						Vector3.Lerp(transform.position, nextNodes[i].transform.position, 0.5f), 
+						Quaternion.LookRotation((transform.position - nextNodes[i].transform.position).normalized)
+					);
+				}
+			}
+		}
+	}
 
 	public void PlayGlowVfx()
 	{
@@ -115,17 +169,7 @@ public class Node : MonoBehaviour
 			players.Remove(p);
 		}
 	}
-	//public void RagdollPlayers()
-	//{
-	//	foreach (PlayerControls player in players)
-	//	{
-	//		if (player != null)
-	//		{
-	//			player.CmdPlayerToggle(false);
-	//			player.CmdRagdollToggle(true);
-	//		}
-	//	}
-	//}
+
 	public void HitPlayers(int penalty)
 	{
 		if (players != null && players.Contains(p) && !p.isShield)
