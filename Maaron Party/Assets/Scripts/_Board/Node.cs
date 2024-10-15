@@ -9,12 +9,13 @@ public enum NodeSpace { blue, red, green_rotate, green_speed, star, shop }
 
 public class Node : MonoBehaviour
 {
-	public List<Node> nextNodes;
+	public NodeSpace nodeSpace;
 	private Vector3 offset = new Vector3(0,0.25f);
 	[HideInInspector] public ushort nodeId;
 
 
-	[Space] [HideInInspector] public NodeSpace nodeSpace;
+
+	[Space] public List<Node> nextNodes;
 	public bool hasStar {get; private set;}
 
 	[Space] [Header("Node Type")]

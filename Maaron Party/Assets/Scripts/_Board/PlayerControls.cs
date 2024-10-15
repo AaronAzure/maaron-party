@@ -65,6 +65,7 @@ public class PlayerControls : NetworkBehaviour
 
 	[Space] [Header("Vfx")]
 	[SerializeField] private GameObject maaronFireVfx;
+	[SerializeField] private GameObject maaronSpotlightVfx;
 
 
 	[Space] [Header("Ragdoll")]
@@ -90,6 +91,7 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private GameObject starUi;
 	[SerializeField] private GameObject shopUi;
 	[SerializeField] private GameObject spellUi;
+	[SerializeField] private GameObject fullUi;
 	[SerializeField] private GameObject backToBaseUi;
 	[SerializeField] private GameObject baseUi;
 
@@ -150,6 +152,8 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private GameObject fireSpell1;
 	[SerializeField] private ParticleSystem dashSpellPs1;
 	[SerializeField] private GameObject shieldSpell1;
+	[SerializeField] private int newSpellId;
+	[SerializeField] private ItemShopButton[] newSpellBtns;
 	public int _spellInd {get; private set;} 
 
 	#endregion
@@ -575,6 +579,44 @@ public class PlayerControls : NetworkBehaviour
 		isBuyingStar = false;
 	}
 
+	public void _BUY_ITEM(int itemId)
+	{
+		//Debug.Log($"<color=cyan>BOUGHT ITEM {itemId}</color>");
+		if (itemInds.Count < 3)
+		{
+			itemInds.Add(itemId);
+			CmdReplaceItems(itemInds);
+			CmdShowItems();
+		}
+		// inventory full!
+		else
+		{
+			newSpellId = itemId;
+			for (int i=0 ; i<newSpellBtns.Length ; i++)
+				newSpellBtns[i].ind = i >= 0 && i < itemInds.Count ? itemInds[i] : itemId;
+			fullUi.SetActive(true);
+			shopUi.SetActive(false);
+		}
+	}
+	public void _REPLACE_ITEM(int ind)
+	{
+		//Debug.Log($"<color=cyan>BOUGHT ITEM {itemId}</color>");
+		if (ind >= 0 && ind < itemInds.Count)
+		{
+			itemInds[ind] = newSpellId;
+			CmdReplaceItems(itemInds);
+			CmdShowItems();
+			fullUi.SetActive(false);
+			if (isAtShop)
+				shopUi.SetActive(true);
+		}
+		else
+		{
+			fullUi.SetActive(false);
+			if (isAtShop)
+				shopUi.SetActive(true);
+		}
+	}
 	public void _CLOSE_SHOP()
 	{
 		startPos = transform.position;
@@ -840,14 +882,6 @@ public class PlayerControls : NetworkBehaviour
 
 
 	#region Items/Spells
-	public void _BUY_ITEM(int itemId)
-	{
-		Debug.Log($"<color=cyan>BOUGHT ITEM {itemId}</color>");
-		if (itemInds.Count < 3)
-			itemInds.Add(itemId);
-		CmdReplaceItems(itemInds);
-		CmdShowItems();
-	}
 	[Command(requiresAuthority=false)] private void CmdShowItems() => RpcShowItems();
 	[ClientRpc] private void RpcShowItems()
 	{
