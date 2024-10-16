@@ -58,6 +58,16 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private Direction downLeft;
 	[SerializeField] private Direction downRight;
 
+	[Space] [SerializeField] private GameObject melon;
+	[SerializeField] private Transform upPos;
+	[SerializeField] private Transform downPos;
+	[SerializeField] private Transform leftPos;
+	[SerializeField] private Transform rightPos;
+	[SerializeField] private Transform upLeftPos;
+	[SerializeField] private Transform upRightPos;
+	[SerializeField] private Transform downLeftPos;
+	[SerializeField] private Transform downRightPos;
+
 
 	[Space] [SerializeField] private int movesLeft;
 	[SerializeField] private TextMeshPro movesLeftTxt;
@@ -700,11 +710,39 @@ public class PlayerControls : NetworkBehaviour
 		inMap = true;
 		CmdToggleMapCam(true);
 		if (nextNode != null)
+		{
+			int shortestPath = 9999;
+			int shortestInd = 0;
 			for (int i=0 ; i<nextNode.nextNodes.Count ; i++)
+			{
 				RevealPaths(nextNode.nextNodes[i].transform.position, i);
+				int distance = nextNode.nextNodes[i].GetDistanceAway(1);
+				if (shortestPath > distance)
+				{
+					shortestPath = distance;
+					shortestInd = i;
+				}
+			}
+			if (shortestInd < nextNode.nextNodes.Count && nextNode.nextNodes[shortestInd] != null)
+				ShowShortestPath(nextNode.nextNodes[shortestInd].transform.position);
+		}
 		else
+		{
+			int shortestPath = 9999;
+			int shortestInd = 0;
 			for (int i=0 ; i<currNode.nextNodes.Count ; i++)
+			{
 				RevealPaths(currNode.nextNodes[i].transform.position, i);
+				int distance = currNode.nextNodes[i].GetDistanceAway(1);
+				if (shortestPath > distance)
+				{
+					shortestPath = distance;
+					shortestInd = i;
+				}
+			}
+			if (shortestInd < currNode.nextNodes.Count && currNode.nextNodes[shortestInd] != null)
+				ShowShortestPath(currNode.nextNodes[shortestInd].transform.position);
+		}
 	}
 	[Command(requiresAuthority=false)] void CmdToggleMapCam(bool active) => RpcToggleMapCam(active);
 	[ClientRpc] void RpcToggleMapCam(bool active) => spellCam.SetActive(active);
@@ -802,6 +840,7 @@ public class PlayerControls : NetworkBehaviour
 
 	void HidePaths()
 	{
+		melon.SetActive(false);
 		if (up.gameObject.activeSelf)
 			up.gameObject.SetActive(false);
 		if (down.gameObject.activeSelf)
@@ -867,6 +906,32 @@ public class PlayerControls : NetworkBehaviour
 			downRight.gameObject.SetActive(true);
 			downRight.index = ind;
 		}
+	}
+	void ShowShortestPath(Vector3 nextPos)
+	{
+		Vector3 toPos = (nextPos - startPos).normalized;
+		bool goingUp = toPos.z >= 0.33f;
+		bool goingDown = toPos.z <= -0.33f;
+		bool goingRight = toPos.x >= 0.33f;
+		bool goingLeft = toPos.x <= -0.33f;
+
+		melon.SetActive(true);
+		if (goingUp && !goingLeft && !goingRight)
+			melon.transform.position = upPos.position;
+		else if (goingDown && !goingLeft && !goingRight)
+			melon.transform.position = downPos.position;
+		else if (goingLeft && !goingUp && !goingDown)
+			melon.transform.position = leftPos.position;
+		else if (goingRight && !goingUp && !goingDown)
+			melon.transform.position = rightPos.position;
+		else if (goingUp && goingLeft)
+			melon.transform.position = upLeftPos.position;
+		else if (goingUp && goingRight)
+			melon.transform.position = upRightPos.position;
+		else if (goingDown && goingLeft)
+			melon.transform.position = downLeftPos.position;
+		else if (goingDown && goingRight)
+			melon.transform.position = downRightPos.position;
 	}
 
 	public void ChoosePath(int ind)
