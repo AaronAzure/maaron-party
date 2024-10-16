@@ -53,15 +53,15 @@ public class Item : MonoBehaviour
 			img.sprite = GetSprite(ind);
 	}
 
-	public void _USE_SPELL()
+	public void _USE_SPELL(int slot)
 	{
 		if (p != null) 
 		{
 			switch (ind)
 			{
 				case -1: break;
-				case 0: p._USE_SPELL(0); break;
-				case 1: p._USE_SPELL(1); break;
+				case 0: p._USE_SPELL(slot, 0); break;
+				case 1: p._USE_SPELL(slot, 1); break;
 
 				case 6: p.UseDashSpell(4); break;
 				case 7: p.UseDashSpell(8); break;
@@ -69,7 +69,7 @@ public class Item : MonoBehaviour
 
 				case 9: p.UseShieldSpell(); break;
 
-				default: p._USE_SPELL(ind); break;
+				default: p._USE_SPELL(slot, ind); break;
 			}
 		}
 	}

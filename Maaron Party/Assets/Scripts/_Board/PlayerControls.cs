@@ -10,7 +10,7 @@ using Cinemachine;
 public class PlayerControls : NetworkBehaviour
 {
 	[Header("HACKS")]
-	[SerializeField] [Range(-1,30)] private int controlledRoll=-1;
+	[SerializeField] private int controlledRoll=-1;
 	[SerializeField] private bool freeShop;
 
 	
@@ -165,6 +165,7 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private int newSpellId;
 	[SerializeField] private ItemShopButton[] newSpellBtns;
 	public int _spellInd {get; private set;} 
+	public int _spellSlot {get; private set;} 
 
 	#endregion
 
@@ -528,6 +529,15 @@ public class PlayerControls : NetworkBehaviour
 		spellUi.SetActive(false);
 		baseUi.SetActive(true);
 	}
+	public void StopUsingSpells()
+	{
+		// show base ui
+		isUsingSpell = false;
+		ToggleSpellUi(false);
+		backToBaseUi.SetActive(false);
+		spellUi.SetActive(false);
+		baseUi.SetActive(true);
+	}
 	public void _TOGGLE_SPELLS_UI()
 	{
 		// show base ui
@@ -539,7 +549,7 @@ public class PlayerControls : NetworkBehaviour
 		// show spell ui
 		else
 		{
-			ToggleSpellUi(true);
+			//ToggleSpellUi(true);
 			spellUi.SetActive(true);
 			baseUi.SetActive(false);
 		}
@@ -579,8 +589,10 @@ public class PlayerControls : NetworkBehaviour
 	{
 		isBuyingStar = true;
 		anim.SetBool("hasStar", true);
+		bm.CmdMaaronClap(true);
 
 		yield return new WaitForSeconds(2);
+		bm.CmdMaaronClap(false);
 		anim.SetBool("hasStar", false);
 		CmdToggleStarCam(false);
 		bm.CmdChooseStar();
@@ -591,7 +603,6 @@ public class PlayerControls : NetworkBehaviour
 
 	public void _BUY_ITEM(int itemId)
 	{
-		//Debug.Log($"<color=cyan>BOUGHT ITEM {itemId}</color>");
 		if (itemInds.Count < 3)
 		{
 			itemInds.Add(itemId);
@@ -947,6 +958,12 @@ public class PlayerControls : NetworkBehaviour
 
 
 	#region Items/Spells
+	private void RemoveSpell(int ind)
+	{
+		if (itemInds != null && ind >= 0 && ind < itemInds.Count)
+			itemInds.RemoveAt(ind);
+		CmdShowItems();
+	}
 	[Command(requiresAuthority=false)] private void CmdShowItems() => RpcShowItems();
 	[ClientRpc] private void RpcShowItems()
 	{
@@ -976,10 +993,24 @@ public class PlayerControls : NetworkBehaviour
 	{
 		itemInds = ints;
 	}
-	public void _USE_SPELL(int ind) 
+	public void _USE_SPELL(int slot, int ind) 
 	{
+		_spellSlot = slot;
 		_spellInd = ind;
 		CmdUseSpell(!rangeObj.activeSelf, currNode != null ? currNode.nodeId : -1);
+	}
+	[Command(requiresAuthority=false)] private void CmdToggleRange(bool active, int nodeId) => RpcToggleRange(active, nodeId);
+	[ClientRpc] private void RpcToggleRange(bool active, int nodeId)
+	{
+		if (!active && nodeId != -1)
+			NodeManager.Instance.GetNode(nodeId).SetCanSpellTargetDelay(true);
+		else if (active && nodeId != -1) 
+			NodeManager.Instance.GetNode(nodeId).SetCanSpellTarget(false);
+
+		if (active)
+			spellCam.transform.localPosition = new Vector3(0,25,-10);
+		spellCam.SetActive(active);
+	 	rangeAnim.SetTrigger(active ? "on" : "off");
 	}
 	[Command(requiresAuthority=false)] private void CmdUseSpell(bool active, int nodeId) => RpcUseSpell(active, nodeId);
 	[ClientRpc] private void RpcUseSpell(bool active, int nodeId)
@@ -1064,7 +1095,8 @@ public class PlayerControls : NetworkBehaviour
 	public void UseThornSpell(Node target)
 	{
 		ToggleSpellUi(false);
-		usingFireSpell1 = true;
+		backToBaseUi.SetActive(false);
+
 		if (spellCo == null)
 			spellCo = StartCoroutine( ThornCo(target) );
 	}
@@ -1073,6 +1105,8 @@ public class PlayerControls : NetworkBehaviour
 		nodeCam.m_Follow = target.transform;
 		CmdSaveTrap(target.nodeId);
 		CmdToggleNodeCam(true);
+		CmdToggleRange(false, currNode != null ? currNode.nodeId : -1);
+		RemoveSpell(_spellSlot);
 
 		//yield return new WaitForSeconds(1f);
 		//CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera.VirtualCameraGameObject.name;
@@ -1081,11 +1115,14 @@ public class PlayerControls : NetworkBehaviour
 		yield return new WaitForSeconds(1.5f);
 		CmdToggleNodeCam(false);
 		spellCo = null;
+		StopUsingSpells();
 	}
 	[Command(requiresAuthority=false)] private void CmdSaveTrap(int nodeId) => gm.SaveTrap(nodeId, id);
 	public void UseFireSpell(Node target)
 	{
 		ToggleSpellUi(false);
+		backToBaseUi.SetActive(false);
+
 		usingFireSpell1 = true;
 		if (spellCo == null)
 			spellCo = StartCoroutine( SpellCo(target) );
@@ -1095,7 +1132,8 @@ public class PlayerControls : NetworkBehaviour
 		//yield return new WaitForSeconds(0.5f);
 		nodeCam.m_Follow = target.transform;
 		CmdToggleNodeCam(true);
-		//nodeCam.gameObject.SetActive(true);
+		CmdToggleRange(false, currNode != null ? currNode.nodeId : -1);
+		RemoveSpell(_spellSlot);
 
 		yield return new WaitForSeconds(1f);
 		CmdFireSpell1(target.transform.position);
@@ -1105,11 +1143,12 @@ public class PlayerControls : NetworkBehaviour
 
 		yield return new WaitForSeconds(0.5f);
 		gm.CmdHitPlayersAtNode(target.nodeId);
-		Debug.Log($"{CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera.VirtualCameraGameObject.name}");
+		//Debug.Log($"{CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera.VirtualCameraGameObject.name}");
 		
 		yield return new WaitForSeconds(1.5f);
 		CmdToggleNodeCam(false);
 		spellCo = null;
+		StopUsingSpells();
 	}
 	[Command(requiresAuthority=false)] private void CmdToggleNodeCam(bool active) => RpcToggleNodeCam(active);
 	[ClientRpc] private void RpcToggleNodeCam(bool active) => nodeCam.gameObject.SetActive(active);

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -13,6 +14,7 @@ public class BoardTurret : MonoBehaviour
 	[SerializeField] private GameObject cam;
 	[SerializeField] private Transform turret;
 	[SerializeField] private Animator anim;
+	[SerializeField] private TextMeshPro monitorTxt;
 
 	[Space] [SerializeField] private SkinnedMeshRenderer turretRenderer;
 	[SerializeField] private Material turretMat;
@@ -57,6 +59,7 @@ public class BoardTurret : MonoBehaviour
 			if (i<lightnings.Length)
 				lightnings[i].Play();
 		}
+		monitorTxt.text = $"{5-n}";
 		turret.localRotation = Quaternion.Euler(45 - 90 * rot, 90, 0);
 		if (castleRend != null)
 		{
@@ -74,6 +77,7 @@ public class BoardTurret : MonoBehaviour
 			renderers[n-1].material = emissionMats[n-1];
 		if (n-1 < lightnings.Length)
 			lightnings[n-1].Play();
+		monitorTxt.text = $"{5-n}";
 		if (n == 5)
 			StartCoroutine(FireTurretCo());
 	}
@@ -103,6 +107,7 @@ public class BoardTurret : MonoBehaviour
 			if (i<lightnings.Length)
 				lightnings[i].Stop(true, ParticleSystemStopBehavior.StopEmitting);
 		}
+		monitorTxt.text = $"{5}";
 		turretRenderer.material = turretMat;
 	}
 

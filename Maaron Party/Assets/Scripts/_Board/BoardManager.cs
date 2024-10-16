@@ -380,7 +380,7 @@ public class BoardManager : NetworkBehaviour
 		if (changeLoc)
 		{
 			CmdToggleSpotlight(false);
-			
+
 			yield return new WaitForSeconds(1f);
 			RpcMaaronTeleport();
 
@@ -422,6 +422,9 @@ public class BoardManager : NetworkBehaviour
 	// maaron teleports
 	[Command(requiresAuthority=false)] void CmdMaaronTeleport() => RpcMaaronTeleport();
 	[ClientRpc] void RpcMaaronTeleport() => maaronAnim.SetTrigger("teleport");
+
+	[Command(requiresAuthority=false)] public void CmdMaaronClap(bool active) => RpcMaaronClap(active);
+	[ClientRpc] void RpcMaaronClap(bool active) => maaronAnim.SetBool("isClapping", active);
 
 	// set maaron location
 	[Command(requiresAuthority=false)] void CmdSetMaaron(int nodeId, bool isStarSpace) => RpcSetMaaron(nodeId, isStarSpace);
