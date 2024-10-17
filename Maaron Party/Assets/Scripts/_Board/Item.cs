@@ -73,4 +73,58 @@ public class Item : MonoBehaviour
 			}
 		}
 	}
+
+	public string GetDesc()
+	{
+		return ind switch
+		{
+			0 => "Sets a trap, steal <b>10</b> coins from any opponents that lands on it >:)",
+			1 => "Sets a trap, steal <b>20</b> coins from any opponents that lands on it >:)",
+			2 => "Sets a trap, steal <b>Golden Watermelon</b> from any opponents that lands on it >:)",
+			3 => "Shoots a fireball at a space, destroy <b>15</b> coins from all opponents on that space >:)",
+			4 => "Shoots a fireball at a space, destroy <b>25</b> coins from all opponents on that space >:)",
+			5 => "Shoots a fireball at a space, destroy <b>Golden Watermelon</b> coins from all opponents on that space >:)",
+			6 => "Enhance yourself, and immediately move <b>4</b> spaces, then proceed with your turn >:)",
+			7 => "Enhance yourself, and immediately move <b>8</b> spaces, then proceed with your turn >:)",
+			8 => "Enhance yourself, and immediately move <b>12</b> spaces, then proceed with your turn >:)",
+			9 => "spellShield1",
+			_ => "",
+		};
+	}
+
+	public int GetPrice()
+	{
+		return ind switch
+		{
+			0 => 5,		//spellThorn1
+			1 => 10,	//spellThorn2
+			2 => 20,	//spellThorn3
+			3 => 10,	//spellFire1
+			4 => 20,	//spellFire2
+			5 => 40,	//spellFire3
+			6 => 10,	//spellSpeed1
+			7 => 20,	//spellSpeed2
+			8 => 40,	//spellSpeed3
+			9 => 10,	//spellShield1
+			_ => 5,
+		};
+	}
+
+	public int GetManaCost()
+	{
+		return ind switch
+		{
+			0 => 1, 	//spellThorn1
+			1 => 2, 	//spellThorn2
+			2 => 3, 	//spellThorn3
+			3 => 2, 	//spellFire1
+			4 => 3, 	//spellFire2
+			5 => 4, 	//spellFire3
+			6 => 2, 	//spellSpeed1
+			7 => 3, 	//spellSpeed2
+			8 => 4, 	//spellSpeed3
+			9 => 2, 	//spellShield1
+			_ => 1,
+		};
+}
 }
