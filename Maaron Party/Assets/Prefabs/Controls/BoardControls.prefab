@@ -122,10 +122,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3325275383187896159}
-        m_TargetAssemblyTypeName: PlayerControls, Assembly-CSharp
-        m_MethodName: _BUY_ITEM
-        m_Mode: 3
+      - m_Target: {fileID: 2711707849746702350}
+        m_TargetAssemblyTypeName: ItemShopButton, Assembly-CSharp
+        m_MethodName: _CHECK_OUT_ITEM
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -151,7 +151,7 @@ MonoBehaviour:
   availability: 2
   isReplace: 0
   isShop: 1
-  buyBtn: {fileID: 0}
+  buyBtn: {fileID: 4424728719337420266}
   titleTxt: {fileID: 2655536019229860521}
   descTxt: {fileID: 1982703288630178047}
   manaTxt: {fileID: 6942921410939097132}
@@ -1672,10 +1672,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3325275383187896159}
-        m_TargetAssemblyTypeName: PlayerControls, Assembly-CSharp
-        m_MethodName: _BUY_ITEM
-        m_Mode: 3
+      - m_Target: {fileID: 4587046909959650205}
+        m_TargetAssemblyTypeName: ItemShopButton, Assembly-CSharp
+        m_MethodName: _CHECK_OUT_ITEM
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1701,7 +1701,7 @@ MonoBehaviour:
   availability: 2
   isReplace: 0
   isShop: 1
-  buyBtn: {fileID: 0}
+  buyBtn: {fileID: 4424728719337420266}
   titleTxt: {fileID: 2655536019229860521}
   descTxt: {fileID: 1982703288630178047}
   manaTxt: {fileID: 6942921410939097132}
@@ -2471,10 +2471,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3325275383187896159}
-        m_TargetAssemblyTypeName: PlayerControls, Assembly-CSharp
-        m_MethodName: _BUY_ITEM
-        m_Mode: 3
+      - m_Target: {fileID: 1998890239430673068}
+        m_TargetAssemblyTypeName: ItemShopButton, Assembly-CSharp
+        m_MethodName: _CHECK_OUT_ITEM
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -2500,7 +2500,7 @@ MonoBehaviour:
   availability: 1
   isReplace: 0
   isShop: 1
-  buyBtn: {fileID: 0}
+  buyBtn: {fileID: 4424728719337420266}
   titleTxt: {fileID: 2655536019229860521}
   descTxt: {fileID: 1982703288630178047}
   manaTxt: {fileID: 6942921410939097132}
@@ -2565,7 +2565,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.25, g: 0.25, b: 0.25, a: 0.6}
+  m_Color: {r: 0.25, g: 0.25, b: 0.25, a: 0.8}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2907,10 +2907,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3325275383187896159}
-        m_TargetAssemblyTypeName: PlayerControls, Assembly-CSharp
-        m_MethodName: _BUY_ITEM
-        m_Mode: 3
+      - m_Target: {fileID: 6093368686892749663}
+        m_TargetAssemblyTypeName: ItemShopButton, Assembly-CSharp
+        m_MethodName: _CHECK_OUT_ITEM
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -2936,7 +2936,7 @@ MonoBehaviour:
   availability: 0
   isReplace: 0
   isShop: 1
-  buyBtn: {fileID: 0}
+  buyBtn: {fileID: 4424728719337420266}
   titleTxt: {fileID: 2655536019229860521}
   descTxt: {fileID: 1982703288630178047}
   manaTxt: {fileID: 6942921410939097132}
@@ -5451,7 +5451,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.25, g: 0.25, b: 0.25, a: 0.6}
+  m_Color: {r: 0.25, g: 0.25, b: 0.25, a: 0.8}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -6403,10 +6403,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3325275383187896159}
-        m_TargetAssemblyTypeName: PlayerControls, Assembly-CSharp
-        m_MethodName: _BUY_ITEM
-        m_Mode: 3
+      - m_Target: {fileID: 5291564975070427516}
+        m_TargetAssemblyTypeName: ItemShopButton, Assembly-CSharp
+        m_MethodName: _CHECK_OUT_ITEM
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -6432,7 +6432,7 @@ MonoBehaviour:
   availability: 1
   isReplace: 0
   isShop: 1
-  buyBtn: {fileID: 0}
+  buyBtn: {fileID: 4424728719337420266}
   titleTxt: {fileID: 2655536019229860521}
   descTxt: {fileID: 1982703288630178047}
   manaTxt: {fileID: 6942921410939097132}
@@ -7226,10 +7226,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3325275383187896159}
-        m_TargetAssemblyTypeName: PlayerControls, Assembly-CSharp
-        m_MethodName: _BUY_ITEM
-        m_Mode: 3
+      - m_Target: {fileID: 3908425489552767140}
+        m_TargetAssemblyTypeName: ItemShopButton, Assembly-CSharp
+        m_MethodName: _CHECK_OUT_ITEM
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -7255,7 +7255,7 @@ MonoBehaviour:
   availability: 0
   isReplace: 0
   isShop: 1
-  buyBtn: {fileID: 0}
+  buyBtn: {fileID: 4424728719337420266}
   titleTxt: {fileID: 2655536019229860521}
   descTxt: {fileID: 1982703288630178047}
   manaTxt: {fileID: 6942921410939097132}
@@ -24392,10 +24392,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3325275383187896159}
-        m_TargetAssemblyTypeName: PlayerControls, Assembly-CSharp
-        m_MethodName: _BUY_ITEM
-        m_Mode: 3
+      - m_Target: {fileID: 1268168868881693859}
+        m_TargetAssemblyTypeName: ItemShopButton, Assembly-CSharp
+        m_MethodName: _CHECK_OUT_ITEM
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -24421,7 +24421,7 @@ MonoBehaviour:
   availability: 1
   isReplace: 0
   isShop: 1
-  buyBtn: {fileID: 0}
+  buyBtn: {fileID: 4424728719337420266}
   titleTxt: {fileID: 2655536019229860521}
   descTxt: {fileID: 1982703288630178047}
   manaTxt: {fileID: 6942921410939097132}
@@ -25064,7 +25064,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.25, g: 0.25, b: 0.25, a: 0.6}
+  m_Color: {r: 0.25, g: 0.25, b: 0.25, a: 0.8}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -25350,7 +25350,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.25, g: 0.25, b: 0.25, a: 0.6}
+  m_Color: {r: 0.25, g: 0.25, b: 0.25, a: 0.8}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -31374,10 +31374,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3325275383187896159}
-        m_TargetAssemblyTypeName: PlayerControls, Assembly-CSharp
-        m_MethodName: _BUY_ITEM
-        m_Mode: 3
+      - m_Target: {fileID: 9172501098995124121}
+        m_TargetAssemblyTypeName: ItemShopButton, Assembly-CSharp
+        m_MethodName: _CHECK_OUT_ITEM
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -31403,7 +31403,7 @@ MonoBehaviour:
   availability: 0
   isReplace: 0
   isShop: 1
-  buyBtn: {fileID: 0}
+  buyBtn: {fileID: 4424728719337420266}
   titleTxt: {fileID: 2655536019229860521}
   descTxt: {fileID: 1982703288630178047}
   manaTxt: {fileID: 6942921410939097132}
@@ -32096,6 +32096,10 @@ MonoBehaviour:
   - {fileID: 6185934712740215295}
   - {fileID: 3973232923319653704}
   emptySpr: {fileID: 21300000, guid: bb946192ec4a9cd47813c89b169df76b, type: 3}
+  buyBtnObj: {fileID: 8527372103419472375}
+  titleTxt: {fileID: 2655536019229860521}
+  descTxt: {fileID: 1982703288630178047}
+  manaCostTxt: {fileID: 6942921410939097132}
   items:
   - {fileID: 6640340927944033158}
   - {fileID: 15928089169623596}
@@ -58630,10 +58634,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3325275383187896159}
-        m_TargetAssemblyTypeName: PlayerControls, Assembly-CSharp
-        m_MethodName: _BUY_ITEM
-        m_Mode: 3
+      - m_Target: {fileID: 5766692294933979242}
+        m_TargetAssemblyTypeName: ItemShopButton, Assembly-CSharp
+        m_MethodName: _CHECK_OUT_ITEM
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -58659,7 +58663,7 @@ MonoBehaviour:
   availability: 2
   isReplace: 0
   isShop: 1
-  buyBtn: {fileID: 0}
+  buyBtn: {fileID: 4424728719337420266}
   titleTxt: {fileID: 2655536019229860521}
   descTxt: {fileID: 1982703288630178047}
   manaTxt: {fileID: 6942921410939097132}
@@ -89915,6 +89919,7 @@ GameObject:
   - component: {fileID: 6573201825891419578}
   - component: {fileID: 4242887215602417438}
   - component: {fileID: 4756014278074242278}
+  - component: {fileID: 4424728719337420266}
   m_Layer: 0
   m_Name: Button
   m_TagString: Untagged
@@ -90024,10 +90029,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3325275383187896159}
-        m_TargetAssemblyTypeName: PlayerControls, Assembly-CSharp
-        m_MethodName: _PURCHASE_STAR
-        m_Mode: 6
+      - m_Target: {fileID: 4424728719337420266}
+        m_TargetAssemblyTypeName: BuyButton, Assembly-CSharp
+        m_MethodName: _BUY_ITEM
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -90036,6 +90041,20 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+--- !u!114 &4424728719337420266
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8527372103419472375}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22932a39f62f4684eacb4bbd94d45c21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemInd: 0
+  cost: 0
 --- !u!1 &8708362313402386600
 GameObject:
   m_ObjectHideFlags: 0

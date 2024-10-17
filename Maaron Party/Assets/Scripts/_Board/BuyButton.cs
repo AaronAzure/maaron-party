@@ -9,6 +9,6 @@ public class BuyButton : MonoBehaviour
 	public void _BUY_ITEM()
 	{
 		if (pc.GetCoins() >= cost)
-			pc._BUY_ITEM(itemInd);
+			pc._BUY_ITEM(itemInd, cost);
 	}
 }

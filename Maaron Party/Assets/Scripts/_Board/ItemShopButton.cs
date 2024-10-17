@@ -45,11 +45,13 @@ public class ItemShopButton : MonoBehaviour
 			{
 				buyBtn.itemInd = ind;
 				buyBtn.cost = Item.instance.GetPrice(ind);
+				if (!buyBtn.gameObject.activeSelf)
+					buyBtn.gameObject.SetActive(true);
 			}
 			if (titleTxt != null) titleTxt.text = Item.instance.GetTitle(ind);
 			if (descTxt != null) descTxt.text = Item.instance.GetDesc(ind);
-			if (manaTxt != null) manaTxt.text = $"{Item.instance.GetManaCost(ind)}";
-			if (priceTxt != null) priceTxt.text = $"{Item.instance.GetPrice(ind)}";
+			if (manaTxt != null) manaTxt.text = $"Mana: {Item.instance.GetManaCost(ind)}";
+			if (priceTxt != null) priceTxt.text = $"Buy ({Item.instance.GetPrice(ind)})";
 		}
 	}
 

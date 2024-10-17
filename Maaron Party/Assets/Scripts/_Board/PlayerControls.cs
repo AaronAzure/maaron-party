@@ -151,6 +151,10 @@ public class PlayerControls : NetworkBehaviour
 	[SyncVar] [SerializeField] List<int> itemInds = new();
 	[SerializeField] Image[] itemImgs;
 	[SerializeField] private Sprite emptySpr;
+	[SerializeField] private GameObject buyBtnObj;
+	[SerializeField] private TextMeshProUGUI titleTxt;
+	[SerializeField] private TextMeshProUGUI descTxt;
+	[SerializeField] private TextMeshProUGUI manaCostTxt;
 
 
 	#region Spell Vars
@@ -601,8 +605,10 @@ public class PlayerControls : NetworkBehaviour
 		isBuyingStar = false;
 	}
 
-	public void _BUY_ITEM(int itemId)
+	public void _BUY_ITEM(int itemId, int itemCost)
 	{
+		NodeEffect(-itemCost);
+
 		if (itemInds.Count < 3)
 		{
 			itemInds.Add(itemId);
@@ -770,6 +776,11 @@ public class PlayerControls : NetworkBehaviour
 	public void OnShopNode()
 	{
 		isAtShop = true;
+		if (buyBtnObj != null) buyBtnObj.SetActive(false);
+		if (titleTxt != null) titleTxt.text = "Click on an Item!";
+		if (descTxt != null) descTxt.text = "I'm waiting...";
+		if (manaCostTxt != null) manaCostTxt.text = ":D";
+
 		if (anim != null) anim.SetFloat("moveSpeed", 0);
 		if (nextNode != null && nextNode.target != null)
 		{
