@@ -74,7 +74,24 @@ public class Item : MonoBehaviour
 		}
 	}
 
-	public string GetDesc()
+	public string GetTitle(int ind)
+	{
+		return ind switch
+		{
+			0 => "Thorn I",
+			1 => "Thorn II",
+			2 => "Thorn III",
+			3 => "Fire II",
+			4 => "Fire III",
+			5 => "Fire IV",
+			6 => "Speed II",
+			7 => "Speed III",
+			8 => "Speed IV",
+			9 => "Shield II",
+			_ => "",
+		};
+	}
+	public string GetDesc(int ind)
 	{
 		return ind switch
 		{
@@ -92,7 +109,7 @@ public class Item : MonoBehaviour
 		};
 	}
 
-	public int GetPrice()
+	public int GetPrice(int ind)
 	{
 		return ind switch
 		{
@@ -110,7 +127,7 @@ public class Item : MonoBehaviour
 		};
 	}
 
-	public int GetManaCost()
+	public int GetManaCost(int ind)
 	{
 		return ind switch
 		{
