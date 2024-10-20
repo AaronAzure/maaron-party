@@ -15,7 +15,6 @@ public class BoardManager : NetworkBehaviour
 	private PlayerControls _player;
 	GameManager gm {get{return GameManager.Instance;}}
 	GameNetworkManager nm {get{return GameNetworkManager.Instance;}}
-	//[SerializeField] UiDialogue dialogue;
 	UiDialogue dialogue {get{return UiDialogue.Instance;}}
 
 
@@ -34,6 +33,9 @@ public class BoardManager : NetworkBehaviour
 	[SerializeField] private CinemachineVirtualCamera starCam;
 	[SerializeField] private Animator maaronAnim;
 	[SerializeField] private ParticleSystem maaronSpotlightPs;
+	[SerializeField] private CanvasGroup placementCg;
+	[SerializeField] private PlacementButton[] placementBtns;
+	[SyncVar] bool[] placementChosen;
 
 	[Space] [SerializeField] private TreasureChest[] chests;
 	[SyncVar] public int nBmReady; 
@@ -79,7 +81,11 @@ public class BoardManager : NetworkBehaviour
 		turnTxt.text = $"Turn: {gm.nTurn}/{gm.maxTurns}";
 
 		if (!gm.gameStarted)
+		{
 			CmdToggleMainUi(false);
+			if (isServer)
+				placementChosen = new bool[placementBtns.Length];
+		}
 		//string s = $"<color=#FF8D07>";
 		//s += $"NetworkServer.connections.Count = {NetworkServer.connections.Count} | ";
 		//s += $"GameNetworkManager.Instance.numPlayers = {GameNetworkManager.Instance.numPlayers} | ";
@@ -229,12 +235,12 @@ public class BoardManager : NetworkBehaviour
 		RpcEndDialogue();
 		if (isIntro && isServer && teleportCo == null)
 		{
-			teleportCo = StartCoroutine( TeleportToStarCo(0) );
+			StartCoroutine(PlacementCardsCo());
+			//teleportCo = StartCoroutine( TeleportToStarCo(0) );
 		}
 		if (isLast5 && isServer)
 		{
 			CmdSpawnChests();
-			//teleportCo = StartCoroutine( TeleportToStarCo(0) );
 		}
 		if (gameOver && isServer)
 		{
@@ -245,6 +251,83 @@ public class BoardManager : NetworkBehaviour
 
 	#endregion
 
+
+	#region Placement
+	IEnumerator PlacementCardsCo()
+	{
+		List<int> temp = new();
+		tempPlayerOrder = new();
+		for (int i=0 ; i<nm.GetNumPlayers() ; i++)
+		{
+			temp.Add(i);
+			tempPlayerOrder.Add(i);
+		}
+
+		yield return new WaitForSeconds(1);
+		for (int i=0 ; i<nm.GetNumPlayers() ; i++)
+		{
+			int rng = temp[Random.Range(0, temp.Count)];
+			//placementBtns[i].SetPlacement(rng, i);
+			RpcSetPlacementCard(i, rng);
+			temp.Remove(rng);
+			//placementBtns[i].gameObject.SetActive(true);
+		}
+		RpcTogglePlacementCard(true);
+	}
+	[ClientRpc] void RpcSetPlacementCard(int i, int rng)
+	{
+		if (i >= 0 && i < placementBtns.Length && placementBtns[i] != null)
+			placementBtns[i].SetPlacement(rng, i);
+	}
+	[ClientRpc] void RpcTogglePlacementCard(bool active)
+	{
+		for (int i=0 ; i<placementBtns.Length && i<nm.GetNumPlayers() ; i++)
+			if (placementBtns[i] != null)
+				placementBtns[i].gameObject.SetActive(active);
+	}
+
+	
+	List<int> tempPlayerOrder;
+	public void DoneChoosingPlacement()
+	{
+		placementCg.interactable = false;
+	}
+	[Command(requiresAuthority=false)] public void CmdRevealPlacementCard(int ind, int playerId, int characterInd, int placement) 
+	{
+		if (ind >= 0 && ind < placementBtns.Length && placementBtns[ind] != null &&
+			ind < placementChosen.Length && !placementChosen[ind])
+		{
+			placementChosen[ind] = true;
+			tempPlayerOrder[placement] = playerId;
+			RpcRevealPlacementCard(ind, characterInd);
+		}
+		bool allReady = true;
+		for (int i=0 ; i<tempPlayerOrder.Count ; i++)
+			if (!placementChosen[i])
+				allReady = false;
+		if (allReady && endPlacementCo == null)
+			endPlacementCo = StartCoroutine( EndPlacementCo() );
+	}
+	[ClientRpc] void RpcRevealPlacementCard(int ind, int characterInd)
+	{
+		if (ind >= 0 && ind < placementBtns.Length && placementBtns[ind] != null)
+		{
+			placementBtns[ind].RevealCard(characterInd);
+		}
+	}
+
+	Coroutine endPlacementCo;
+	IEnumerator EndPlacementCo()
+	{
+		yield return new WaitForSeconds(1);
+		RpcTogglePlacementCard(false);
+		nm.SetPlayerOrder(tempPlayerOrder);
+
+		yield return new WaitForSeconds(0.5f);
+		teleportCo = StartCoroutine( TeleportToStarCo(0) );
+	}
+	
+	#endregion
 
 
 	#region Introduction
@@ -392,7 +475,7 @@ public class BoardManager : NetworkBehaviour
 		int rng = fixedInd == -1 ? Random.Range(0, starNodes.Length) : fixedInd;
 		while (rng == gm.prevStarInd || 
 			(gm.prevStarInd >= 0 && gm.prevStarInd < starNodes.Length &&
-			starNodes[gm.prevStarInd].invalid != null && starNodes[gm.prevStarInd].invalid != starNodes[rng].node))
+			starNodes[gm.prevStarInd].invalid != null && starNodes[gm.prevStarInd].invalid == starNodes[rng].node))
 		{
 			rng = Random.Range(0, starNodes.Length);
 		}

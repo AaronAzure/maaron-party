@@ -62,6 +62,7 @@ public class GameNetworkManager : NetworkManager
 	[Space] [SerializeField] private List<LobbyObject> lobbyPlayers = new();
 	[SerializeField] private List<PlayerControls> boardControls = new();
 	[SerializeField] private List<MinigameControls> minigameControls = new();
+	public List<int> playerOrder;
 	//bool isLoadingScene
 
 
@@ -263,6 +264,10 @@ public class GameNetworkManager : NetworkManager
 
 	#region Board
 
+	public void SetPlayerOrder(List<int> order) => playerOrder = order;
+
+	public int GetNumPlayers() => boardControls.Count;
+
 	public void StartBoardGame()
 	{
 		StartCoroutine( StartBoardGameCo() );
@@ -293,8 +298,8 @@ public class GameNetworkManager : NetworkManager
 	{
 		if (nPlayerOrder < boardControls.Count)
 		{
-			if (boardControls[nPlayerOrder] != null)
-				boardControls[nPlayerOrder++].YourTurn();
+			if (boardControls[ playerOrder[nPlayerOrder ]] != null)
+				boardControls[ playerOrder[nPlayerOrder++] ].YourTurn();
 			else
 			{
 				++nPlayerOrder;
@@ -392,10 +397,8 @@ public class GameNetworkManager : NetworkManager
 
 
 	#region Minigame
-	public int GetNumPlayers()
-	{
-		return minigameControls.Count;
-	}
+	public int GetNumMinigamePlayers() => minigameControls.Count;
+
 	IEnumerator StartMiniGameCo()
 	{
 		gm.CmdTriggerTransition(true);

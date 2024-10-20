@@ -5,7 +5,7 @@ using TMPro;
 using Unity.Collections;
 using UnityEngine;
 
-public enum NodeSpace { blue, red, green_rotate, green_speed, star, shop }
+public enum NodeSpace { blue, red, green_rotate, green_speed, star, shop, door }
 
 public class Node : MonoBehaviour
 {
@@ -27,6 +27,7 @@ public class Node : MonoBehaviour
 	[SerializeField] Material shopMat;
 	[SerializeField] Material starMat;
 	[SerializeField] Material starFadeMat;
+	[SerializeField] Material emptyMat;
 
 	
 	[Space] [SerializeField] GameObject blueLandVfx;
@@ -105,6 +106,9 @@ public class Node : MonoBehaviour
 			case NodeSpace.star: 
 				mesh.material = starFadeMat;
 				break;
+			case NodeSpace.door: 
+				mesh.material = emptyMat;
+				break;
 		}
 	}
 
@@ -126,6 +130,8 @@ public class Node : MonoBehaviour
 		}
 	}
 	#endregion
+
+	public bool IsDoor() => nodeSpace == NodeSpace.door;
 
 
 	public void PlayGlowVfx()
@@ -268,6 +274,7 @@ public class Node : MonoBehaviour
 		{
 			NodeSpace.star => false,
 			NodeSpace.shop => false,
+			NodeSpace.door => false,
 			_ => true,
 		};
 	}

@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class Item : MonoBehaviour
+public class Item : MonoBehaviour, IPointerEnterHandler
 {
 	public static Item instance;
 	
@@ -23,10 +25,26 @@ public class Item : MonoBehaviour
 	[SerializeField] private Sprite spellSpeed3;
 	[SerializeField] private Sprite spellShield1;
 
+	[Space] [Header("Ui")]
+	[SerializeField] private bool isUsuable;
+	[SerializeField] private TextMeshProUGUI titleTxt;
+	[SerializeField] private TextMeshProUGUI descTxt;
+	[SerializeField] private TextMeshProUGUI manaTxt;
+
 	private void Awake() 
 	{
 		if (instance == null)
 			instance = this;
+	}
+
+	public void OnPointerEnter(PointerEventData eventData)
+	{
+		if (isUsuable)
+		{
+			if (titleTxt != null) titleTxt.text = GetTitle(ind);
+			if (descTxt != null) descTxt.text = GetDesc(ind);
+			if (manaTxt != null) manaTxt.text = $"Mana Cost: {GetManaCost(ind)}";
+		}
 	}
 
 	public Sprite GetSprite(int n)
