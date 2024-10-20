@@ -614,6 +614,7 @@ public class PlayerControls : NetworkBehaviour
 			itemInds.Add(itemId);
 			CmdReplaceItems(itemInds);
 			CmdShowItems();
+			StartCoroutine( CloseShopCo() );
 		}
 		// inventory full!
 		else
@@ -627,15 +628,16 @@ public class PlayerControls : NetworkBehaviour
 	}
 	public void _REPLACE_ITEM(int ind)
 	{
-		//Debug.Log($"<color=cyan>BOUGHT ITEM {itemId}</color>");
+		// replaced item
 		if (ind >= 0 && ind < itemInds.Count)
 		{
 			itemInds[ind] = newSpellId;
 			CmdReplaceItems(itemInds);
 			CmdShowItems();
 			fullUi.SetActive(false);
-			if (isAtShop)
-				shopUi.SetActive(true);
+			//if (isAtShop)
+			//	shopUi.SetActive(true);
+			StartCoroutine( CloseShopCo() );
 		}
 		else
 		{
@@ -682,7 +684,7 @@ public class PlayerControls : NetworkBehaviour
 		}
 
 		int rng = controlledRoll != -1 ? controlledRoll : Random.Range(1, 11);
-		Debug.Log($"<color=magenta>ROLLED {rng}</color>");
+		//Debug.Log($"<color=magenta>ROLLED {rng}</color>");
 		movesLeft = rng;
 		if (currNode != null)
 			currNode.RemovePlayer(this);
@@ -999,17 +1001,20 @@ public class PlayerControls : NetworkBehaviour
 			}
 		}
 	}
+	
 	[Command(requiresAuthority=false)] private void CmdReplaceItems(List<int> ints) => RpcReplaceItems(ints);
 	[ClientRpc(includeOwner=false)] private void RpcReplaceItems(List<int> ints)
 	{
 		itemInds = ints;
 	}
+	
 	public void _USE_SPELL(int slot, int ind) 
 	{
 		_spellSlot = slot;
 		_spellInd = ind;
 		CmdUseSpell(!rangeObj.activeSelf, currNode != null ? currNode.nodeId : -1);
 	}
+	
 	[Command(requiresAuthority=false)] private void CmdToggleRange(bool active, int nodeId) => RpcToggleRange(active, nodeId);
 	[ClientRpc] private void RpcToggleRange(bool active, int nodeId)
 	{
@@ -1023,6 +1028,7 @@ public class PlayerControls : NetworkBehaviour
 		spellCam.SetActive(active);
 	 	rangeAnim.SetTrigger(active ? "on" : "off");
 	}
+	
 	[Command(requiresAuthority=false)] private void CmdUseSpell(bool active, int nodeId) => RpcUseSpell(active, nodeId);
 	[ClientRpc] private void RpcUseSpell(bool active, int nodeId)
 	{
@@ -1042,9 +1048,26 @@ public class PlayerControls : NetworkBehaviour
 			ToggleSpellUi(false);
 		}
 	}
-	void ToggleSpellUi(bool active)
+	void ToggleSpellUi(bool active) => spellUi.SetActive(active);
+
+	IEnumerator CloseShopCo()
 	{
-		spellUi.SetActive(active);
+		if (shopUi != null)
+			shopUi.SetActive(false);
+		CmdUpdateMovesLeft(0);
+
+		yield return new WaitForSeconds(0.5f);
+		CmdUpdateMovesLeft(movesLeft);
+		startPos = transform.position;
+		// more than one path
+		if (nextNode.nextNodes.Count > 1)
+			StuckAtFork();
+		// single path
+		else
+			nextNode = nextNode.nextNodes[0];
+
+		CmdToggleStarCam(false);
+		isStop = isAtShop = false;
 	}
 
 	//float spellTime;
