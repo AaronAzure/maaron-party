@@ -21,6 +21,7 @@ public class GameManager : NetworkBehaviour
 	public readonly SyncDictionary<int, int> traps = new SyncDictionary<int, int>();
 	[SyncVar] [SerializeField] private List<int> coins;
 	[SyncVar] [SerializeField] private List<int> stars;
+	[SyncVar] [SerializeField] private List<int> manas;
 	[SyncVar] [SerializeField] private List<List<int>> items;
 	
 	[Space] [SyncVar] public int nTurn=1; 
@@ -54,6 +55,7 @@ public class GameManager : NetworkBehaviour
 		//traps = new SyncDictionary<int, int>();
 		coins = new();
 		stars = new();
+		manas = new();
 		items = new();
 		nTurn = 1;
 		if (BoardManager.Instance == null)
@@ -137,6 +139,18 @@ public class GameManager : NetworkBehaviour
 	public int GetStars(int playerId)
 	{
 		return stars[playerId];
+	}
+	[Command(requiresAuthority=false)] public void CmdSaveMana(int newMana, int playerId)
+	{
+		if (manas == null)
+			manas = new();
+		while (manas.Count <= playerId)
+			manas.Add(0);
+		manas[playerId] = newMana;
+	}
+	public int GetMana(int playerId)
+	{
+		return manas[playerId];
 	}
 	//* ------- save -------
 	//* --------------------

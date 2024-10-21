@@ -53,6 +53,8 @@ public class ItemShopButton : MonoBehaviour
 			if (manaTxt != null) manaTxt.text = $"Mana: {Item.instance.GetManaCost(ind)}";
 			if (priceTxt != null) priceTxt.text = $"Buy ({Item.instance.GetPrice(ind)})";
 		}
+		else
+			Debug.Log($"<color=red>Item.instance != null = {Item.instance != null}</color>");
 	}
 
 	//public void OnPointerEnter(PointerEventData eventData)

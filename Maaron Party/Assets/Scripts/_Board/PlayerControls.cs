@@ -85,13 +85,19 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private float ragdollKb=15;
 	
 	
+	#region Stats
+
 	[Space] [Header("Stats")]
 	[SyncVar] private int coins=10;
 	private int coinsT;
 	[SyncVar] private int stars;
 	private int starsT;
+	[SyncVar] [SerializeField] private int mana=5;
+	//private int manaT;
 	[SerializeField] private float currencyT;
 	private float currencySpeedT=0.5f;
+
+	#endregion
 
 
 	#region UI
@@ -111,6 +117,9 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private GameObject clickAnywhereUi;
 	[SerializeField] private TextMeshProUGUI introTxt;
 	[SerializeField] private GameObject[] profilePics;
+
+	[Space] [SerializeField] private Slider manaSld;
+	[Space] [SerializeField] private TextMeshProUGUI manaTxt;
 
 	#endregion
 	
@@ -247,6 +256,7 @@ public class PlayerControls : NetworkBehaviour
 		
 		CmdSetCoinText(coins);
 		CmdSetStarText(stars);
+		CmdShowMana();
 		CmdReplaceItems(itemInds);
 		CmdShowItems();
 	}
@@ -502,6 +512,7 @@ public class PlayerControls : NetworkBehaviour
 		gm.SaveCurrNode(currNode.nodeId, id);
 		gm.CmdSaveCoins(coins, id);
 		gm.CmdSaveStars(stars, id);
+		gm.CmdSaveMana(mana, id);
 		gm.CmdSaveItems(itemInds, id);
 	}
 	private void LoadData()
@@ -512,6 +523,7 @@ public class PlayerControls : NetworkBehaviour
 		transform.position = new Vector3(transform.position.x, 0, transform.position.z);
 		coinsT = coins = gm.GetCoins(id);
 		starsT = stars = gm.GetStars(id);
+		mana = gm.GetMana(id);
 		itemInds = gm.GetItems(id);
 	}
 
@@ -607,14 +619,16 @@ public class PlayerControls : NetworkBehaviour
 
 	public void _BUY_ITEM(int itemId, int itemCost)
 	{
-		NodeEffect(-itemCost);
+		if (!freeShop)
+			NodeEffect(-itemCost);
 
 		if (itemInds.Count < 3)
 		{
 			itemInds.Add(itemId);
 			CmdReplaceItems(itemInds);
 			CmdShowItems();
-			StartCoroutine( CloseShopCo() );
+			if (!freeShop)
+				StartCoroutine( CloseShopCo() );
 		}
 		// inventory full!
 		else
@@ -806,6 +820,7 @@ public class PlayerControls : NetworkBehaviour
 		CmdToggleStarCam(true);
 		isStop = false;
 	}
+	public int GetMana() => mana;
 	public int GetCoins() => coins;
 	public int GetStars() => stars;
 	[Command(requiresAuthority=false)] public void CmdNodeEffect(int bonus) => TargetNodeEffect(netIdentity.connectionToClient, bonus);
@@ -971,6 +986,18 @@ public class PlayerControls : NetworkBehaviour
 
 
 	#region Items/Spells
+	public void ConsumeMana(int cost)
+	{
+		mana = Mathf.Max(mana - cost, 0);
+		CmdShowMana();
+	}
+	[Command(requiresAuthority=false)] private void CmdShowMana() => RpcShowMana();
+	[ClientRpc] private void RpcShowMana() 
+	{
+		manaSld.value = mana;
+		manaTxt.text = $"{mana}/{manaSld.maxValue}";
+	}
+
 	private void RemoveSpell(int ind)
 	{
 		if (itemInds != null && ind >= 0 && ind < itemInds.Count)
@@ -1074,11 +1101,13 @@ public class PlayerControls : NetworkBehaviour
 	//Vector3 spellPos;
 	//Vector3 spellEndPos;
 	Coroutine spellCo;
-	public void UseDashSpell(int dashMove)
+	public void UseDashSpell(int dashMove, int manaCost)
 	{
 		isDashing = true;
 		ToggleSpellUi(false);
 		CmdToggleDashVfx(true);
+		RemoveSpell(_spellSlot);
+		ConsumeMana(manaCost);
 
 		if (currNode != null)
 		{
@@ -1126,21 +1155,23 @@ public class PlayerControls : NetworkBehaviour
 		isShield = active;
 	} 
 	
-	public void UseThornSpell(Node target)
+	public void UseThornSpell(Node target, int manaCost)
 	{
 		ToggleSpellUi(false);
 		backToBaseUi.SetActive(false);
 
 		if (spellCo == null)
-			spellCo = StartCoroutine( ThornCo(target) );
+			spellCo = StartCoroutine( ThornCo(target, manaCost) );
 	}
-	IEnumerator ThornCo(Node target)
+	IEnumerator ThornCo(Node target, int manaCost)
 	{
 		nodeCam.m_Follow = target.transform;
 		CmdSaveTrap(target.nodeId);
 		CmdToggleNodeCam(true);
 		CmdToggleRange(false, currNode != null ? currNode.nodeId : -1);
 		RemoveSpell(_spellSlot);
+		ConsumeMana(manaCost);
+
 
 		//yield return new WaitForSeconds(1f);
 		//CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera.VirtualCameraGameObject.name;
@@ -1152,22 +1183,23 @@ public class PlayerControls : NetworkBehaviour
 		StopUsingSpells();
 	}
 	[Command(requiresAuthority=false)] private void CmdSaveTrap(int nodeId) => gm.SaveTrap(nodeId, id);
-	public void UseFireSpell(Node target)
+	public void UseFireSpell(Node target, int manaCost)
 	{
 		ToggleSpellUi(false);
 		backToBaseUi.SetActive(false);
 
 		usingFireSpell1 = true;
 		if (spellCo == null)
-			spellCo = StartCoroutine( SpellCo(target) );
+			spellCo = StartCoroutine( SpellCo(target, manaCost) );
 	}
-	IEnumerator SpellCo(Node target)
+	IEnumerator SpellCo(Node target, int manaCost)
 	{
 		//yield return new WaitForSeconds(0.5f);
 		nodeCam.m_Follow = target.transform;
 		CmdToggleNodeCam(true);
 		CmdToggleRange(false, currNode != null ? currNode.nodeId : -1);
 		RemoveSpell(_spellSlot);
+		ConsumeMana(manaCost);
 
 		yield return new WaitForSeconds(1f);
 		CmdFireSpell1(target.transform.position);

@@ -211,6 +211,7 @@ GameObject:
   - component: {fileID: 7063794103719922717}
   - component: {fileID: 1394956670957801121}
   - component: {fileID: 5151234886908247087}
+  - component: {fileID: 1368920899764181810}
   m_Layer: 0
   m_Name: __ GAME MANAGER
   m_TagString: Untagged
@@ -259,12 +260,19 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  nPlayers: 0
   spawnHolder: {fileID: 0}
   currNodes: 
   coins: 
   stars: 
+  manas: 
+  nTurn: 1
+  maxTurns: 20
+  gameStarted: 0
+  prevStarInd: -1
+  turretReady: 0
+  turretRot: 0
   anim: {fileID: 7288775949962906796}
+  minigameName: 
 --- !u!114 &5151234886908247087
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -282,6 +290,36 @@ MonoBehaviour:
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
+--- !u!114 &1368920899764181810
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4357352453857552675}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20ac0ba3ae8f0d14b810231fb631e032, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ind: 0
+  img: {fileID: 0}
+  p: {fileID: 0}
+  emptySpr: {fileID: 0}
+  spellThorn1: {fileID: 21300000, guid: 51d097a683f5f62409b224eb12597076, type: 3}
+  spellThorn2: {fileID: 21300000, guid: 51d097a683f5f62409b224eb12597076, type: 3}
+  spellThorn3: {fileID: 21300000, guid: 51d097a683f5f62409b224eb12597076, type: 3}
+  spellFire1: {fileID: 21300000, guid: 204108443adf7b64385f840688adf0d4, type: 3}
+  spellFire2: {fileID: 21300000, guid: 204108443adf7b64385f840688adf0d4, type: 3}
+  spellFire3: {fileID: 21300000, guid: 204108443adf7b64385f840688adf0d4, type: 3}
+  spellSpeed1: {fileID: 21300000, guid: 5e231b577ea5997439f16104a47c05eb, type: 3}
+  spellSpeed2: {fileID: 21300000, guid: 5e231b577ea5997439f16104a47c05eb, type: 3}
+  spellSpeed3: {fileID: 21300000, guid: 5e231b577ea5997439f16104a47c05eb, type: 3}
+  spellShield1: {fileID: 0}
+  isUsuable: 0
+  titleTxt: {fileID: 0}
+  descTxt: {fileID: 0}
+  manaTxt: {fileID: 0}
 --- !u!1 &5695075454774481832
 GameObject:
   m_ObjectHideFlags: 0

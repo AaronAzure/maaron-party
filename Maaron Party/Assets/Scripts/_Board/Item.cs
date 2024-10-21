@@ -73,20 +73,22 @@ public class Item : MonoBehaviour, IPointerEnterHandler
 
 	public void _USE_SPELL(int slot)
 	{
-		if (p != null) 
+		if (p != null && HasEnoughMana(ind)) 
 		{
+			//p.ConsumeMana(GetManaCost(ind));
 			switch (ind)
 			{
 				case -1: break;
 				case 0: p._USE_SPELL(slot, 0); break;
 				case 1: p._USE_SPELL(slot, 1); break;
 
-				case 6: p.UseDashSpell(4); break;
-				case 7: p.UseDashSpell(8); break;
-				case 8: p.UseDashSpell(12); break;
+				case 6: p.UseDashSpell(4, 2); break;
+				case 7: p.UseDashSpell(8, 3); break;
+				case 8: p.UseDashSpell(12, 4); break;
 
 				case 9: p.UseShieldSpell(); break;
 
+				// target node (fire)
 				default: p._USE_SPELL(slot, ind); break;
 			}
 		}
@@ -161,5 +163,23 @@ public class Item : MonoBehaviour, IPointerEnterHandler
 			9 => 2, 	//spellShield1
 			_ => 1,
 		};
-}
+	}
+
+	public bool HasEnoughMana(int ind)
+	{
+		return ind switch
+		{
+			0 => p.GetMana() >= 1, 	//spellThorn1
+			1 => p.GetMana() >= 2, 	//spellThorn2
+			2 => p.GetMana() >= 3, 	//spellThorn3
+			3 => p.GetMana() >= 2, 	//spellFire1
+			4 => p.GetMana() >= 3, 	//spellFire2
+			5 => p.GetMana() >= 4, 	//spellFire3
+			6 => p.GetMana() >= 2, 	//spellSpeed1
+			7 => p.GetMana() >= 3, 	//spellSpeed2
+			8 => p.GetMana() >= 4, 	//spellSpeed3
+			9 => p.GetMana() >= 2, 	//spellShield1
+			_ => p.GetMana() >= 1,
+		};
+	}
 }

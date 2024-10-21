@@ -428,26 +428,26 @@ public class Node : MonoBehaviour
 					case 0: 
 						BoardManager.Instance.CmdThornNode(nodeId, p.id);
 						//ToggleThorn(true, PlayerControls.Instance.id);
-						PlayerControls.Instance.UseThornSpell(this);
+						PlayerControls.Instance.UseThornSpell(this, 1);
 						break;
 					case 1: 
 						BoardManager.Instance.CmdThornNode(nodeId, p.id);
 						//ToggleThorn(true, PlayerControls.Instance.id);
-						PlayerControls.Instance.UseThornSpell(this);
+						PlayerControls.Instance.UseThornSpell(this, 2);
 						break;
 					case 2: 
 						BoardManager.Instance.CmdThornNode(nodeId, p.id);
 						//ToggleThorn(true, PlayerControls.Instance.id);
-						PlayerControls.Instance.UseThornSpell(this);
+						PlayerControls.Instance.UseThornSpell(this, 3);
 						break;
 					case 3:
-						PlayerControls.Instance.UseFireSpell(this);
+						PlayerControls.Instance.UseFireSpell(this, 2);
 						break;
 					case 4:
-						PlayerControls.Instance.UseFireSpell(this);
+						PlayerControls.Instance.UseFireSpell(this, 3);
 						break;
 					case 5:
-						PlayerControls.Instance.UseFireSpell(this);
+						PlayerControls.Instance.UseFireSpell(this, 4);
 						break;
 				}
 			}
