@@ -22,6 +22,7 @@ public class GameManager : NetworkBehaviour
 	[SyncVar] [SerializeField] private List<int> coins;
 	[SyncVar] [SerializeField] private List<int> stars;
 	[SyncVar] [SerializeField] private List<int> manas;
+	[SyncVar] [SerializeField] private List<int> doorTolls;
 	[SyncVar] [SerializeField] private List<List<int>> items;
 	
 	[Space] [SyncVar] public int nTurn=1; 
@@ -159,6 +160,19 @@ public class GameManager : NetworkBehaviour
 
 	[Command(requiresAuthority=false)] public void CmdHitPlayersAtNode(int nodeId) => RpcHitPlayersAtNode(nodeId);
 	[ClientRpc] private void RpcHitPlayersAtNode(int nodeId) => NodeManager.Instance.GetNode(nodeId).HitPlayers(-10);
+
+	public void SetupDoorTolls(int nDoors)
+	{
+		doorTolls = new();
+		for (int i=0 ; i<nDoors ; i++)
+			doorTolls.Add(1);
+	}
+	public int GetDoorToll(int ind)
+	{
+		if (doorTolls == null || ind < 0 || ind >= doorTolls.Count)
+			return 0;
+		return doorTolls[ind];
+	}
 
 	#endregion
 

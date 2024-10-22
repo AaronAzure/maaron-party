@@ -108,6 +108,12 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private GameObject shopUi;
 	[SerializeField] private GameObject spellUi;
 	[SerializeField] private GameObject fullUi;
+	[SerializeField] private GameObject doorUi;
+	[SerializeField] private TextMeshProUGUI doorTollTxt;
+	[SerializeField] private GameObject tollUi;
+	[SerializeField] private Slider tollSldr;
+	[SerializeField] private TextMeshProUGUI tollTxt;
+	[SerializeField] private GameObject brokeUi;
 	[SerializeField] private GameObject backToBaseUi;
 	[SerializeField] private GameObject baseUi;
 
@@ -144,6 +150,7 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private bool isAtStar;
 	[SerializeField] private bool isBuyingStar;
 	[SerializeField] private bool isAtShop;
+	[SerializeField] private bool isAtDoor;
 	[SerializeField] private bool isStop;
 	[SerializeField] private bool isUsingSpell;
 	[SerializeField] private bool inMap;
@@ -375,6 +382,7 @@ public class PlayerControls : NetworkBehaviour
 		else if (inMap) {}
 		else if (isAtFork) {}
 		else if (isAtStar) {}
+		else if (isAtDoor) {}
 		else if (isAtShop) {}
 		else if (isBuyingStar) {}
 		else if (movesLeft > 0)
@@ -397,6 +405,7 @@ public class PlayerControls : NetworkBehaviour
 			else
 			{
 				time = 0;
+
 				// if shop or star
 				if (nextNode.GetNodeTraverseEffect(this))
 				{
@@ -432,6 +441,7 @@ public class PlayerControls : NetworkBehaviour
 							nextNode = nextNode.nextNodes[0];
 					}
 				}
+				// still moving
 				else
 				{
 					startPos = transform.position;
@@ -444,6 +454,7 @@ public class PlayerControls : NetworkBehaviour
 					else
 					{
 						nextNode = nextNode.nextNodes[0];
+						IsStuckAtDoor();
 					}
 				}
 			}
@@ -598,6 +609,7 @@ public class PlayerControls : NetworkBehaviour
 		else
 		{
 			nextNode = nextNode.nextNodes[0];
+			IsStuckAtDoor();
 		}
 
 		if (starUi != null)
@@ -663,6 +675,39 @@ public class PlayerControls : NetworkBehaviour
 				shopUi.SetActive(true);
 		}
 	}
+	public void _OPEN_TOLL()
+	{
+		doorUi.SetActive(false);
+		tollUi.SetActive(true);
+		tollTxt.text = $"Set New Toll: <b>{gm.GetDoorToll(_doorInd)}<b>";
+		tollSldr.minValue = gm.GetDoorToll(_doorInd) + 1;
+		tollSldr.maxValue = coins;
+	}
+	public void _SET_NEW_TOLL_TEXT()
+	{
+		tollTxt.text = $"Set New Toll: <b>{tollSldr.value}<b>";
+	}
+	public void _PAY_DOOR_TOLL()
+	{
+		NodeEffect(-(int)tollSldr.value);
+		bm.CmdPlayDoorAnim(nextNode.nodeId);
+		isAtDoor = false;
+		doorUi.SetActive(false);
+		tollUi.SetActive(false);
+		brokeUi.SetActive(false);
+		nextNode = nextNode.nextNodes[0];
+		CmdToggleStarCam(false);
+	}
+	public void _CANCEL_DOOR_TOLL()
+	{
+		isAtDoor = false;
+		doorUi.SetActive(false);
+		tollUi.SetActive(false);
+		brokeUi.SetActive(false);
+		nextNode = nextNode.altNode;
+		CmdToggleStarCam(false);
+	}
+
 	public void _CLOSE_SHOP()
 	{
 		startPos = transform.position;
@@ -675,6 +720,7 @@ public class PlayerControls : NetworkBehaviour
 		else
 		{
 			nextNode = nextNode.nextNodes[0];
+			IsStuckAtDoor();
 		}
 
 		if (shopUi != null)
@@ -697,6 +743,7 @@ public class PlayerControls : NetworkBehaviour
 			{
 				isAtFork = false;
 				nextNode = currNode.nextNodes[0];
+				IsStuckAtDoor();
 			}
 		}
 
@@ -790,6 +837,29 @@ public class PlayerControls : NetworkBehaviour
 			NodeManager.Instance.SetDistanceAway(nodeId, num, movesLeft);
 		else
 			NodeManager.Instance.ClearDistanceAway(nodeId);
+	}
+
+	private void IsStuckAtDoor()
+	{
+		if (nextNode.IsDoor()) OnDoorNode(nextNode.GetDoorInd());
+	}
+	int _doorInd;
+	public void OnDoorNode(int doorInd)
+	{
+		isAtDoor = true;
+		_doorInd = doorInd;
+		if (doorTollTxt != null)
+			doorTollTxt.text = $"Pay Toll: <color=yellow>{gm.GetDoorToll(_doorInd)}</color> Coins to Pass";
+
+		if (anim != null) anim.SetFloat("moveSpeed", 0);
+		if (nextNode != null && nextNode.target != null)
+		{
+			Vector3 dir = (nextNode.target.position - transform.position).normalized;
+			RotateDirection(dir);
+		}
+		CmdToggleStarCam(true);
+		doorUi.SetActive(true);
+		isStop = false;
 	}
 
 	public void OnShopNode()
@@ -980,6 +1050,7 @@ public class PlayerControls : NetworkBehaviour
 	{
 		CmdShowNodeDistance(false, nextNode != null ? nextNode.nodeId : currNode.nodeId, 0, movesLeft);
 		nextNode = nextNode.nextNodes[ind];
+		IsStuckAtDoor();
 		HidePaths();
 		CmdToggleMapCam(false);
 		inMap = isAtFork = false;
@@ -1139,6 +1210,7 @@ public class PlayerControls : NetworkBehaviour
 			{
 				isAtFork = false;
 				nextNode = currNode.nextNodes[0];
+				IsStuckAtDoor();
 			}
 		}
 

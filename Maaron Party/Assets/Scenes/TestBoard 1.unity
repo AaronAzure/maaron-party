@@ -1519,6 +1519,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 6280161334121603384, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
+      propertyPath: altNode
+      value: 
+      objectReference: {fileID: 1497168255}
+    - target: {fileID: 6280161334121603384, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
+      propertyPath: doorAnim
+      value: 
+      objectReference: {fileID: 1038591085}
+    - target: {fileID: 6280161334121603384, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: nodeSpace
       value: 6
       objectReference: {fileID: 0}
@@ -3022,6 +3030,22 @@ PrefabInstance:
       propertyPath: startNode
       value: 
       objectReference: {fileID: 1320383790}
+    - target: {fileID: 8433219930874235559, guid: cb3e16d45230cbf4293d68b3b28cdb4a, type: 3}
+      propertyPath: doors.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8433219930874235559, guid: cb3e16d45230cbf4293d68b3b28cdb4a, type: 3}
+      propertyPath: doors.Array.data[0]
+      value: 
+      objectReference: {fileID: 681132587}
+    - target: {fileID: 8433219930874235559, guid: cb3e16d45230cbf4293d68b3b28cdb4a, type: 3}
+      propertyPath: doors.Array.data[1]
+      value: 
+      objectReference: {fileID: 201181618}
+    - target: {fileID: 8433219930874235559, guid: cb3e16d45230cbf4293d68b3b28cdb4a, type: 3}
+      propertyPath: doors.Array.data[2]
+      value: 
+      objectReference: {fileID: 1731779846}
     - target: {fileID: 8433219930874235559, guid: cb3e16d45230cbf4293d68b3b28cdb4a, type: 3}
       propertyPath: starNodes.Array.size
       value: 8
@@ -9464,6 +9488,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 6280161334121603384, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
+      propertyPath: altNode
+      value: 
+      objectReference: {fileID: 1952769609}
+    - target: {fileID: 6280161334121603384, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
+      propertyPath: doorAnim
+      value: 
+      objectReference: {fileID: 1243762014309394737}
+    - target: {fileID: 6280161334121603384, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: nodeSpace
       value: 6
       objectReference: {fileID: 0}
@@ -11909,6 +11941,11 @@ PrefabInstance:
 --- !u!4 &1038591084 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3193121425436522662, guid: b2b72ed0e7b02784994a3ba4a93a7070, type: 3}
+  m_PrefabInstance: {fileID: 1038591083}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &1038591085 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 797287966714101593, guid: b2b72ed0e7b02784994a3ba4a93a7070, type: 3}
   m_PrefabInstance: {fileID: 1038591083}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1051820598
@@ -17008,6 +17045,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 6280161334121603384, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
+      propertyPath: altNode
+      value: 
+      objectReference: {fileID: 929126064}
+    - target: {fileID: 6280161334121603384, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
+      propertyPath: doorAnim
+      value: 
+      objectReference: {fileID: 1998186466}
+    - target: {fileID: 6280161334121603384, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: nodeSpace
       value: 6
       objectReference: {fileID: 0}
@@ -18887,6 +18932,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3193121425436522662, guid: b2b72ed0e7b02784994a3ba4a93a7070, type: 3}
   m_PrefabInstance: {fileID: 1998186464}
   m_PrefabAsset: {fileID: 0}
+--- !u!95 &1998186466 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 797287966714101593, guid: b2b72ed0e7b02784994a3ba4a93a7070, type: 3}
+  m_PrefabInstance: {fileID: 1998186464}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2017516042
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19979,6 +20029,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: b2b72ed0e7b02784994a3ba4a93a7070, type: 3}
+--- !u!95 &1243762014309394737 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 797287966714101593, guid: b2b72ed0e7b02784994a3ba4a93a7070, type: 3}
+  m_PrefabInstance: {fileID: 1243762014309394736}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1316497576754455229
 GameObject:
   m_ObjectHideFlags: 0

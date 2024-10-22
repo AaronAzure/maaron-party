@@ -49,6 +49,7 @@ public class BoardManager : NetworkBehaviour
 	[SerializeField] private starNodes[] starNodes;
 	[SerializeField] private BoardTurret turret;
 	[SerializeField] private Animator turretIntro;
+	[SerializeField] private Node[] doors;
 	private bool turretTurnDone;
 
 
@@ -85,7 +86,10 @@ public class BoardManager : NetworkBehaviour
 		{
 			CmdToggleMainUi(false);
 			if (isServer)
+			{
 				placementChosen = new bool[placementBtns.Length];
+				gm.SetupDoorTolls(doors == null ? 0 : doors.Length);
+			}
 		}
 		//string s = $"<color=#FF8D07>";
 		//s += $"NetworkServer.connections.Count = {NetworkServer.connections.Count} | ";
@@ -132,17 +136,24 @@ public class BoardManager : NetworkBehaviour
 		// turn 1
 		if (!gm.gameStarted)
 		{
-			isIntro = gm.gameStarted = true;
-			CmdToggleStartCam(true);
-			
-			yield return new WaitForSeconds(1.5f);
-			CmdMaaronIntro();
+			if (nm.skipIntro)
+			{
+				yield return ChooseStarCo(0);
+			}
+			else
+			{
+				isIntro = gm.gameStarted = true;
+				CmdToggleStartCam(true);
+				
+				yield return new WaitForSeconds(1.5f);
+				CmdMaaronIntro();
 
-			yield return new WaitForSeconds(2);
-			CmdToggleDialogue(true, introSents);
-			CmdToggleNextButton(true);
+				yield return new WaitForSeconds(2);
+				CmdToggleDialogue(true, introSents);
+				CmdToggleNextButton(true);
 
-			yield break;
+				yield break;
+			}
 			//yield return ChooseStarCo(0);
 		}
 		// Game Over
@@ -373,6 +384,10 @@ public class BoardManager : NetworkBehaviour
 
 	[Command(requiresAuthority=false)] public void CmdThornNode(int nodeId, int playerId) => RpcThornNode(nodeId, playerId);
 	[ClientRpc] private void RpcThornNode(int nodeId, int playerId) => NodeManager.Instance.GetNode(nodeId).ToggleThorn(true, playerId);
+
+	[Command(requiresAuthority=false)] public void CmdPlayDoorAnim(int nodeId) => RpcPlayDoorAnim(nodeId);
+	[ClientRpc] private void RpcPlayDoorAnim(int nodeId) => NodeManager.Instance.GetNode(nodeId).PlayDoorAnim();
+
 	#endregion
 
 	#region Chest

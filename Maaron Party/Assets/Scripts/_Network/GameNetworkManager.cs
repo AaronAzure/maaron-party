@@ -42,6 +42,7 @@ public class GameNetworkManager : NetworkManager
 	//bool isInTransition;
 	[Space] [SerializeField] private int fixedGame=-1;
 	[SerializeField] private bool skipSideQuests;
+	public bool skipIntro;
 
 
 	[Space] [Header("Scenes")]
@@ -298,13 +299,25 @@ public class GameNetworkManager : NetworkManager
 	{
 		if (nPlayerOrder < boardControls.Count)
 		{
-			if (boardControls[ playerOrder[nPlayerOrder ]] != null)
-				boardControls[ playerOrder[nPlayerOrder++] ].YourTurn();
+			if (skipIntro)
+			{
+				if (boardControls[ nPlayerOrder ] != null)
+					boardControls[ nPlayerOrder++ ].YourTurn();
+				else
+				{
+					++nPlayerOrder;
+					BoardManager.Instance.NextPlayerTurn();
+				}
+			}
 			else
 			{
-				++nPlayerOrder;
-				//NextBoardPlayerTurn();
-				BoardManager.Instance.NextPlayerTurn();
+				if (boardControls[ playerOrder[nPlayerOrder ]] != null)
+					boardControls[ playerOrder[nPlayerOrder++] ].YourTurn();
+				else
+				{
+					++nPlayerOrder;
+					BoardManager.Instance.NextPlayerTurn();
+				}
 			}
 		}
 		else

@@ -18,6 +18,14 @@ public class Node : MonoBehaviour
 	[Space] public List<Node> nextNodes;
 	public bool hasStar {get; private set;}
 
+
+	[Space] [Header("Door")]
+	public Node altNode;
+	[SerializeField] private int doorInd;
+	[SerializeField] private Animator doorAnim;
+	[SerializeField] private TextMeshPro tollTxt;
+
+
 	[Space] [Header("Node Type")]
 	[Space] [SerializeField] MeshRenderer mesh;
 	[SerializeField] Material blueMat;
@@ -132,6 +140,12 @@ public class Node : MonoBehaviour
 	#endregion
 
 	public bool IsDoor() => nodeSpace == NodeSpace.door;
+	public int GetDoorInd() => doorInd;
+	public void PlayDoorAnim() 
+	{
+		if (doorAnim != null)
+			doorAnim.SetTrigger("open");
+	}
 
 
 	public void PlayGlowVfx()
