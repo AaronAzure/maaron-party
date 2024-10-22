@@ -43,7 +43,7 @@ public class PlacementButton : NetworkBehaviour
 
 	public void RevealCard(int characterInd)
 	{
-		if (characterInd > 0 && characterInd < profilePics.Length)
+		if (characterInd >= 0 && characterInd < profilePics.Length)
 		{
 			pic.sprite = profilePics[characterInd];
 			pic.gameObject.SetActive(true);

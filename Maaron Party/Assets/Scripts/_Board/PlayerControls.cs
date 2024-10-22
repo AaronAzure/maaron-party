@@ -119,7 +119,10 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private GameObject[] profilePics;
 
 	[Space] [SerializeField] private Slider manaSld;
-	[Space] [SerializeField] private TextMeshProUGUI manaTxt;
+	[SerializeField] private TextMeshProUGUI manaTxt;
+
+	[Space] [SerializeField] private GameObject manalessUi;
+	[Space] [SerializeField] private GameObject coinlessUi;
 
 	#endregion
 	
@@ -986,6 +989,22 @@ public class PlayerControls : NetworkBehaviour
 
 
 	#region Items/Spells
+	public void NoManaAlert() 
+	{
+		if (manalessUi != null)
+		{
+			manalessUi.SetActive(false);
+			manalessUi.SetActive(true);
+		}
+	}
+	public void NoCoinAlert() 
+	{
+		if (coinlessUi != null)
+		{
+			coinlessUi.SetActive(false);
+			coinlessUi.SetActive(true);
+		}
+	}
 	public void ConsumeMana(int cost)
 	{
 		mana = Mathf.Max(mana - cost, 0);

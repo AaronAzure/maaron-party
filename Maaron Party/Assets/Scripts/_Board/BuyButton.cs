@@ -10,5 +10,7 @@ public class BuyButton : MonoBehaviour
 	{
 		if (pc.GetCoins() >= cost)
 			pc._BUY_ITEM(itemInd, cost);
+		else
+			pc.NoCoinAlert();
 	}
 }

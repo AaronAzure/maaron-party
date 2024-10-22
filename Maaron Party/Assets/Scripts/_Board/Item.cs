@@ -92,6 +92,8 @@ public class Item : MonoBehaviour, IPointerEnterHandler
 				default: p._USE_SPELL(slot, ind); break;
 			}
 		}
+		else if (p != null)
+			p.NoManaAlert();
 	}
 
 	public string GetTitle(int ind)

@@ -34,6 +34,7 @@ public class BoardManager : NetworkBehaviour
 	[SerializeField] private Animator maaronAnim;
 	[SerializeField] private ParticleSystem maaronSpotlightPs;
 	[SerializeField] private CanvasGroup placementCg;
+	[SerializeField] private GameObject placementUi;
 	[SerializeField] private PlacementButton[] placementBtns;
 	[SyncVar] bool[] placementChosen;
 
@@ -264,6 +265,7 @@ public class BoardManager : NetworkBehaviour
 		}
 
 		yield return new WaitForSeconds(1);
+		RpcTogglePlacementUi(true);
 		for (int i=0 ; i<nm.GetNumPlayers() ; i++)
 		{
 			int rng = temp[Random.Range(0, temp.Count)];
@@ -284,6 +286,10 @@ public class BoardManager : NetworkBehaviour
 		for (int i=0 ; i<placementBtns.Length && i<nm.GetNumPlayers() ; i++)
 			if (placementBtns[i] != null)
 				placementBtns[i].gameObject.SetActive(active);
+	}
+	[ClientRpc] void RpcTogglePlacementUi(bool active)
+	{
+		placementUi.SetActive(active);
 	}
 
 	
@@ -321,6 +327,7 @@ public class BoardManager : NetworkBehaviour
 	{
 		yield return new WaitForSeconds(1);
 		RpcTogglePlacementCard(false);
+		RpcTogglePlacementUi(false);
 		nm.SetPlayerOrder(tempPlayerOrder);
 
 		yield return new WaitForSeconds(0.5f);
