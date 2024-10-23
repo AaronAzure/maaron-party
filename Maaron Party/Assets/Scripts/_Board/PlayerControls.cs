@@ -39,6 +39,7 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private Animator anim;
 	[SerializeField] private Transform vCam;
 	[SerializeField] private GameObject starCam;
+	[SerializeField] private GameObject doorCam;
 	[SerializeField] private CinemachineVirtualCamera nodeCam;
 	[SerializeField] private GameObject rangeObj;
 	[SerializeField] private Animator rangeAnim;
@@ -614,6 +615,8 @@ public class PlayerControls : NetworkBehaviour
 
 		if (starUi != null)
 			starUi.SetActive(false);
+		if (brokeUi != null)
+			brokeUi.SetActive(false);
 		isStop = isAtStar = false;
 	}
 	IEnumerator PurchaseStarCo()
@@ -679,13 +682,15 @@ public class PlayerControls : NetworkBehaviour
 	{
 		doorUi.SetActive(false);
 		tollUi.SetActive(true);
-		tollTxt.text = $"Set New Toll: <b>{gm.GetDoorToll(_doorInd)}<b>";
-		tollSldr.minValue = gm.GetDoorToll(_doorInd) + 1;
+		tollTxt.text = $"Spend: <b>{tollSldr.value}</b> (Next person pays: <b>{tollSldr.value+1}</b>)";
+		//tollTxt.text = $"Set New Toll: <b>{gm.GetDoorToll(_doorInd)}<b>";
+		tollSldr.minValue = gm.GetDoorToll(_doorInd);
 		tollSldr.maxValue = coins;
 	}
 	public void _SET_NEW_TOLL_TEXT()
 	{
-		tollTxt.text = $"Set New Toll: <b>{tollSldr.value}<b>";
+		tollTxt.text = $"Spend: <b>{tollSldr.value}</b> (Next person pays: <b>{tollSldr.value+1}</b>)";
+		//gm.SetDoorToll(_doorInd, (int)tollSldr.value);
 	}
 	public void _PAY_DOOR_TOLL()
 	{
@@ -696,16 +701,25 @@ public class PlayerControls : NetworkBehaviour
 		tollUi.SetActive(false);
 		brokeUi.SetActive(false);
 		nextNode = nextNode.nextNodes[0];
-		CmdToggleStarCam(false);
+		CmdToggleDoorCam(false);
+		gm.CmdSetDoorToll(_doorInd, (int)tollSldr.value+1);
 	}
 	public void _CANCEL_DOOR_TOLL()
 	{
-		isAtDoor = false;
+		if (isAtDoor)
+			StartCoroutine(CancelDoorTollCo());
+		else if (isAtStar)
+			_PURCHASE_STAR(false);
+	}
+	IEnumerator CancelDoorTollCo()
+	{
 		doorUi.SetActive(false);
 		tollUi.SetActive(false);
 		brokeUi.SetActive(false);
+		CmdToggleDoorCam(false);
+		yield return new WaitForSeconds(1);
 		nextNode = nextNode.altNode;
-		CmdToggleStarCam(false);
+		isAtDoor = false;
 	}
 
 	public void _CLOSE_SHOP()
@@ -848,6 +862,10 @@ public class PlayerControls : NetworkBehaviour
 	{
 		isAtDoor = true;
 		_doorInd = doorInd;
+		var lookPos = nextNode.transform.position - transform.position;
+		lookPos.y = 0;
+		model.rotation = Quaternion.LookRotation(lookPos);
+
 		if (doorTollTxt != null)
 			doorTollTxt.text = $"Pay Toll: <color=yellow>{gm.GetDoorToll(_doorInd)}</color> Coins to Pass";
 
@@ -857,8 +875,11 @@ public class PlayerControls : NetworkBehaviour
 			Vector3 dir = (nextNode.target.position - transform.position).normalized;
 			RotateDirection(dir);
 		}
-		CmdToggleStarCam(true);
-		doorUi.SetActive(true);
+		CmdToggleDoorCam(true);
+		if (coins >= gm.GetDoorToll(_doorInd))
+			doorUi.SetActive(true);
+		else
+			brokeUi.SetActive(true);
 		isStop = false;
 	}
 
@@ -884,7 +905,11 @@ public class PlayerControls : NetworkBehaviour
 	{
 		isAtStar = true;
 		if (anim != null) anim.SetFloat("moveSpeed", 0);
-		starUi.SetActive(true);
+
+		if (coins >= 20)
+			starUi.SetActive(true);
+		else
+			brokeUi.SetActive(true);
 		if (nextNode != null)
 		{
 			Vector3 dir = (nextNode.GetTargetTransform().position - transform.position).normalized;
@@ -924,6 +949,8 @@ public class PlayerControls : NetworkBehaviour
 
 	[Command(requiresAuthority=false)] private void CmdToggleStarCam(bool active) => RpcToggleStarCam(active);
 	[ClientRpc] private void RpcToggleStarCam(bool active) => starCam.SetActive(active);
+	[Command(requiresAuthority=false)] private void CmdToggleDoorCam(bool active) => RpcToggleDoorCam(active);
+	[ClientRpc] private void RpcToggleDoorCam(bool active) => doorCam.SetActive(active);
 
 	private IEnumerator NodeEffectCo()
 	{

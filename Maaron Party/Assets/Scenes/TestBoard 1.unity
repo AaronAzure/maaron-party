@@ -872,6 +872,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0face27f2341d764a9b13cf979379060, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &97632966 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2407139766025380330, guid: b2b72ed0e7b02784994a3ba4a93a7070, type: 3}
+  m_PrefabInstance: {fileID: 1998186464}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &99821480 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1819129819980566161, guid: bdb6df6f236f88347acaecaf7810e670, type: 3}
@@ -1523,6 +1534,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1497168255}
     - target: {fileID: 6280161334121603384, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
+      propertyPath: doorInd
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6280161334121603384, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: doorAnim
       value: 
       objectReference: {fileID: 1038591085}
@@ -1531,9 +1546,21 @@ PrefabInstance:
       value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 6280161334121603384, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
+      propertyPath: tollTxts.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6280161334121603384, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: nextNodes.Array.size
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6280161334121603384, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
+      propertyPath: tollTxts.Array.data[0]
+      value: 
+      objectReference: {fileID: 814613946}
+    - target: {fileID: 6280161334121603384, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
+      propertyPath: tollTxts.Array.data[1]
+      value: 
+      objectReference: {fileID: 347323425}
     - target: {fileID: 6280161334121603384, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: nextNodes.Array.data[0]
       value: 
@@ -2421,6 +2448,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0face27f2341d764a9b13cf979379060, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &347323425 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2407139766025380330, guid: b2b72ed0e7b02784994a3ba4a93a7070, type: 3}
+  m_PrefabInstance: {fileID: 1038591083}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &351936325 stripped
@@ -9500,9 +9538,21 @@ PrefabInstance:
       value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 6280161334121603384, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
+      propertyPath: tollTxts.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6280161334121603384, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: nextNodes.Array.size
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6280161334121603384, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
+      propertyPath: tollTxts.Array.data[0]
+      value: 
+      objectReference: {fileID: 1494315196}
+    - target: {fileID: 6280161334121603384, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
+      propertyPath: tollTxts.Array.data[1]
+      value: 
+      objectReference: {fileID: 1920567243}
     - target: {fileID: 6280161334121603384, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: nextNodes.Array.data[0]
       value: 
@@ -9946,6 +9996,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3193121425436522662, guid: b2b72ed0e7b02784994a3ba4a93a7070, type: 3}
   m_PrefabInstance: {fileID: 1243762014309394736}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &814613946 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5505619572932449421, guid: b2b72ed0e7b02784994a3ba4a93a7070, type: 3}
+  m_PrefabInstance: {fileID: 1038591083}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &843297874
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11883,6 +11944,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 201181617}
     m_Modifications:
+    - target: {fileID: 2407139766025380330, guid: b2b72ed0e7b02784994a3ba4a93a7070, type: 3}
+      propertyPath: m_text
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2818109497311322652, guid: b2b72ed0e7b02784994a3ba4a93a7070, type: 3}
       propertyPath: m_Name
       value: door (1)
@@ -11926,6 +11991,10 @@ PrefabInstance:
     - target: {fileID: 3193121425436522662, guid: b2b72ed0e7b02784994a3ba4a93a7070, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5505619572932449421, guid: b2b72ed0e7b02784994a3ba4a93a7070, type: 3}
+      propertyPath: m_text
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -14238,6 +14307,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0face27f2341d764a9b13cf979379060, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1267558818 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5505619572932449421, guid: b2b72ed0e7b02784994a3ba4a93a7070, type: 3}
+  m_PrefabInstance: {fileID: 1998186464}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1277628482
 GameObject:
   m_ObjectHideFlags: 0
@@ -16131,6 +16211,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0face27f2341d764a9b13cf979379060, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1494315196 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5505619572932449421, guid: b2b72ed0e7b02784994a3ba4a93a7070, type: 3}
+  m_PrefabInstance: {fileID: 1243762014309394736}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1497168253
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17049,6 +17140,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 929126064}
     - target: {fileID: 6280161334121603384, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
+      propertyPath: doorInd
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6280161334121603384, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: doorAnim
       value: 
       objectReference: {fileID: 1998186466}
@@ -17057,9 +17152,21 @@ PrefabInstance:
       value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 6280161334121603384, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
+      propertyPath: tollTxts.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6280161334121603384, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: nextNodes.Array.size
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6280161334121603384, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
+      propertyPath: tollTxts.Array.data[0]
+      value: 
+      objectReference: {fileID: 1267558818}
+    - target: {fileID: 6280161334121603384, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
+      propertyPath: tollTxts.Array.data[1]
+      value: 
+      objectReference: {fileID: 97632966}
     - target: {fileID: 6280161334121603384, guid: 9cbe4ac5dc43a5749875f55bf9a91b9d, type: 3}
       propertyPath: nextNodes.Array.data[0]
       value: 
@@ -18028,6 +18135,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0face27f2341d764a9b13cf979379060, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1920567243 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2407139766025380330, guid: b2b72ed0e7b02784994a3ba4a93a7070, type: 3}
+  m_PrefabInstance: {fileID: 1243762014309394736}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1926095589
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18872,6 +18990,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1731779845}
     m_Modifications:
+    - target: {fileID: 2407139766025380330, guid: b2b72ed0e7b02784994a3ba4a93a7070, type: 3}
+      propertyPath: m_text
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2818109497311322652, guid: b2b72ed0e7b02784994a3ba4a93a7070, type: 3}
       propertyPath: m_Name
       value: door (1)
@@ -18915,6 +19037,10 @@ PrefabInstance:
     - target: {fileID: 3193121425436522662, guid: b2b72ed0e7b02784994a3ba4a93a7070, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5505619572932449421, guid: b2b72ed0e7b02784994a3ba4a93a7070, type: 3}
+      propertyPath: m_text
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -19974,6 +20100,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 681132586}
     m_Modifications:
+    - target: {fileID: 2407139766025380330, guid: b2b72ed0e7b02784994a3ba4a93a7070, type: 3}
+      propertyPath: m_text
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2818109497311322652, guid: b2b72ed0e7b02784994a3ba4a93a7070, type: 3}
       propertyPath: m_Name
       value: door
@@ -20017,6 +20147,10 @@ PrefabInstance:
     - target: {fileID: 3193121425436522662, guid: b2b72ed0e7b02784994a3ba4a93a7070, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5505619572932449421, guid: b2b72ed0e7b02784994a3ba4a93a7070, type: 3}
+      propertyPath: m_text
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

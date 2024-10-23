@@ -161,17 +161,35 @@ public class GameManager : NetworkBehaviour
 	[Command(requiresAuthority=false)] public void CmdHitPlayersAtNode(int nodeId) => RpcHitPlayersAtNode(nodeId);
 	[ClientRpc] private void RpcHitPlayersAtNode(int nodeId) => NodeManager.Instance.GetNode(nodeId).HitPlayers(-10);
 
-	public void SetupDoorTolls(int nDoors)
+	[Command(requiresAuthority=false)] public void CmdSetupDoorTolls(int nDoors)
 	{
 		doorTolls = new();
 		for (int i=0 ; i<nDoors ; i++)
-			doorTolls.Add(1);
+		{
+			doorTolls.Add(0);
+			if (BoardManager.Instance != null)
+				BoardManager.Instance.CmdSetNewToll(i, 1);
+		}
+	}
+	[Command(requiresAuthority=false)] public void CmdSetDoorToll(int ind, int newToll)
+	{
+		if (doorTolls == null || ind < 0 || ind >= doorTolls.Count)
+			return;
+		RpcSetDoorToll(ind, newToll);
+		if (BoardManager.Instance != null)
+			BoardManager.Instance.CmdSetNewToll(ind, newToll);
+	}
+	[ClientRpc] public void RpcSetDoorToll(int ind, int newToll)
+	{
+		if (doorTolls == null || ind < 0 || ind >= doorTolls.Count)
+			return;
+		doorTolls[ind] = newToll;
 	}
 	public int GetDoorToll(int ind)
 	{
 		if (doorTolls == null || ind < 0 || ind >= doorTolls.Count)
 			return 0;
-		return doorTolls[ind];
+		return doorTolls[ind] == 0 ? 1 : doorTolls[ind];
 	}
 
 	#endregion

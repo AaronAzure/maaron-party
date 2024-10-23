@@ -23,7 +23,7 @@ public class Node : MonoBehaviour
 	public Node altNode;
 	[SerializeField] private int doorInd;
 	[SerializeField] private Animator doorAnim;
-	[SerializeField] private TextMeshPro tollTxt;
+	[SerializeField] private TextMeshPro[] tollTxts;
 
 
 	[Space] [Header("Node Type")]
@@ -139,6 +139,9 @@ public class Node : MonoBehaviour
 	}
 	#endregion
 
+
+	#region Door
+
 	public bool IsDoor() => nodeSpace == NodeSpace.door;
 	public int GetDoorInd() => doorInd;
 	public void PlayDoorAnim() 
@@ -146,6 +149,15 @@ public class Node : MonoBehaviour
 		if (doorAnim != null)
 			doorAnim.SetTrigger("open");
 	}
+	public void SetNewToll(int newToll)
+	{
+		Debug.Log($"<color=yellow>{name} - SETTING NEW TOLL {newToll}</color>");
+		if (tollTxts != null) 
+			foreach (TextMeshPro tollTxt in tollTxts)
+				tollTxt.text = $"{newToll}";
+	}
+
+	#endregion
 
 
 	public void PlayGlowVfx()

@@ -88,7 +88,7 @@ public class BoardManager : NetworkBehaviour
 			if (isServer)
 			{
 				placementChosen = new bool[placementBtns.Length];
-				gm.SetupDoorTolls(doors == null ? 0 : doors.Length);
+				gm.CmdSetupDoorTolls(doors == null ? 0 : doors.Length);
 			}
 		}
 		//string s = $"<color=#FF8D07>";
@@ -136,13 +136,15 @@ public class BoardManager : NetworkBehaviour
 		// turn 1
 		if (!gm.gameStarted)
 		{
+			gm.gameStarted = true;
 			if (nm.skipIntro)
 			{
 				yield return ChooseStarCo(0);
+				CmdToggleMainUi(true);
 			}
 			else
 			{
-				isIntro = gm.gameStarted = true;
+				isIntro = true;
 				CmdToggleStartCam(true);
 				
 				yield return new WaitForSeconds(1.5f);
@@ -387,6 +389,9 @@ public class BoardManager : NetworkBehaviour
 
 	[Command(requiresAuthority=false)] public void CmdPlayDoorAnim(int nodeId) => RpcPlayDoorAnim(nodeId);
 	[ClientRpc] private void RpcPlayDoorAnim(int nodeId) => NodeManager.Instance.GetNode(nodeId).PlayDoorAnim();
+
+	[Command(requiresAuthority=false)] public void CmdSetNewToll(int doorInd, int newToll) => RpcSetNewToll(doorInd, newToll);
+	[ClientRpc] private void RpcSetNewToll(int doorInd, int newToll) => NodeManager.Instance.GetNode(doors[doorInd].nodeId).SetNewToll(newToll);
 
 	#endregion
 
