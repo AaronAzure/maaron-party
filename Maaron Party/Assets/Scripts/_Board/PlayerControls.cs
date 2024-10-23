@@ -129,7 +129,8 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private TextMeshProUGUI manaTxt;
 
 	[Space] [SerializeField] private GameObject manalessUi;
-	[Space] [SerializeField] private GameObject coinlessUi;
+	[SerializeField] private GameObject coinlessUi;
+	[SerializeField] private TextMeshProUGUI thinkingTxt;
 
 	#endregion
 	
@@ -316,6 +317,26 @@ public class PlayerControls : NetworkBehaviour
 	[ClientRpc] private void RpcSetCoinText(int n) => coinTxt.text = $"{n}";
 	[Command(requiresAuthority=false)] private void CmdSetStarText(int n) => RpcSetStarText(n);
 	[ClientRpc] private void RpcSetStarText(int n) => starTxt.text = $"{n}";
+
+
+	[Command(requiresAuthority=false)] void CmdPlayerThinking(bool active, int ind) => RpcPlayerThinking(active, ind); 
+	[ClientRpc(includeOwner=false)] void RpcPlayerThinking(bool active, int ind)
+	{
+		if (!isOwned)
+		{
+			thinkingTxt.gameObject.SetActive(active);
+			//introTxt.color = ind == 0 ? new Color(0.7f,0.13f,0.13f) : ind == 1 ? new Color(0.4f,0.7f,0.3f) 
+			//	: ind == 2 ? new Color(0.85f,0.85f,0.5f) : new Color(0.7f,0.5f,0.8f);
+			switch (ind)
+			{
+				case 0: thinkingTxt.text = "Red is Thinking..."; break;
+				case 1: thinkingTxt.text = "Green is Thinking..."; break;
+				case 2: thinkingTxt.text = "Yellow is Thinking..."; break;
+				case 3: thinkingTxt.text = "Periwinkle is Thinking..."; break;
+				default: thinkingTxt.text = "Someone is Thinking..."; break;
+			}
+		}
+	}
 
 	private void RotateDirection(Vector3 dir)
 	{
@@ -740,6 +761,8 @@ public class PlayerControls : NetworkBehaviour
 		if (shopUi != null)
 			shopUi.SetActive(false);
 		CmdToggleStarCam(false);
+		CmdPlayerThinking(false, characterInd);
+
 		isStop = isAtShop = false;
 	}
 	public void _ROLL_DICE()
@@ -806,6 +829,7 @@ public class PlayerControls : NetworkBehaviour
 		spellCam.transform.localPosition = new Vector3(0,25,-10);
 		inMap = true;
 		CmdToggleMapCam(true);
+		CmdPlayerThinking(true, characterInd);
 		if (nextNode != null)
 		{
 			int shortestPath = 9999;
@@ -886,6 +910,8 @@ public class PlayerControls : NetworkBehaviour
 	public void OnShopNode()
 	{
 		isAtShop = true;
+		CmdPlayerThinking(true, characterInd);
+
 		if (buyBtnObj != null) buyBtnObj.SetActive(false);
 		if (titleTxt != null) titleTxt.text = "Click on an Item!";
 		if (descTxt != null) descTxt.text = "I'm waiting...";
@@ -1077,6 +1103,7 @@ public class PlayerControls : NetworkBehaviour
 	{
 		CmdShowNodeDistance(false, nextNode != null ? nextNode.nodeId : currNode.nodeId, 0, movesLeft);
 		nextNode = nextNode.nextNodes[ind];
+		CmdPlayerThinking(false, characterInd);
 		IsStuckAtDoor();
 		HidePaths();
 		CmdToggleMapCam(false);
@@ -1211,6 +1238,7 @@ public class PlayerControls : NetworkBehaviour
 			nextNode = nextNode.nextNodes[0];
 
 		CmdToggleStarCam(false);
+		CmdPlayerThinking(false, characterInd);
 		isStop = isAtShop = false;
 	}
 
