@@ -141,6 +141,11 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private TextMeshProUGUI distanceTxt;
 	[SerializeField] private TextMeshProUGUI coinTxt;
 	[SerializeField] private TextMeshProUGUI starTxt;
+
+	[Space] [SerializeField] private RectTransform finalUi;
+	[SerializeField] private TextMeshProUGUI finalCoinsTxt;
+	[SerializeField] private TextMeshProUGUI finalStarsTxt;
+
 	private BoardManager bm { get { return BoardManager.Instance; } }
 	private GameNetworkManager nm { get { return GameNetworkManager.Instance; } }
 	private GameManager gm { get { return GameManager.Instance; } }
@@ -324,6 +329,15 @@ public class PlayerControls : NetworkBehaviour
 	{
 		dataUi.anchoredPosition = new Vector3(125, -137.5f - 175 * n);
 		dataUi.gameObject.SetActive(true);
+	}
+
+	[Command(requiresAuthority=false)] public void CmdSetFinalUi() => RpcSetFinalUi(id, coins, stars);
+	[ClientRpc] private void RpcSetFinalUi(int n, int coins, int stars)
+	{
+		finalUi.anchoredPosition = new Vector3(400 + 250 * n, -650);
+		finalUi.gameObject.SetActive(true);
+		finalCoinsTxt.text = $"{coins}";
+		finalStarsTxt.text = $"{stars}";
 	}
 
 	public void SetStartNode(Node startNode) => nextNode = startNode;

@@ -584,9 +584,13 @@ public class BoardManager : NetworkBehaviour
 
 		yield return new WaitForSeconds(1);
 		nm.ShowWinner();
+		CmdShowFinalData();
 	}
 	[Command(requiresAuthority=false)] void CmdMaaronMagic() => RpcMaaronMagic();
 	[ClientRpc] void RpcMaaronMagic() => maaronAnim.SetTrigger("magicOnly");
+
+	[Command(requiresAuthority=false)] void CmdShowFinalData() => RpcShowFinalData();
+	[ClientRpc] void RpcShowFinalData() => _player.CmdSetFinalUi();
 	#endregion
 
 	public void NextPlayerTurn()
