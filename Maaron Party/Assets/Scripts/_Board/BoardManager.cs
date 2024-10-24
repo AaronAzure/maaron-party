@@ -308,9 +308,11 @@ public class BoardManager : NetworkBehaviour
 
 	
 	List<int> tempPlayerOrder;
-	public void DoneChoosingPlacement()
+	public void DoneChoosingPlacement(int placement)
 	{
 		placementCg.interactable = false;
+		gm.CmdSavePlacements(placement, _player.id);
+		_player.CmdSetDataUi(placement);
 	}
 	[Command(requiresAuthority=false)] public void CmdRevealPlacementCard(int ind, int playerId, int characterInd, int placement) 
 	{

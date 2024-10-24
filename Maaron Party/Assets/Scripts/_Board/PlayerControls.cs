@@ -135,7 +135,7 @@ public class PlayerControls : NetworkBehaviour
 
 	#endregion
 	
-	[Space] [SerializeField] private Transform dataUi;
+	[Space] [SerializeField] private RectTransform dataUi;
 	[SerializeField] private GameObject[] profileUis;
 	[SerializeField] private Image dataImg;
 	[SerializeField] private TextMeshProUGUI distanceTxt;
@@ -227,7 +227,8 @@ public class PlayerControls : NetworkBehaviour
 	{
 		TargetRemoteStart(netIdentity.connectionToClient);
 	}
-	//[Command(requiresAuthority = false)] private void CmdPing() => Debug.Log($"<color=yellow>TargetRemoteStart {name}</color>");
+	
+	// Start()
 	[TargetRpc] private void TargetRemoteStart(NetworkConnectionToClient target) 
 	{
 		//Debug.Log($"<color=yellow>TargetRemoteStart</color>");
@@ -237,11 +238,16 @@ public class PlayerControls : NetworkBehaviour
 		
 		CmdSetModel(characterInd);
 		model.rotation = Quaternion.LookRotation(Vector3.back);
+
+		// first turn
 		if (gm.nTurn == 1)
 		{
 			transform.position = BoardManager.Instance.GetSpawnPos().position + new Vector3(-4 + 2*id,0,-2);
 			startPos = this.transform.position;
+			if (nm.skipIntro)
+				CmdSetDataUi(id);
 		}
+		// game over
 		else if (gm.nTurn > gm.maxTurns)
 		{
 			transform.position = BoardManager.Instance.GetSpawnPos().position + new Vector3(-4 + 2*id,0,-2);
@@ -259,7 +265,7 @@ public class PlayerControls : NetworkBehaviour
 		if (gm.nTurn > 1)
 		{
 			LoadData();
-			
+			CmdSetDataUi(nm.skipIntro ? id : gm.GetPlacements(id));
 		}
 		// 第一名 
 		else
@@ -290,9 +296,9 @@ public class PlayerControls : NetworkBehaviour
 		if (isOwned)
 			anim = models[ind].GetComponent<Animator>();
 
-		if (bm != null)
-			bm.SetUiLayout(dataUi);
-		dataUi.gameObject.SetActive(true);
+		//if (bm != null)
+		//	bm.SetUiLayout(dataUi);
+		//dataUi.gameObject.SetActive(true);
 		dataImg.color = ind == 0 ? new Color(0.7f,0.13f,0.13f) : ind == 1 ? new Color(0.4f,0.7f,0.3f) 
 				: ind == 2 ? new Color(0.85f,0.85f,0.5f) : new Color(0.7f,0.5f,0.8f);
 		for (int i=0 ; i<profileUis.Length ; i++)
@@ -311,6 +317,13 @@ public class PlayerControls : NetworkBehaviour
 		}
 		introImg.color = ind == 0 ? new Color(0.7f,0.13f,0.13f) : ind == 1 ? new Color(0.4f,0.7f,0.3f) 
 				: ind == 2 ? new Color(0.85f,0.85f,0.5f) : new Color(0.7f,0.5f,0.8f);
+	}
+
+	[Command(requiresAuthority=false)] public void CmdSetDataUi(int n) => RpcSetDataUi(n);
+	[ClientRpc] private void RpcSetDataUi(int n)
+	{
+		dataUi.anchoredPosition = new Vector3(125, -137.5f - 175 * n);
+		dataUi.gameObject.SetActive(true);
 	}
 
 	public void SetStartNode(Node startNode) => nextNode = startNode;

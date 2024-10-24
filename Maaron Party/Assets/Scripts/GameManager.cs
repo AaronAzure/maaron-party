@@ -19,6 +19,7 @@ public class GameManager : NetworkBehaviour
 	[SerializeField] private List<ushort> currNodes;
 	//[SyncVar] [SerializeField] private Dictionary<int, int> traps;
 	public readonly SyncDictionary<int, int> traps = new SyncDictionary<int, int>();
+	[SyncVar] [SerializeField] private List<int> placements;
 	[SyncVar] [SerializeField] private List<int> coins;
 	[SyncVar] [SerializeField] private List<int> stars;
 	[SyncVar] [SerializeField] private List<int> manas;
@@ -54,6 +55,7 @@ public class GameManager : NetworkBehaviour
 	{
 		currNodes = new();
 		//traps = new SyncDictionary<int, int>();
+		placements = new();
 		coins = new();
 		stars = new();
 		manas = new();
@@ -99,10 +101,6 @@ public class GameManager : NetworkBehaviour
 		if (!traps.ContainsKey(nodeId))
 			traps.Add(nodeId, playerId);
 	}
-	//public Dictionary<int, int> GetTraps()
-	//{
-	//	return traps;
-	//}
 
 	[Command(requiresAuthority=false)] public void CmdSaveCoins(int newCoin, int playerId)
 	{
@@ -152,6 +150,21 @@ public class GameManager : NetworkBehaviour
 	public int GetMana(int playerId)
 	{
 		return manas[playerId];
+	}
+
+	[Command(requiresAuthority=false)] public void CmdSavePlacements(int newPlacement, int playerId)
+	{
+		if (placements == null)
+			placements = new();
+		while (placements.Count <= playerId)
+			placements.Add(0);
+		placements[playerId] = newPlacement;
+	}
+	public int GetPlacements(int playerId)
+	{
+		if (playerId < 0 || placements == null || playerId >= placements.Count)
+			return 0;
+		return placements[playerId];
 	}
 	//* ------- save -------
 	//* --------------------
