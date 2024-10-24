@@ -246,7 +246,7 @@ public class Node : MonoBehaviour
 				return 4.5f;
 			case NodeSpace.green_speed: 
 				BoardManager.Instance.CmdTurretTurnCo();
-				return 3.5f;
+				return GameManager.Instance.turretReady == 4 ? 10.5f : 3.5f;
 		}
 		return 0.5f;
 	}

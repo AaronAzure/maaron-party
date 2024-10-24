@@ -71,7 +71,8 @@ public class PlayerControls : NetworkBehaviour
 
 
 	[Space] [SerializeField] private int movesLeft;
-	[SerializeField] private TextMeshPro movesLeftTxt;
+	//[SerializeField] private TextMeshPro movesLeftTxt;
+	[SerializeField] private TextMeshProUGUI movesLeftTxt;
 
 
 	[Space] [Header("Vfx")]
@@ -148,6 +149,7 @@ public class PlayerControls : NetworkBehaviour
 	#region States
 
 	[Space] [Header("States")]
+	[SerializeField] private bool canMove;
 	[SerializeField] private bool isAtFork;
 	[SerializeField] private bool isAtStar;
 	[SerializeField] private bool isBuyingStar;
@@ -407,6 +409,7 @@ public class PlayerControls : NetworkBehaviour
 		else if (isAtDoor) {}
 		else if (isAtShop) {}
 		else if (isBuyingStar) {}
+		else if (!canMove) {}
 		else if (movesLeft > 0)
 		{
 			// moving to next node
@@ -458,7 +461,7 @@ public class PlayerControls : NetworkBehaviour
 						if (canvas != null)
 							canvas.SetActive(true);
 						CmdToggleDashVfx(false);
-						isDashing = false;
+						canMove = isDashing = false;
 						if (nextNode.nextNodes.Count == 1)
 							nextNode = nextNode.nextNodes[0];
 					}
@@ -790,9 +793,16 @@ public class PlayerControls : NetworkBehaviour
 		if (currNode != null)
 			currNode.RemovePlayer(this);
 		CmdUpdateMovesLeft( movesLeft );
+		CmdResetMovesLeft(true);
 
 		if (canvas != null)
 			canvas.SetActive(false);
+		StartCoroutine(MoveCo());
+	}
+	IEnumerator MoveCo()
+	{
+		yield return new WaitForSeconds(0.5f);
+		canMove = true;
 	}
 
 	public void _TOGGLE_MAP()
@@ -953,7 +963,8 @@ public class PlayerControls : NetworkBehaviour
 	{
 		if (bonus != 0) currencySpeedT = 0.5f / Mathf.Abs(bonus);
 		coins = Mathf.Clamp(coins + bonus, 0, 999);
-		this.enabled = isCurrencyAsync = true;
+		if (coins != 0)
+			this.enabled = isCurrencyAsync = true;
 		CmdShowBonusTxt(bonus);
 	}
 	public void LoseAllCoins()
@@ -980,8 +991,8 @@ public class PlayerControls : NetworkBehaviour
 
 	private IEnumerator NodeEffectCo()
 	{
-		CmdTriggerNodeVfx(currNode.nodeId);
-		yield return new WaitForSeconds(currNode.GetNodeLandEffect(this));
+		CmdTriggerNodeVfx(currNode.nodeId); // vfx on node
+		yield return new WaitForSeconds(currNode.GetNodeLandEffect(this)); // event duration
 		// no event
 		//if (currNode.GetNodeLandEffect(this))
 		//else 
@@ -1276,6 +1287,7 @@ public class PlayerControls : NetworkBehaviour
 
 		if (canvas != null)
 			canvas.SetActive(false);
+		canMove = true;
 	}
 	[Command(requiresAuthority=false)] private void CmdToggleDashVfx(bool active) => RpcToggleDashVfx(active);
 	[ClientRpc] private void RpcToggleDashVfx(bool active)
@@ -1374,6 +1386,14 @@ public class PlayerControls : NetworkBehaviour
 
 	#endregion
 
+	
+	[Command(requiresAuthority=false)] void CmdResetMovesLeft(bool active) => RpcResetMovesLeft(active);
+	[ClientRpc] void RpcResetMovesLeft(bool active) 
+	{
+		movesLeftTxt.gameObject.SetActive(false);
+		if (active)
+			movesLeftTxt.gameObject.SetActive(true);
+	}
 	
 	[Command(requiresAuthority=false)] void CmdUpdateMovesLeft(int x) => RpcUpdateMovesLeft(x);
 	[ClientRpc] void RpcUpdateMovesLeft(int x) => movesLeftTxt.text = $"{(x == 0 ? "" : x)}";

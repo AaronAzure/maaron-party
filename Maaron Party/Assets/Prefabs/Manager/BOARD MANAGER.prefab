@@ -5466,6 +5466,7 @@ MonoBehaviour:
   maaronSpotlightPs: {fileID: 7845143465901863428}
   placementCg: {fileID: 2616642957807251776}
   placementUi: {fileID: 1882133947987306841}
+  boardCam: {fileID: 8919935913004619858}
   placementBtns:
   - {fileID: 3586473154906277959}
   - {fileID: 8776322501399042733}
@@ -5481,6 +5482,7 @@ MonoBehaviour:
   starNodes: []
   turret: {fileID: 0}
   turretIntro: {fileID: 8575764100328934781}
+  doors: []
   fireTurret: 0
   isIntro: 0
   isLast5: 0

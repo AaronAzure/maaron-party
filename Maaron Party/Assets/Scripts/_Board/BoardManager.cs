@@ -35,6 +35,7 @@ public class BoardManager : NetworkBehaviour
 	[SerializeField] private ParticleSystem maaronSpotlightPs;
 	[SerializeField] private CanvasGroup placementCg;
 	[SerializeField] private GameObject placementUi;
+	[SerializeField] private CinemachineVirtualCamera boardCam;
 	[SerializeField] private PlacementButton[] placementBtns;
 	[SyncVar] bool[] placementChosen;
 
@@ -624,6 +625,8 @@ public class BoardManager : NetworkBehaviour
 	{
 		yield return new WaitForSeconds(goToNextPlayer ? 1 : 0.5f);
 		CmdToggleTurretCam(true);
+
+		// ui showing Freakin' giant turret's turn!
 		if (goToNextPlayer)
 		{
 			CmdTurretIntro(true);
@@ -636,8 +639,11 @@ public class BoardManager : NetworkBehaviour
 		CmdTurretTurn(++gm.turretReady);
 		if (gm.turretReady == 5 || fireTurret)
 		{
+			int temp = boardCam.m_Priority;
+			CmdSetBoardCamPriority(10000);
 			CmdToggleTurretCam(false);
 			yield return new WaitForSeconds(7);
+			CmdSetBoardCamPriority(temp);
 		}
 		gm.turretReady = gm.turretReady == 5 ? 0 : gm.turretReady;
 
@@ -661,6 +667,9 @@ public class BoardManager : NetworkBehaviour
 
 	[Command(requiresAuthority=false)] public void CmdTurretStart() => RpcTurretStart(gm.turretReady, gm.turretRot);
 	[ClientRpc] void RpcTurretStart(int x, int y) => turret.RemoteStart(x, y);
+
+	[Command(requiresAuthority=false)] public void CmdSetBoardCamPriority(int val) => RpcSetBoardCamPriority(val);
+	[ClientRpc] void RpcSetBoardCamPriority(int val) => boardCam.m_Priority = val;
 
 	[Command(requiresAuthority=false)] public void CmdTurretIntro(bool active) => RpcTurretIntro(active);
 	[ClientRpc] void RpcTurretIntro(bool active)
