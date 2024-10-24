@@ -9,28 +9,24 @@ public class PreviewManager : NetworkBehaviour
 	[SerializeField] private Animator anim;
 	private GameManager gm {get{return GameManager.Instance;}}
 	private GameNetworkManager nm {get{return GameNetworkManager.Instance;}}
-	[SyncVar] public int nManagerReady;
+	[SyncVar] public int nReady;
+	public Transform readyLayoutHolder;
 
-	private void Awake() 
+	private void OnEnable()
 	{
 		Instance = this;
-	}
-
-	// Start is called before the first frame update
-	void Start()
-	{
-		CmdReadyUp();
-	}
+		nReady = 0;
+	} 
+	private void OnDisable() => Instance = null;
+	
 
 	[Command(requiresAuthority=false)] public void CmdReadyUp()
 	{
-		++nManagerReady;
-		if (nManagerReady >= nm.numPlayers)
-		{
-			nm.LoadPreviewMinigame();
-			//gm.CmdTriggerTransitionDelay(false);
-		}
-	} 
+		++nReady;
+		if (nReady > nm.GetNumPreviewPlayers())
+			nm.StartActualMiniGame();
+	}
+
 
 	[Command(requiresAuthority=false)] public void CmdTriggerTransition(bool fadeIn)
 	{

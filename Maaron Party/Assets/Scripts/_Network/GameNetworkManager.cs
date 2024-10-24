@@ -27,6 +27,7 @@ public class GameNetworkManager : NetworkManager
 	public static GameNetworkManager Instance;
 	public Transform spawnHolder;
 	private GameManager gm {get{return GameManager.Instance;}}
+	private PreviewManager pm {get{return PreviewManager.Instance;}}
 	//GameObject ball;
 	[SerializeField] private GameObject buttons;
 	[SerializeField] private GameObject hostLostUi;
@@ -43,6 +44,7 @@ public class GameNetworkManager : NetworkManager
 	[Space] [SerializeField] private int fixedGame=-1;
 	[SerializeField] private bool skipSideQuests;
 	public bool skipIntro;
+	public bool skipBoard;
 
 
 	[Space] [Header("Scenes")]
@@ -51,6 +53,7 @@ public class GameNetworkManager : NetworkManager
 	[Scene] [SerializeField] private string boardScene;
 	[Scene] [SerializeField] private string practiceScene;
 	int nMinigame;
+	private string minigameName;
 	[Scene] [SerializeField] private string[] minigameScenes;
 
 	[Space] [SerializeField] private GameObject previewObj;
@@ -59,10 +62,12 @@ public class GameNetworkManager : NetworkManager
 	[Space] [SerializeField] private LobbyObject lobbyPlayerPrefab;
 	[SerializeField] private PlayerControls boardPlayerPrefab;
 	[SerializeField] private MinigameControls gamePlayerPrefab;
+	[SerializeField] private PreviewControls previewPlayerPrefab;
 
 	[Space] [SerializeField] private List<LobbyObject> lobbyPlayers = new();
 	[SerializeField] private List<PlayerControls> boardControls = new();
 	[SerializeField] private List<MinigameControls> minigameControls = new();
+	[SerializeField] private List<PreviewControls> previewControls = new();
 	public List<int> playerOrder;
 	//bool isLoadingScene
 
@@ -152,6 +157,18 @@ public class GameNetworkManager : NetworkManager
 			minigameControls.Remove(mc);
 	}
 
+	public void AddPreviewConnection(PreviewControls pc)
+	{
+		Debug.Log($"<color=green>Preview joined!</color>");
+		if (!previewControls.Contains(pc))
+			previewControls.Add(pc);
+	}
+	public void RemovePreviewConnection(PreviewControls pc)
+	{
+		if (previewControls.Contains(pc))
+			previewControls.Remove(pc);
+	}
+
 	#endregion
 
 	public void _START_HOST()
@@ -174,6 +191,7 @@ public class GameNetworkManager : NetworkManager
 	}
 
 
+	#region ServerChangeScene
 	public override void ServerChangeScene(string newSceneName)
 	{
 		// transitioning from lobby to board
@@ -221,7 +239,25 @@ public class GameNetworkManager : NetworkManager
 		// transitioning from board to minigame
 		else if (SceneManager.GetActiveScene().name.Contains("Board"))
 		{
+			//* Add preview controls
+			//for (int i = 0; i < boardControls.Count; i++)
+			//{
+			//	if (boardControls[i] != null)
+			//	{
+			//		Debug.Log($"<color=cyan>ADDING PREVIEW MINIGAME</color>");
+			//		var conn = boardControls[i].connectionToClient;
+			//		PreviewControls player = Instantiate(previewPlayerPrefab);
+			//		player.characterInd = boardControls[i].characterInd;
+			//		player.id = i;
+
+			//		//NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
+			//		NetworkServer.AddPlayerForConnection(conn, player.gameObject);
+			//	}
+			//	else
+			//		previewControls.Add(null);
+			//}
 			//Debug.Log($"<color=yellow>STARTING MINIGAME</color>");
+
 			//* Add minigame controls
 			for (int i = 0; i < boardControls.Count; i++)
 			{
@@ -231,13 +267,52 @@ public class GameNetworkManager : NetworkManager
 					MinigameControls player = Instantiate(gamePlayerPrefab);
 					player.characterInd = boardControls[i].characterInd;
 					player.id = i;
+					PreviewControls p2 = Instantiate(previewPlayerPrefab);
+					p2.characterInd = boardControls[i].characterInd;
+					p2.id = i;
 
+					//NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
+
+					NetworkServer.ReplacePlayerForConnection(conn, p2.gameObject);
 					NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
 				}
 				else
 					minigameControls.Add(null);
 			}
 			boardControls.Clear();
+		}
+		// transitioning from minigame to minigame
+		else if (SceneManager.GetActiveScene().name.Contains("Minigame") && newSceneName.Contains("Minigame"))
+		{
+			//if (pm == null)
+			//{
+			//	for (int i=previewControls.Count-1 ; i>= 0 ; i--)
+			//	{
+			//		if (previewControls[i] != null)
+			//		{
+			//			var conn = previewControls[i].connectionToClient;
+			//			NetworkServer.RemovePlayerForConnection(conn, RemovePlayerOptions.Destroy);
+			//		}
+			//	}
+			//	previewControls.Clear();
+			//}
+			//* Add minigame controls
+			int temp = minigameControls.Count;
+			for (int i = 0; i < temp; i++)
+			{
+				if (minigameControls[i] != null)
+				{
+					var conn = minigameControls[i].connectionToClient;
+					MinigameControls player = Instantiate(gamePlayerPrefab);
+					player.characterInd = minigameControls[i].characterInd;
+					player.id = i;
+
+					NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
+				}
+				else
+					minigameControls.Add(null);
+			}
+			minigameControls.Clear();
 		}
 		// transitioning from minigame to board
 		else if (SceneManager.GetActiveScene().name.Contains("Minigame"))
@@ -259,8 +334,10 @@ public class GameNetworkManager : NetworkManager
 			}
 			minigameControls.Clear();
 		}
+
 		base.ServerChangeScene(newSceneName);
 	}
+	#endregion
 
 
 	#region Board
@@ -297,7 +374,9 @@ public class GameNetworkManager : NetworkManager
 	public bool StillHavePlayerTurns() => nPlayerOrder < boardControls.Count;
 	public void NextBoardPlayerTurn()
 	{
-		if (nPlayerOrder < boardControls.Count)
+		if (skipBoard)
+			StartCoroutine(StartMiniGameCo());
+		else if (nPlayerOrder < boardControls.Count)
 		{
 			if (skipIntro)
 			{
@@ -404,6 +483,7 @@ public class GameNetworkManager : NetworkManager
 	{
 		base.OnServerSceneChanged(sceneName);
 		Debug.Log($"==> Scene Loaded = {sceneName}");
+		//if (PreviewManager.Instance == null)
 		gm.TriggerTransitionDelay(false);
 	}
 	#endregion
@@ -411,6 +491,7 @@ public class GameNetworkManager : NetworkManager
 
 	#region Minigame
 	public int GetNumMinigamePlayers() => minigameControls.Count;
+	public int GetNumPreviewPlayers() => previewControls.Count;
 
 	IEnumerator StartMiniGameCo()
 	{
@@ -428,13 +509,51 @@ public class GameNetworkManager : NetworkManager
 		else
 		{
 			yield return new WaitForSeconds(0.5f);
-			ServerChangeScene(minigameScenes[fixedGame == -1 ? nMinigame++ % minigameScenes.Length : fixedGame]);
+			gm.CmdTogglePreviewManager(true);
+			
+			yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame();
+			minigameName = minigameScenes[fixedGame == -1 ? nMinigame++ % minigameScenes.Length : fixedGame];
+			ServerChangeScene(minigameName);
 		}
 		
 		//while (NetworkServer.isLoadingScene)
 		//	yield return null;
 
 		//gm.CmdTriggerTransition(false);
+	}
+	Coroutine actualMinigameCo;
+	public void StartActualMiniGame() => actualMinigameCo = StartCoroutine(StartActualMiniGameCo());
+	IEnumerator StartActualMiniGameCo()
+	{
+		yield return new WaitForSeconds(0.5f);
+		gm.CmdTriggerTransition(true);
+		
+		yield return new WaitForSeconds(0.5f);
+		if (skipSideQuests)
+		{
+			//yield return new WaitForSeconds(0.5f);
+			ServerChangeScene(boardScene);
+		}
+		else
+		{
+			yield return new WaitForSeconds(0.5f);
+			gm.CmdTogglePreviewManager(false);
+			
+			yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame();
+			for (int i=0 ; i<previewControls.Count ; i++)
+			{
+				if (previewControls[i] != null)
+				{
+					previewControls[i].CmdUnparent();
+				}
+			}
+			previewControls.Clear();
+
+			//minigameName = minigameScenes[fixedGame == -1 ? nMinigame++ % minigameScenes.Length : fixedGame];
+			yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame();
+			ServerChangeScene(minigameName);
+		}
+		actualMinigameCo = null;
 	}
 
 	/// <summary>
@@ -446,19 +565,21 @@ public class GameNetworkManager : NetworkManager
 	}
 	public void ReloadPreviewMinigame()
 	{
-		Debug.Log($"<color=yellow>STARTING MINIGAME</color>");
-		for (int i = 0; i < minigameControls.Count; i++)
-		{
-			var conn = minigameControls[i].connectionToClient;
-			int temp = minigameControls[i].characterInd;
-			minigameControls.Remove(minigameControls[i]);
+		//Debug.Log($"<color=yellow>STARTING MINIGAME</color>");
+		//for (int i = 0; i < minigameControls.Count; i++)
+		//{
+		//	var conn = minigameControls[i].connectionToClient;
+		//	int temp = minigameControls[i].characterInd;
+		//	minigameControls.Remove(minigameControls[i]);
 
-			MinigameControls player = Instantiate(gamePlayerPrefab);
-			player.characterInd = temp;
-			player.id = i;
+		//	MinigameControls player = Instantiate(gamePlayerPrefab);
+		//	player.characterInd = temp;
+		//	player.id = i;
 
-			NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
-		}
+		//	NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
+		//}
+		if (actualMinigameCo == null)
+			ServerChangeScene(minigameName);
 		//gm.StartMinigame(minigameScene);
 		//gm.CmdReloadPreviewMinigameUnload();
 		//StartCoroutine(LoadPreviewMinigameCo());

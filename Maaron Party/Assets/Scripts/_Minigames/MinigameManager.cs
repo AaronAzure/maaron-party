@@ -46,7 +46,8 @@ public class MinigameManager : NetworkBehaviour
 
 	private void Start() 
 	{
-		nPlayers = GameObject.FindGameObjectsWithTag("Player").Length;
+		//nPlayers = GameObject.FindGameObjectsWithTag("Player").Length;
+		nPlayers = nm.GetNumMinigamePlayers();
 		if (isServer)
 		{
 			rewards = new int[nPlayers];

@@ -28,6 +28,10 @@ public class GameManager : NetworkBehaviour
 	
 	[Space] [SyncVar] public int nTurn=1; 
 	[SyncVar] public int maxTurns=20; 
+	
+	[Space] [SyncVar] public bool isPractice; 
+	[SerializeField] private PreviewManager pm;
+	[SerializeField] private GameObject pmObj;
 
 	[Space] public bool gameStarted; 
 	public int prevStarInd=-1; 
@@ -233,6 +237,11 @@ public class GameManager : NetworkBehaviour
 	{
 		nTurn++;
 	}
+
+	[Command(requiresAuthority=false)] public void CmdTogglePreviewManager(bool active) => RpcTogglePreviewManager(active);
+	[ClientRpc] void RpcTogglePreviewManager(bool active) => pmObj.SetActive(active);
+
+
 	public void StartMinigame(string minigameName) // host side
 	{
 		RpcStartMinigame(minigameName);
