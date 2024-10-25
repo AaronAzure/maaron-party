@@ -98,8 +98,9 @@ public class MinigameControls : NetworkBehaviour
 		//gameObject.SetActive(true);
 		model.rotation = Quaternion.identity;
 		model.Rotate(0,180,0);
-		gameStarted = true;
 	}
+	public void StartGame() => gameStarted = true;
+	
 	[Command] private void CmdReactivate() => RpcReactivate();
 	[ClientRpc] private void RpcReactivate() => gameObject.SetActive(true);
 	 

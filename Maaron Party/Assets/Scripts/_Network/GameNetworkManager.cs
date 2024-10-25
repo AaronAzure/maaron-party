@@ -516,12 +516,13 @@ public class GameNetworkManager : NetworkManager
 			ServerChangeScene(minigameName);
 
 			yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame();
-			if (pm != null)
-			{
-				//!Debug.Log($"<color=cyan>NetworkManager = StartMinigameCo() {pm != null}</color>");
-				pm.Setup();
-				pm.CmdSetup();
-			} 
+			gm.CmdSetupPreviewManager();
+			//if (pm != null)
+			//{
+			//	//!Debug.Log($"<color=cyan>NetworkManager = StartMinigameCo() {pm != null}</color>");
+			//	pm.Setup();
+			//	pm.CmdSetup();
+			//} 
 		}
 		
 		//while (NetworkServer.isLoadingScene)

@@ -14,6 +14,8 @@ public class MinigameManager : NetworkBehaviour
 	//[SerializeField] private NetworkObject playerToSpawn;
 	[SyncVar] public int nBmReady; 
 	[SerializeField] private TextMeshProUGUI timerTxt;
+	[SerializeField] private TextMeshProUGUI countDownTxt;
+	private int countDownTimer=-1;
 	
 	[Space] [SerializeField] private Transform spawnPos;
 
@@ -80,6 +82,15 @@ public class MinigameManager : NetworkBehaviour
 		_player.canJump = playersCanJump;
 		_player.canKb = playersCanKb;
 		_player.SetSpawn();
+		if (pm != null && pm.gameObject.activeInHierarchy)
+		{
+			_player.StartGame();
+		}
+		else
+		{
+			countDownTimer = 3;
+			countDownTxt.text = $"{3}";
+		}
 		countdownCo = StartCoroutine( GameTimerCo() );
 		if (pm != null && pm.gameObject.activeInHierarchy)
 			pm.CmdTriggerTransition(false);
@@ -123,22 +134,36 @@ public class MinigameManager : NetworkBehaviour
 	}
 	IEnumerator CountDownCo()
 	{
-		yield return new WaitForSeconds(1);
+		yield return new WaitForSeconds(pm != null && !pm.gameObject.activeInHierarchy ? 4 : 1);
 		ctr.enabled = true;
 	}
 
 
 
-	IEnumerator GameTimerCo()
+	IEnumerator GameTimerCo(bool gameStart=false)
 	{
 		yield return new WaitForSeconds(1);
-		timerTxt.text = $"{--timer}";
+		if (gameStart)
+			_player.StartGame();
+		if (pm != null && !pm.gameObject.activeInHierarchy && countDownTimer >= 0)
+		{
+			--countDownTimer;
+			countDownTxt.text = countDownTimer >= 0 ? countDownTimer == 0 ? "Start" : $"{countDownTimer}" : "";
+			if (countDownTimer > 0)
+				StartCoroutine( GameTimerCo() );
+			else
+				StartCoroutine( GameTimerCo(true) );
+		}
+		else
+		{
+			timerTxt.text = $"{--timer}";
 
-		if (timer > 0)
-			StartCoroutine( GameTimerCo() );
-		// game over
-		else if (isServer)
-			GameOver();
+			if (timer > 0)
+				StartCoroutine( GameTimerCo() );
+			// game over
+			else if (isServer)
+				GameOver();
+		}
 	} 
 
 	bool gameFin;

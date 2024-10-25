@@ -242,6 +242,7 @@ public class GameManager : NetworkBehaviour
 	[ClientRpc] void RpcTogglePreviewManager(bool active) => pmObj.SetActive(active);
 
 
+	[Command(requiresAuthority=false)] public void CmdSetupPreviewManager() => pm.CmdSetup();
 	public void StartMinigame(string minigameName) // host side
 	{
 		RpcStartMinigame(minigameName);
