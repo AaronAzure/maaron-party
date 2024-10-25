@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 1036959276735422318}
   - component: {fileID: 4658905001722268017}
   - component: {fileID: 1580142788309249562}
-  - component: {fileID: 2213528701436151040}
   m_Layer: 5
   m_Name: PreviewControls
   m_TagString: Untagged
@@ -154,23 +153,6 @@ MonoBehaviour:
   characterInd: -1
   id: -1
   readyObj: {fileID: 7551511839609553406}
---- !u!114 &2213528701436151040
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4286328577593527152}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  _assetId: 4086828807
-  serverOnly: 0
-  visibility: 0
-  hasSpawned: 0
 --- !u!1 &7551511839609553406
 GameObject:
   m_ObjectHideFlags: 0

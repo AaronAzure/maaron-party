@@ -249,6 +249,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1686969842}
     m_Modifications:
+    - target: {fileID: 153617093788674727, guid: a4aef1495346d694ab338e0e88ce8c28, type: 3}
+      propertyPath: sceneId
+      value: 2314752531
+      objectReference: {fileID: 0}
     - target: {fileID: 685219388542977043, guid: a4aef1495346d694ab338e0e88ce8c28, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -293,9 +297,21 @@ PrefabInstance:
       propertyPath: sceneId
       value: 3410787223
       objectReference: {fileID: 0}
+    - target: {fileID: 3397591859957908136, guid: a4aef1495346d694ab338e0e88ce8c28, type: 3}
+      propertyPath: sceneId
+      value: 3612636604
+      objectReference: {fileID: 0}
     - target: {fileID: 4610139740070670416, guid: a4aef1495346d694ab338e0e88ce8c28, type: 3}
       propertyPath: sceneId
       value: 2488190170
+      objectReference: {fileID: 0}
+    - target: {fileID: 5699006600605903512, guid: a4aef1495346d694ab338e0e88ce8c28, type: 3}
+      propertyPath: sceneId
+      value: 4086720521
+      objectReference: {fileID: 0}
+    - target: {fileID: 7323133466988777711, guid: a4aef1495346d694ab338e0e88ce8c28, type: 3}
+      propertyPath: sceneId
+      value: 3926712787
       objectReference: {fileID: 0}
     - target: {fileID: 8149806081266758905, guid: a4aef1495346d694ab338e0e88ce8c28, type: 3}
       propertyPath: m_Name
@@ -485,7 +501,6 @@ MonoBehaviour:
   spawnPrefabs:
   - {fileID: 5611867278237887193, guid: 8a9d11e354baf9d48b9000cbafda63eb, type: 3}
   - {fileID: 5611867278237887193, guid: 249e06af49db8f54bb16e7597754b811, type: 3}
-  - {fileID: 4286328577593527152, guid: f026a3d90512fc24d939842f15901ed0, type: 3}
   exceptionsDisconnect: 1
   snapshotSettings:
     bufferTimeMultiplier: 2
@@ -524,11 +539,9 @@ MonoBehaviour:
   lobbyPlayerPrefab: {fileID: 1037466775356406029, guid: a8be1d7671adca64ea71e7d4a57fbdf0, type: 3}
   boardPlayerPrefab: {fileID: 3325275383187896159, guid: 8a9d11e354baf9d48b9000cbafda63eb, type: 3}
   gamePlayerPrefab: {fileID: 2208156073547461706, guid: 249e06af49db8f54bb16e7597754b811, type: 3}
-  previewPlayerPrefab: {fileID: 1580142788309249562, guid: f026a3d90512fc24d939842f15901ed0, type: 3}
   lobbyPlayers: []
   boardControls: []
   minigameControls: []
-  previewControls: []
   playerOrder: 
   nPlayerOrder: 0
 --- !u!4 &193865297

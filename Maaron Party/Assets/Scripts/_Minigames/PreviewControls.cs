@@ -14,34 +14,34 @@ public class PreviewControls : NetworkBehaviour
 	[SyncVar] public int id=-1;
 	[SerializeField] private GameObject readyObj;
 
-	public override void OnStartClient()
-	{
-		base.OnStartClient();
-		btn.interactable = isOwned;
-		if (isOwned)
-			Instance = this;	
-		nm.AddPreviewConnection(this);
-	}
-	public override void OnStopClient()
-	{
-		//Debug.Log($"<color=#FF9900>PLAYER DISCONNECT ({isOwned}) | {isServer} | {yourTurn}</color>");
-		base.OnStopClient();
-		if (isOwned)
-			nm.RemovePreviewConnection(this);
-		// if disconnect and not ready
-		//if (isServer && yourTurn)
-		//	bm.NextPlayerTurn();
-	}
+	//public override void OnStartClient()
+	//{
+	//	base.OnStartClient();
+	//	btn.interactable = isOwned;
+	//	if (isOwned)
+	//		Instance = this;	
+	//	nm.AddPreviewConnection(this);
+	//}
+	//public override void OnStopClient()
+	//{
+	//	//Debug.Log($"<color=#FF9900>PLAYER DISCONNECT ({isOwned}) | {isServer} | {yourTurn}</color>");
+	//	base.OnStopClient();
+	//	if (isOwned)
+	//		nm.RemovePreviewConnection(this);
+	//	// if disconnect and not ready
+	//	//if (isServer && yourTurn)
+	//	//	bm.NextPlayerTurn();
+	//}
 
-	private void Start() 
-	{
-		if (PreviewManager.Instance != null)
-		{
-			transform.parent = PreviewManager.Instance.readyLayoutHolder;
-			transform.localScale = Vector3.one;
-		}
-		name = $"__ {id} __";
-	}
+	//private void Start() 
+	//{
+	//	if (PreviewManager.Instance != null)
+	//	{
+	//		transform.parent = PreviewManager.Instance.readyLayoutHolder;
+	//		transform.localScale = Vector3.one;
+	//	}
+	//	name = $"__ {id} __";
+	//}
 
 	public void _READY_UP()
 	{

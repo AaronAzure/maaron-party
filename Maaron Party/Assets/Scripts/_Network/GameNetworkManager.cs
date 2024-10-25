@@ -7,21 +7,21 @@ using UnityEngine.SceneManagement;
 
 public class GameNetworkManager : NetworkManager
 {
-	public struct CreateMMOCharacterMessage : NetworkMessage
-	{
-		public Race race;
-		public string name;
-		public Color hairColor;
-		public Color eyeColor;
-	}
+	//public struct CreateMMOCharacterMessage : NetworkMessage
+	//{
+	//	public Race race;
+	//	public string name;
+	//	public Color hairColor;
+	//	public Color eyeColor;
+	//}
 
-	public enum Race
-	{
-		None,
-		Elvish,
-		Dwarvish,
-		Human
-	}
+	//public enum Race
+	//{
+	//	None,
+	//	Elvish,
+	//	Dwarvish,
+	//	Human
+	//}
 
 	#region Variables
 	public static GameNetworkManager Instance;
@@ -62,12 +62,12 @@ public class GameNetworkManager : NetworkManager
 	[Space] [SerializeField] private LobbyObject lobbyPlayerPrefab;
 	[SerializeField] private PlayerControls boardPlayerPrefab;
 	[SerializeField] private MinigameControls gamePlayerPrefab;
-	[SerializeField] private PreviewControls previewPlayerPrefab;
+	//[SerializeField] private PreviewControls previewPlayerPrefab;
 
 	[Space] [SerializeField] private List<LobbyObject> lobbyPlayers = new();
 	[SerializeField] private List<PlayerControls> boardControls = new();
 	[SerializeField] private List<MinigameControls> minigameControls = new();
-	[SerializeField] private List<PreviewControls> previewControls = new();
+	//[SerializeField] private List<PreviewControls> previewControls = new();
 	public List<int> playerOrder;
 	//bool isLoadingScene
 
@@ -97,7 +97,7 @@ public class GameNetworkManager : NetworkManager
     {
         base.OnStartServer();
 
-        NetworkServer.RegisterHandler<CreateMMOCharacterMessage>(OnCreateCharacter);
+        //NetworkServer.RegisterHandler<CreateMMOCharacterMessage>(OnCreateCharacter);
     }
 
 	public override void OnStopServer()
@@ -157,17 +157,17 @@ public class GameNetworkManager : NetworkManager
 			minigameControls.Remove(mc);
 	}
 
-	public void AddPreviewConnection(PreviewControls pc)
-	{
-		Debug.Log($"<color=green>Preview joined!</color>");
-		if (!previewControls.Contains(pc))
-			previewControls.Add(pc);
-	}
-	public void RemovePreviewConnection(PreviewControls pc)
-	{
-		if (previewControls.Contains(pc))
-			previewControls.Remove(pc);
-	}
+	//public void AddPreviewConnection(PreviewControls pc)
+	//{
+	//	Debug.Log($"<color=green>Preview joined!</color>");
+	//	if (!previewControls.Contains(pc))
+	//		previewControls.Add(pc);
+	//}
+	//public void RemovePreviewConnection(PreviewControls pc)
+	//{
+	//	if (previewControls.Contains(pc))
+	//		previewControls.Remove(pc);
+	//}
 
 	#endregion
 
@@ -267,13 +267,13 @@ public class GameNetworkManager : NetworkManager
 					MinigameControls player = Instantiate(gamePlayerPrefab);
 					player.characterInd = boardControls[i].characterInd;
 					player.id = i;
-					PreviewControls p2 = Instantiate(previewPlayerPrefab);
-					p2.characterInd = boardControls[i].characterInd;
-					p2.id = i;
+					//PreviewControls p2 = Instantiate(previewPlayerPrefab);
+					//p2.characterInd = boardControls[i].characterInd;
+					//p2.id = i;
 
 					//NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
 
-					NetworkServer.ReplacePlayerForConnection(conn, p2.gameObject);
+					//NetworkServer.ReplacePlayerForConnection(conn, p2.gameObject);
 					NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
 				}
 				else
@@ -491,7 +491,7 @@ public class GameNetworkManager : NetworkManager
 
 	#region Minigame
 	public int GetNumMinigamePlayers() => minigameControls.Count;
-	public int GetNumPreviewPlayers() => previewControls.Count;
+	//public int GetNumPreviewPlayers() => previewControls.Count;
 
 	IEnumerator StartMiniGameCo()
 	{
@@ -514,6 +514,14 @@ public class GameNetworkManager : NetworkManager
 			yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame();
 			minigameName = minigameScenes[fixedGame == -1 ? nMinigame++ % minigameScenes.Length : fixedGame];
 			ServerChangeScene(minigameName);
+
+			yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame();
+			if (pm != null)
+			{
+				//!Debug.Log($"<color=cyan>NetworkManager = StartMinigameCo() {pm != null}</color>");
+				pm.Setup();
+				pm.CmdSetup();
+			} 
 		}
 		
 		//while (NetworkServer.isLoadingScene)
@@ -540,14 +548,14 @@ public class GameNetworkManager : NetworkManager
 			gm.CmdTogglePreviewManager(false);
 			
 			yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame();
-			for (int i=0 ; i<previewControls.Count ; i++)
-			{
-				if (previewControls[i] != null)
-				{
-					previewControls[i].CmdUnparent();
-				}
-			}
-			previewControls.Clear();
+			//for (int i=0 ; i<previewControls.Count ; i++)
+			//{
+			//	if (previewControls[i] != null)
+			//	{
+			//		previewControls[i].CmdUnparent();
+			//	}
+			//}
+			//previewControls.Clear();
 
 			//minigameName = minigameScenes[fixedGame == -1 ? nMinigame++ % minigameScenes.Length : fixedGame];
 			yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame();
@@ -586,23 +594,23 @@ public class GameNetworkManager : NetworkManager
 	}
 
 
-	void OnCreateCharacter(NetworkConnectionToClient conn, CreateMMOCharacterMessage message)
-    {
-        // playerPrefab is the one assigned in the inspector in Network
-        // Manager but you can use different prefabs per race for example
-        GameObject gameobject = Instantiate(playerPrefab);
+	//void OnCreateCharacter(NetworkConnectionToClient conn, CreateMMOCharacterMessage message)
+    //{
+    //    // playerPrefab is the one assigned in the inspector in Network
+    //    // Manager but you can use different prefabs per race for example
+    //    GameObject gameobject = Instantiate(playerPrefab);
 
-        // Apply data from the message however appropriate for your game
-        // Typically Player would be a component you write with syncvars or properties
-        //LobbyObject player = gameobject.GetComponent();
-        //player.hairColor = message.hairColor;
-        //player.eyeColor = message.eyeColor;
-        //player.name = message.name;
-        //player.race = message.race;
+    //    // Apply data from the message however appropriate for your game
+    //    // Typically Player would be a component you write with syncvars or properties
+    //    //LobbyObject player = gameobject.GetComponent();
+    //    //player.hairColor = message.hairColor;
+    //    //player.eyeColor = message.eyeColor;
+    //    //player.name = message.name;
+    //    //player.race = message.race;
 
-        // call this to use this gameobject as the primary controller
-        NetworkServer.AddPlayerForConnection(conn, gameobject);
-    }
+    //    // call this to use this gameobject as the primary controller
+    //    NetworkServer.AddPlayerForConnection(conn, gameobject);
+    //}
 	public override void OnServerAddPlayer(NetworkConnectionToClient conn)
 	{
 		//Debug.Log($"<color=yellow>OnServerAddPlayer</color>");

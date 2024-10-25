@@ -280,13 +280,12 @@ public class BoardManager : NetworkBehaviour
 
 		yield return new WaitForSeconds(1);
 		RpcTogglePlacementUi(true);
+		// create random order
 		for (int i=0 ; i<nm.GetNumPlayers() ; i++)
 		{
 			int rng = temp[Random.Range(0, temp.Count)];
-			//placementBtns[i].SetPlacement(rng, i);
 			RpcSetPlacementCard(i, rng);
 			temp.Remove(rng);
-			//placementBtns[i].gameObject.SetActive(true);
 		}
 		RpcTogglePlacementCard(true);
 	}

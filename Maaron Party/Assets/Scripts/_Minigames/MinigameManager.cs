@@ -81,7 +81,7 @@ public class MinigameManager : NetworkBehaviour
 		_player.canKb = playersCanKb;
 		_player.SetSpawn();
 		countdownCo = StartCoroutine( GameTimerCo() );
-		if (pm != null)
+		if (pm != null && pm.gameObject.activeInHierarchy)
 			pm.CmdTriggerTransition(false);
 	}
 
@@ -167,7 +167,7 @@ public class MinigameManager : NetworkBehaviour
 	private IEnumerator MinigameOverCo()
 	{
 		// practice
-		if (pm != null)
+		if (pm != null && pm.gameObject.activeInHierarchy)
 		{
 			yield return new WaitForSeconds(0.5f);
 			pm.CmdTriggerTransition(true);
