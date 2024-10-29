@@ -526,14 +526,14 @@ MonoBehaviour:
   fixedGame: -1
   skipSideQuests: 0
   skipIntro: 1
-  skipBoard: 0
+  skipBoard: 1
   minPlayers: 2
   lobbyScene: Assets/Scenes/_TestLobby.unity
   boardScene: Assets/Scenes/TestBoard 1.unity
   practiceScene: Assets/Scenes/TestPreview.unity
   minigameScenes:
-  - Assets/Scenes/TestMinigame 1.unity
   - Assets/Scenes/TestMinigame 0.unity
+  - Assets/Scenes/TestMinigame 1.unity
   - Assets/Scenes/TestMinigame 2.unity
   previewObj: {fileID: 8149806081266758905, guid: a4aef1495346d694ab338e0e88ce8c28, type: 3}
   lobbyPlayerPrefab: {fileID: 1037466775356406029, guid: a8be1d7671adca64ea71e7d4a57fbdf0, type: 3}

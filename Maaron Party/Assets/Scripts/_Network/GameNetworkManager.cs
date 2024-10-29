@@ -510,13 +510,13 @@ public class GameNetworkManager : NetworkManager
 		{
 			yield return new WaitForSeconds(0.5f);
 			gm.CmdTogglePreviewManager(true);
+			//gm.SetupPreviewManager();
 			
 			yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame();
 			minigameName = minigameScenes[fixedGame == -1 ? nMinigame++ % minigameScenes.Length : fixedGame];
 			ServerChangeScene(minigameName);
 
 			yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame();
-			gm.CmdSetupPreviewManager();
 			//if (pm != null)
 			//{
 			//	//!Debug.Log($"<color=cyan>NetworkManager = StartMinigameCo() {pm != null}</color>");
@@ -524,11 +524,6 @@ public class GameNetworkManager : NetworkManager
 			//	pm.CmdSetup();
 			//} 
 		}
-		
-		//while (NetworkServer.isLoadingScene)
-		//	yield return null;
-
-		//gm.CmdTriggerTransition(false);
 	}
 	Coroutine actualMinigameCo;
 	public void StartActualMiniGame() => actualMinigameCo = StartCoroutine(StartActualMiniGameCo());

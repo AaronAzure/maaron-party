@@ -14,6 +14,7 @@ public class PreviewManager : NetworkBehaviour
 	public Transform readyLayoutHolder;
 	[SerializeField] private Button[] readyBtns;
 	[SyncVar] bool[] readys;
+	bool hasSetup;
 
 
 
@@ -22,28 +23,27 @@ public class PreviewManager : NetworkBehaviour
 		Debug.Log($"<color=cyan>PreviewManager = OnEnable() {nm.GetNumMinigamePlayers()}</color>");
 		Instance = this;
 	} 
-	//private void OnDisable() => Instance = null;
+	private void OnDisable() => hasSetup = false;
 	
 
 	[Command(requiresAuthority=false)] public void CmdReadyUp()
 	{
 		++nReady;
-		if (nReady > nm.GetNumMinigamePlayers())
+		if (nReady >= nm.GetNumMinigamePlayers())
 			nm.StartActualMiniGame();
 	}
 
-	public void Setup() 
-	{
-		Debug.Log($"<color=cyan>PreviewManager = Setup() {nm.GetNumMinigamePlayers()}</color>");
-		CmdSetup();
-	}
 	[Command(requiresAuthority=false)] public void CmdSetup() 
 	{
-		nReady = 0;
 		Debug.Log($"<color=cyan>PreviewManager = CmdSetup() {nm.GetNumMinigamePlayers()}</color>");
-		RpcToggleReadyButton(true);
-		for (int i=0 ; i<readyBtns.Length && i<nm.GetNumMinigamePlayers() ; i++)
-			RpcSetReadyButton(i);
+		if (!hasSetup)
+		{
+			hasSetup = true;
+			nReady = 0;
+			RpcToggleReadyButton(true);
+			for (int i=0 ; i<readyBtns.Length && i<nm.GetNumMinigamePlayers() ; i++)
+				RpcSetReadyButton(i);
+		}
 	}
 
 

@@ -15,6 +15,11 @@ public class GameManager : NetworkBehaviour
 	public Transform spawnHolder;
 
 
+	[Space] [Header("Minigame rewards")]
+	public GameObject rewardUi;
+	public GameObject[] dataUis;
+
+
 	[Space] [Header("In game references")]
 	[SerializeField] private List<ushort> currNodes;
 	//[SyncVar] [SerializeField] private Dictionary<int, int> traps;
@@ -242,7 +247,6 @@ public class GameManager : NetworkBehaviour
 	[ClientRpc] void RpcTogglePreviewManager(bool active) => pmObj.SetActive(active);
 
 
-	[Command(requiresAuthority=false)] public void CmdSetupPreviewManager() => pm.CmdSetup();
 	public void StartMinigame(string minigameName) // host side
 	{
 		RpcStartMinigame(minigameName);

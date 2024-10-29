@@ -69,8 +69,7 @@ public class MinigameManager : NetworkBehaviour
 		Debug.Log($"<color=white>{nBmReady} >= {nm.numPlayers}</color>");
 		if (nBmReady >= nm.numPlayers)
 		{
-			//if (pm == null)
-			//	gm.CmdTriggerTransitionDelay(false);
+			pm.CmdSetup();
 			RpcSetUpPlayer();
 			StartCoroutine(CountDownCo());
 		}
@@ -119,7 +118,6 @@ public class MinigameManager : NetworkBehaviour
 		{
 			/* Distance around the circle */  
 			float radians = 2 * Mathf.PI * ((float)id / (float)nPlayers);
-			//!Debug.Log($"radians = {radians} | id = {id} | nPlayers = {nPlayers}");
 			
 			/* Get the vector direction */ 
 			float vertical = Mathf.Sin(radians);
@@ -148,7 +146,7 @@ public class MinigameManager : NetworkBehaviour
 		if (pm != null && !pm.gameObject.activeInHierarchy && countDownTimer >= 0)
 		{
 			--countDownTimer;
-			countDownTxt.text = countDownTimer >= 0 ? countDownTimer == 0 ? "Start" : $"{countDownTimer}" : "";
+			countDownTxt.text = countDownTimer >= 0 ? countDownTimer == 0 ? "Start!" : $"{countDownTimer}" : "";
 			if (countDownTimer > 0)
 				StartCoroutine( GameTimerCo() );
 			else
@@ -211,6 +209,10 @@ public class MinigameManager : NetworkBehaviour
 			for (int i=0 ; i<rewards.Length ; i++)
 				d += $"{rewards[i]} ";
 			Debug.Log(d);
+
+			// show reward
+			yield return new WaitForSeconds(3);
+
 
 			yield return new WaitForSeconds(0.5f);
 			//gm.CmdTriggerTransition(true);

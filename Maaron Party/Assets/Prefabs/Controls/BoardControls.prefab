@@ -3910,14 +3910,14 @@ MonoBehaviour:
   p: {fileID: 3325275383187896159}
   emptySpr: {fileID: 21300000, guid: bb946192ec4a9cd47813c89b169df76b, type: 3}
   spellThorn1: {fileID: 21300000, guid: 51d097a683f5f62409b224eb12597076, type: 3}
-  spellThorn2: {fileID: 21300000, guid: 51d097a683f5f62409b224eb12597076, type: 3}
-  spellThorn3: {fileID: 21300000, guid: 51d097a683f5f62409b224eb12597076, type: 3}
+  spellThorn2: {fileID: 21300000, guid: 3e69a530cbc92324ba65d8f5990221a0, type: 3}
+  spellThorn3: {fileID: 21300000, guid: b149a8db0f27a3149a9758a7578e2f1d, type: 3}
   spellFire1: {fileID: 21300000, guid: 204108443adf7b64385f840688adf0d4, type: 3}
-  spellFire2: {fileID: 21300000, guid: 204108443adf7b64385f840688adf0d4, type: 3}
-  spellFire3: {fileID: 21300000, guid: 204108443adf7b64385f840688adf0d4, type: 3}
+  spellFire2: {fileID: 21300000, guid: 284748f2dfdcef84abab58ee255c13b0, type: 3}
+  spellFire3: {fileID: 21300000, guid: 1b6bd5a2c4ed1db449a5ba68992b6a0b, type: 3}
   spellSpeed1: {fileID: 21300000, guid: 5e231b577ea5997439f16104a47c05eb, type: 3}
-  spellSpeed2: {fileID: 21300000, guid: 5e231b577ea5997439f16104a47c05eb, type: 3}
-  spellSpeed3: {fileID: 21300000, guid: 5e231b577ea5997439f16104a47c05eb, type: 3}
+  spellSpeed2: {fileID: 21300000, guid: 969673d96a9e6af44a3d35c20850d750, type: 3}
+  spellSpeed3: {fileID: 21300000, guid: b17c0ab40fa5c3f4989b443aaced085e, type: 3}
   spellShield1: {fileID: 0}
   isUsuable: 1
   titleTxt: {fileID: 2299746556202755715}
@@ -11037,14 +11037,14 @@ MonoBehaviour:
   p: {fileID: 3325275383187896159}
   emptySpr: {fileID: 21300000, guid: bb946192ec4a9cd47813c89b169df76b, type: 3}
   spellThorn1: {fileID: 21300000, guid: 51d097a683f5f62409b224eb12597076, type: 3}
-  spellThorn2: {fileID: 21300000, guid: 51d097a683f5f62409b224eb12597076, type: 3}
-  spellThorn3: {fileID: 21300000, guid: 51d097a683f5f62409b224eb12597076, type: 3}
+  spellThorn2: {fileID: 21300000, guid: 3e69a530cbc92324ba65d8f5990221a0, type: 3}
+  spellThorn3: {fileID: 21300000, guid: b149a8db0f27a3149a9758a7578e2f1d, type: 3}
   spellFire1: {fileID: 21300000, guid: 204108443adf7b64385f840688adf0d4, type: 3}
-  spellFire2: {fileID: 21300000, guid: 204108443adf7b64385f840688adf0d4, type: 3}
-  spellFire3: {fileID: 21300000, guid: 204108443adf7b64385f840688adf0d4, type: 3}
+  spellFire2: {fileID: 21300000, guid: 284748f2dfdcef84abab58ee255c13b0, type: 3}
+  spellFire3: {fileID: 21300000, guid: 1b6bd5a2c4ed1db449a5ba68992b6a0b, type: 3}
   spellSpeed1: {fileID: 21300000, guid: 5e231b577ea5997439f16104a47c05eb, type: 3}
-  spellSpeed2: {fileID: 21300000, guid: 5e231b577ea5997439f16104a47c05eb, type: 3}
-  spellSpeed3: {fileID: 21300000, guid: 5e231b577ea5997439f16104a47c05eb, type: 3}
+  spellSpeed2: {fileID: 21300000, guid: 969673d96a9e6af44a3d35c20850d750, type: 3}
+  spellSpeed3: {fileID: 21300000, guid: b17c0ab40fa5c3f4989b443aaced085e, type: 3}
   spellShield1: {fileID: 0}
   isUsuable: 1
   titleTxt: {fileID: 2299746556202755715}
@@ -96411,14 +96411,14 @@ MonoBehaviour:
   p: {fileID: 3325275383187896159}
   emptySpr: {fileID: 21300000, guid: bb946192ec4a9cd47813c89b169df76b, type: 3}
   spellThorn1: {fileID: 21300000, guid: 51d097a683f5f62409b224eb12597076, type: 3}
-  spellThorn2: {fileID: 21300000, guid: 51d097a683f5f62409b224eb12597076, type: 3}
-  spellThorn3: {fileID: 21300000, guid: 51d097a683f5f62409b224eb12597076, type: 3}
+  spellThorn2: {fileID: 21300000, guid: 3e69a530cbc92324ba65d8f5990221a0, type: 3}
+  spellThorn3: {fileID: 21300000, guid: b149a8db0f27a3149a9758a7578e2f1d, type: 3}
   spellFire1: {fileID: 21300000, guid: 204108443adf7b64385f840688adf0d4, type: 3}
-  spellFire2: {fileID: 21300000, guid: 204108443adf7b64385f840688adf0d4, type: 3}
-  spellFire3: {fileID: 21300000, guid: 204108443adf7b64385f840688adf0d4, type: 3}
+  spellFire2: {fileID: 21300000, guid: 284748f2dfdcef84abab58ee255c13b0, type: 3}
+  spellFire3: {fileID: 21300000, guid: 1b6bd5a2c4ed1db449a5ba68992b6a0b, type: 3}
   spellSpeed1: {fileID: 21300000, guid: 5e231b577ea5997439f16104a47c05eb, type: 3}
-  spellSpeed2: {fileID: 21300000, guid: 5e231b577ea5997439f16104a47c05eb, type: 3}
-  spellSpeed3: {fileID: 21300000, guid: 5e231b577ea5997439f16104a47c05eb, type: 3}
+  spellSpeed2: {fileID: 21300000, guid: 969673d96a9e6af44a3d35c20850d750, type: 3}
+  spellSpeed3: {fileID: 21300000, guid: b17c0ab40fa5c3f4989b443aaced085e, type: 3}
   spellShield1: {fileID: 0}
   isUsuable: 1
   titleTxt: {fileID: 0}
