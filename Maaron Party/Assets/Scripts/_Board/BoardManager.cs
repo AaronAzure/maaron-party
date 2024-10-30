@@ -138,7 +138,12 @@ public class BoardManager : NetworkBehaviour
 		if (!gm.gameStarted)
 		{
 			gm.gameStarted = true;
-			if (nm.skipIntro)
+			if (nm.skipBoard)
+			{
+				yield return new WaitForSeconds(1f);
+				NextPlayerTurn();
+			}
+			else if (nm.skipIntro)
 			{
 				yield return ChooseStarCo(0);
 				CmdToggleMainUi(true);
@@ -250,8 +255,7 @@ public class BoardManager : NetworkBehaviour
 		RpcEndDialogue();
 		if (isIntro && isServer && teleportCo == null)
 		{
-			StartCoroutine(PlacementCardsCo());
-			//teleportCo = StartCoroutine( TeleportToStarCo(0) );
+			StartCoroutine( PlacementCardsCo() );
 		}
 		if (isLast5 && isServer)
 		{

@@ -15,6 +15,7 @@ public class PreviewManager : NetworkBehaviour
 	[SerializeField] private Button[] readyBtns;
 	[SyncVar] bool[] readys;
 	bool hasSetup;
+	bool started;
 
 
 
@@ -23,7 +24,20 @@ public class PreviewManager : NetworkBehaviour
 		Debug.Log($"<color=cyan>PreviewManager = OnEnable() {nm.GetNumMinigamePlayers()}</color>");
 		Instance = this;
 	} 
-	private void OnDisable() => hasSetup = false;
+	private void OnEnable() 
+	{
+		if (isServer) 
+		{
+			started = true;
+			nm.PreviewManagerLoaded();
+		}
+	}
+	
+	private void OnDisable() 
+	{
+		if (started) nm.PreviewManagerUnLoaded();
+		started = hasSetup = false;
+	}
 	
 
 	[Command(requiresAuthority=false)] public void CmdReadyUp()

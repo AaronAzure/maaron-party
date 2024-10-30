@@ -279,18 +279,6 @@ public class GameNetworkManager : NetworkManager
 		// transitioning from minigame to minigame
 		else if (SceneManager.GetActiveScene().name.Contains("Minigame") && newSceneName.Contains("Minigame"))
 		{
-			//if (pm == null)
-			//{
-			//	for (int i=previewControls.Count-1 ; i>= 0 ; i--)
-			//	{
-			//		if (previewControls[i] != null)
-			//		{
-			//			var conn = previewControls[i].connectionToClient;
-			//			NetworkServer.RemovePlayerForConnection(conn, RemovePlayerOptions.Destroy);
-			//		}
-			//	}
-			//	previewControls.Clear();
-			//}
 			//* Add minigame controls
 			int temp = minigameControls.Count;
 			for (int i = 0; i < temp; i++)
@@ -503,6 +491,16 @@ public class GameNetworkManager : NetworkManager
 		return null;
 	}
 
+
+	public void PreviewManagerLoaded() 
+	{
+		minigameName = minigameScenes[fixedGame == -1 ? nMinigame++ % minigameScenes.Length : fixedGame];
+		ServerChangeScene(minigameName);
+	}
+	public void PreviewManagerUnLoaded() 
+	{
+		ServerChangeScene(minigameName);
+	}
 	IEnumerator StartMiniGameCo()
 	{
 		gm.CmdTriggerTransition(true);
@@ -522,17 +520,9 @@ public class GameNetworkManager : NetworkManager
 			gm.CmdTogglePreviewManager(true);
 			//gm.SetupPreviewManager();
 			
-			yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame();
-			minigameName = minigameScenes[fixedGame == -1 ? nMinigame++ % minigameScenes.Length : fixedGame];
-			ServerChangeScene(minigameName);
-
-			yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame();
-			//if (pm != null)
-			//{
-			//	//!Debug.Log($"<color=cyan>NetworkManager = StartMinigameCo() {pm != null}</color>");
-			//	pm.Setup();
-			//	pm.CmdSetup();
-			//} 
+			//yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame();
+			//minigameName = minigameScenes[fixedGame == -1 ? nMinigame++ % minigameScenes.Length : fixedGame];
+			//ServerChangeScene(minigameName);
 		}
 	}
 	Coroutine actualMinigameCo;
@@ -552,20 +542,6 @@ public class GameNetworkManager : NetworkManager
 		{
 			yield return new WaitForSeconds(0.5f);
 			gm.CmdTogglePreviewManager(false);
-			
-			yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame();
-			//for (int i=0 ; i<previewControls.Count ; i++)
-			//{
-			//	if (previewControls[i] != null)
-			//	{
-			//		previewControls[i].CmdUnparent();
-			//	}
-			//}
-			//previewControls.Clear();
-
-			//minigameName = minigameScenes[fixedGame == -1 ? nMinigame++ % minigameScenes.Length : fixedGame];
-			yield return new WaitForEndOfFrame(); yield return new WaitForEndOfFrame();
-			ServerChangeScene(minigameName);
 		}
 		actualMinigameCo = null;
 	}

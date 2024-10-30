@@ -69,7 +69,8 @@ public class MinigameManager : NetworkBehaviour
 		Debug.Log($"<color=white>{nBmReady} >= {nm.numPlayers}</color>");
 		if (nBmReady >= nm.numPlayers)
 		{
-			pm.CmdSetup();
+			if (pm != null && pm.gameObject.activeInHierarchy)
+				pm.CmdSetup();
 			RpcSetUpPlayer();
 			StartCoroutine(CountDownCo());
 		}
@@ -209,8 +210,12 @@ public class MinigameManager : NetworkBehaviour
 			for (int i=0 ; i<rewards.Length ; i++)
 				d += $"{rewards[i]} ";
 			Debug.Log(d);
+			CmdChangeText("Game!");
 
-			for (int i=0 ; i<rewardUis.Length ; i++)
+			yield return new WaitForSeconds(1f);
+			CmdChangeText("");
+
+			for (int i=0 ; i<rewardUis.Length && i<nm.GetNumMinigamePlayers() ; i++)
 			{
 				int[] details = nm.GetMinigamePlayerInfo(i);
 				CmdShowRewards(i, details[0], details[1], details[2], details[3], details[4]);
@@ -230,6 +235,9 @@ public class MinigameManager : NetworkBehaviour
 		}
 	}
 
+
+	[Command(requiresAuthority=false)] void CmdChangeText(string newTxt) => RpcChangeText(newTxt);
+	[ClientRpc] void RpcChangeText(string newTxt) => countDownTxt.text = newTxt;
 
 	[Command(requiresAuthority=false)] void CmdShowRewards(int ind,
 		int characterInd, int order, int coins, int stars, int manas)
