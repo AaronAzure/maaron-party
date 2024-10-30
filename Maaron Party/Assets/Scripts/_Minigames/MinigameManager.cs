@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using Mirror;
@@ -36,6 +35,7 @@ public class MinigameManager : NetworkBehaviour
 	
 	[Space] [Header("Results")]
 	[SerializeField] private int[] rewards;
+	[SerializeField] private RewardUi[] rewardUis;
 	int nOut;
 	int nPlayers=4;
 
@@ -137,7 +137,6 @@ public class MinigameManager : NetworkBehaviour
 	}
 
 
-
 	IEnumerator GameTimerCo(bool gameStart=false)
 	{
 		yield return new WaitForSeconds(1);
@@ -148,16 +147,16 @@ public class MinigameManager : NetworkBehaviour
 			--countDownTimer;
 			countDownTxt.text = countDownTimer >= 0 ? countDownTimer == 0 ? "Start!" : $"{countDownTimer}" : "";
 			if (countDownTimer > 0)
-				StartCoroutine( GameTimerCo() );
+				countdownCo = StartCoroutine( GameTimerCo() );
 			else
-				StartCoroutine( GameTimerCo(true) );
+				countdownCo = StartCoroutine( GameTimerCo(true) );
 		}
 		else
 		{
 			timerTxt.text = $"{--timer}";
 
 			if (timer > 0)
-				StartCoroutine( GameTimerCo() );
+				countdownCo = StartCoroutine( GameTimerCo() );
 			// game over
 			else if (isServer)
 				GameOver();
@@ -172,7 +171,7 @@ public class MinigameManager : NetworkBehaviour
 		//RpcPlayerEliminated((ulong) id);
 		if (lastManStanding && nOut >= nPlayers - 1)
 		{
-			StopCoroutine( countdownCo );
+			if (countdownCo != null) StopCoroutine( countdownCo );
 			GameOver();
 		}
 	}
@@ -202,6 +201,7 @@ public class MinigameManager : NetworkBehaviour
 		// real
 		else if (isServer)
 		{
+			if (countdownCo != null) StopCoroutine( countdownCo );
 			for (int i=0 ; i<rewards.Length ; i++)
 				if (rewards[i] == -1)
 					rewards[i] = gm.GetPrizeValue(nPlayers - 1);
@@ -209,6 +209,12 @@ public class MinigameManager : NetworkBehaviour
 			for (int i=0 ; i<rewards.Length ; i++)
 				d += $"{rewards[i]} ";
 			Debug.Log(d);
+
+			for (int i=0 ; i<rewardUis.Length ; i++)
+			{
+				int[] details = nm.GetMinigamePlayerInfo(i);
+				CmdShowRewards(i, details[0], details[1], details[2], details[3], details[4]);
+			}
 
 			// show reward
 			yield return new WaitForSeconds(3);
@@ -221,6 +227,26 @@ public class MinigameManager : NetworkBehaviour
 			yield return new WaitForSeconds(0.5f);
 			nm.StartBoardGame();
 			//gm.ReturnToBoard("");
+		}
+	}
+
+
+	[Command(requiresAuthority=false)] void CmdShowRewards(int ind,
+		int characterInd, int order, int coins, int stars, int manas)
+	{
+		RpcShowRewards(ind, characterInd, order, coins, stars, manas);
+	}
+	[ClientRpc] void RpcShowRewards(int ind,
+		int characterInd, int order, int coins, int stars, int manas)
+	{
+		if (ind >= 0 && ind < rewardUis.Length && rewardUis[ind] != null)
+		{
+			rewardUis[ind].gameObject.SetActive(true);
+			rewardUis[ind].SetUp(characterInd, order, coins, stars, manas);
+		}
+		else
+		{
+			Debug.LogError($"reward Uis ind={ind} is missing");
 		}
 	}
 }

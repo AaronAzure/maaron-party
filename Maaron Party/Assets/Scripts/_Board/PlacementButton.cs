@@ -37,6 +37,7 @@ public class PlacementButton : NetworkBehaviour
 	{
 		bm.DoneChoosingPlacement(placement);
 		bm.CmdRevealPlacementCard(ind, pc.id, pc.characterInd, placement);
+		pc.CmdSetOrder(placement);
 		glow.enabled = btn.enabled = false;
 		img.sprite = cardFront;
 	}

@@ -16,6 +16,7 @@ public class PlayerControls : NetworkBehaviour
 	
 	[HideInInspector] public static PlayerControls Instance;
 	private Player player;
+
 	
 	[Space] [Header("Static")]
 	[SerializeField] private Node currNode;
@@ -26,12 +27,9 @@ public class PlayerControls : NetworkBehaviour
 	private float time;
 	[SyncVar] public int characterInd=-1;
 	[SyncVar] public int id=-1;
+	[SyncVar] public int boardOrder;
 
 	
-	//[Space] [Header("Network")]
-	//public NetworkVariable<ulong> id = new NetworkVariable<ulong>(
-	//	0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-	//[SerializeField] private NetworkObject nwObj;
 	
 	[Space] [Header("Model")]
 	[SerializeField] private Transform model;
@@ -339,6 +337,8 @@ public class PlayerControls : NetworkBehaviour
 		finalCoinsTxt.text = $"{coins}";
 		finalStarsTxt.text = $"{stars}";
 	}
+
+	[Command(requiresAuthority=false)] public void CmdSetOrder(int order) => boardOrder = order;
 
 	public void SetStartNode(Node startNode) => nextNode = startNode;
 

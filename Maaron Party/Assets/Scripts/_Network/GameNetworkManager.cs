@@ -267,13 +267,8 @@ public class GameNetworkManager : NetworkManager
 					MinigameControls player = Instantiate(gamePlayerPrefab);
 					player.characterInd = boardControls[i].characterInd;
 					player.id = i;
-					//PreviewControls p2 = Instantiate(previewPlayerPrefab);
-					//p2.characterInd = boardControls[i].characterInd;
-					//p2.id = i;
-
-					//NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
-
-					//NetworkServer.ReplacePlayerForConnection(conn, p2.gameObject);
+					player.boardOrder = boardControls[i].boardOrder;
+					
 					NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
 				}
 				else
@@ -306,6 +301,7 @@ public class GameNetworkManager : NetworkManager
 					MinigameControls player = Instantiate(gamePlayerPrefab);
 					player.characterInd = minigameControls[i].characterInd;
 					player.id = i;
+					player.boardOrder = minigameControls[i].boardOrder;
 
 					NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
 				}
@@ -491,7 +487,21 @@ public class GameNetworkManager : NetworkManager
 
 	#region Minigame
 	public int GetNumMinigamePlayers() => minigameControls.Count;
-	//public int GetNumPreviewPlayers() => previewControls.Count;
+	
+	public int[] GetMinigamePlayerInfo(int ind)
+	{
+		if (ind >= 0 && ind < minigameControls.Count && minigameControls[ind] != null)
+		{
+			int[] details = new int[5]; // characterInd, order, coins, stars, manas
+			details[0] = minigameControls[ind].characterInd;
+			details[1] = minigameControls[ind].boardOrder;
+			details[2] = gm.GetCoins(ind);
+			details[3] = gm.GetStars(ind);
+			details[4] = gm.GetMana(ind);
+			return details;
+		}
+		return null;
+	}
 
 	IEnumerator StartMiniGameCo()
 	{
@@ -590,23 +600,6 @@ public class GameNetworkManager : NetworkManager
 	}
 
 
-	//void OnCreateCharacter(NetworkConnectionToClient conn, CreateMMOCharacterMessage message)
-    //{
-    //    // playerPrefab is the one assigned in the inspector in Network
-    //    // Manager but you can use different prefabs per race for example
-    //    GameObject gameobject = Instantiate(playerPrefab);
-
-    //    // Apply data from the message however appropriate for your game
-    //    // Typically Player would be a component you write with syncvars or properties
-    //    //LobbyObject player = gameobject.GetComponent();
-    //    //player.hairColor = message.hairColor;
-    //    //player.eyeColor = message.eyeColor;
-    //    //player.name = message.name;
-    //    //player.race = message.race;
-
-    //    // call this to use this gameobject as the primary controller
-    //    NetworkServer.AddPlayerForConnection(conn, gameobject);
-    //}
 	public override void OnServerAddPlayer(NetworkConnectionToClient conn)
 	{
 		//Debug.Log($"<color=yellow>OnServerAddPlayer</color>");

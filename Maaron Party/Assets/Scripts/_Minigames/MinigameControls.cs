@@ -31,6 +31,7 @@ public class MinigameControls : NetworkBehaviour
 	[SerializeField] private Transform model;
 	[SyncVar] public int characterInd;
 	[SyncVar] public int id;
+	[SyncVar] public int boardOrder;
 	[SerializeField] private GameObject[] models;
 	[SerializeField] private Animator anim;
 	[SerializeField] private Rigidbody rb;

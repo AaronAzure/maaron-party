@@ -526,7 +526,7 @@ MonoBehaviour:
   fixedGame: -1
   skipSideQuests: 0
   skipIntro: 1
-  skipBoard: 1
+  skipBoard: 0
   minPlayers: 2
   lobbyScene: Assets/Scenes/_TestLobby.unity
   boardScene: Assets/Scenes/TestBoard 1.unity
