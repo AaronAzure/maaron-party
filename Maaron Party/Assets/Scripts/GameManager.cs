@@ -276,12 +276,12 @@ public class GameManager : NetworkBehaviour
 		{
 			// 3, 0, 0
 			case 0: return nPlayers == 2 ? 3 : nPlayers == 3 ? 0 : 0 ;
-			// 15, 5, 3
-			case 1: return nPlayers == 2 ? 15 : nPlayers == 3 ? 5 : 3 ;
-			// -, 15, 5
-			case 2: return nPlayers == 2 ? 15 : nPlayers == 3 ? 15 : 5 ;
-			// -, -, 15
-			case 3: return nPlayers == 2 ? 15 : nPlayers == 3 ? 15 : 15 ;
+			// 10, 3, 2
+			case 1: return nPlayers == 2 ? 10 : nPlayers == 3 ? 3 : 2 ;
+			// -, 10, 3
+			case 2: return nPlayers == 2 ? 10 : nPlayers == 3 ? 10 : 3 ;
+			// -, -, 10
+			case 3: return nPlayers == 2 ? 10 : nPlayers == 3 ? 10 : 10 ;
 		}
 		return 0;
 	}

@@ -198,10 +198,12 @@ public class GameNetworkManager : NetworkManager
 		if (lobbyScene.Contains(SceneManager.GetActiveScene().name))
 		{
 			//* Add board controls
+			List<int> temp = new();
 			for (int i = 0; i < lobbyPlayers.Count; i++)
 			{
 				if (lobbyPlayers[i] != null)
 				{
+					temp.Add(i);
 					var conn = lobbyPlayers[i].connectionToClient;
 					PlayerControls player = Instantiate(boardPlayerPrefab);
 					player.characterInd = lobbyPlayers[i].characterInd;
@@ -212,6 +214,7 @@ public class GameNetworkManager : NetworkManager
 				else
 					boardControls.Add(null);
 			}
+			SetPlayerOrder(temp);
 			lobbyPlayers.Clear();
 		}
 		// transitioning from board to board
@@ -239,25 +242,6 @@ public class GameNetworkManager : NetworkManager
 		// transitioning from board to minigame
 		else if (SceneManager.GetActiveScene().name.Contains("Board"))
 		{
-			//* Add preview controls
-			//for (int i = 0; i < boardControls.Count; i++)
-			//{
-			//	if (boardControls[i] != null)
-			//	{
-			//		Debug.Log($"<color=cyan>ADDING PREVIEW MINIGAME</color>");
-			//		var conn = boardControls[i].connectionToClient;
-			//		PreviewControls player = Instantiate(previewPlayerPrefab);
-			//		player.characterInd = boardControls[i].characterInd;
-			//		player.id = i;
-
-			//		//NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
-			//		NetworkServer.AddPlayerForConnection(conn, player.gameObject);
-			//	}
-			//	else
-			//		previewControls.Add(null);
-			//}
-			//Debug.Log($"<color=yellow>STARTING MINIGAME</color>");
-
 			//* Add minigame controls
 			for (int i = 0; i < boardControls.Count; i++)
 			{
@@ -340,6 +324,7 @@ public class GameNetworkManager : NetworkManager
 		gm.CmdTriggerTransition(true);
 		
 		yield return new WaitForSeconds(0.5f);
+
 		ServerChangeScene(boardScene);
 		//SceneManager.LoadScene("TestBoard", LoadSceneMode.Single);
 		//NetworkManager.Singleton.SceneManager.LoadScene("TestBoard", LoadSceneMode.Single);

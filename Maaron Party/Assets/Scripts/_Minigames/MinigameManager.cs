@@ -214,30 +214,34 @@ public class MinigameManager : NetworkBehaviour
 
 			yield return new WaitForSeconds(1f);
 			CmdChangeText("");
-
 			for (int i=0 ; i<rewardUis.Length && i<nm.GetNumMinigamePlayers() ; i++)
 			{
 				int[] details = nm.GetMinigamePlayerInfo(i);
 				CmdShowRewards(i, details[0], details[1], details[2], details[3], details[4]);
+				CmdShowPrizeText(i, rewards[i]);
 			}
 
 			// show reward
-			yield return new WaitForSeconds(3);
-
-
-			yield return new WaitForSeconds(0.5f);
-			//gm.CmdTriggerTransition(true);
+			yield return new WaitForSeconds(2f);
 			gm.AwardMinigamePrize(rewards);
+			for (int i=0 ; i<rewardUis.Length && i<nm.GetNumMinigamePlayers() ; i++)
+			{
+				int[] details = nm.GetMinigamePlayerInfo(i);
+				CmdShowRewards(i, details[0], details[1], details[2], details[3], details[4]);
+				CmdShowPrizeText(i, 0);
+			}
 
-			yield return new WaitForSeconds(0.5f);
+			yield return new WaitForSeconds(1f);
 			nm.StartBoardGame();
-			//gm.ReturnToBoard("");
 		}
 	}
 
 
 	[Command(requiresAuthority=false)] void CmdChangeText(string newTxt) => RpcChangeText(newTxt);
 	[ClientRpc] void RpcChangeText(string newTxt) => countDownTxt.text = newTxt;
+
+	[Command(requiresAuthority=false)] void CmdShowPrizeText(int ind, int prize) => RpcShowPrizeText(ind, prize);
+	[ClientRpc] void RpcShowPrizeText(int ind, int prize) => rewardUis[ind].ShowPrize(prize);
 
 	[Command(requiresAuthority=false)] void CmdShowRewards(int ind,
 		int characterInd, int order, int coins, int stars, int manas)
