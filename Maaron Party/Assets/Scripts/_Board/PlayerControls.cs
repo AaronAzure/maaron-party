@@ -81,7 +81,7 @@ public class PlayerControls : NetworkBehaviour
 	[Space] [Header("Ragdoll")]
 	[SerializeField] private GameObject shoveObj;
 	[SerializeField] private GameObject[] ragdollObj;
-	[SerializeField] private Rigidbody[] ragdollRb;
+	//[SerializeField] private Rigidbody[] ragdollRb;
 	[SerializeField] private float ragdollKb=15;
 	
 	
@@ -1425,22 +1425,7 @@ public class PlayerControls : NetworkBehaviour
 	[Command(requiresAuthority=false)] void CmdUpdateMovesLeft(int x) => RpcUpdateMovesLeft(x);
 	[ClientRpc] void RpcUpdateMovesLeft(int x) => movesLeftTxt.text = $"{(x == 0 ? "" : x)}";
 
-	//private void OnTriggerEnter(Collider other) 
-	//{
-	//	if (isOwned && !this.enabled && model.gameObject.activeSelf && other.gameObject.CompareTag("Enemy"))
-	//	{
-	//		CmdPlayerToggle(false);
-	//		Debug.Log("<color=red>KNOCKBACK!!</color>");
-	//		CmdRagdollToggle(true);
-	//		ragdollObj.transform.parent = null;
-	//		Vector3 dir = (transform.position - other.transform.position).normalized;
-	//		foreach (Rigidbody ragdoll in ragdollRb)
-	//		{
-	//			ragdoll.AddForce(dir * ragdollKb, ForceMode.Impulse);
-	//			//ragdoll.AddExplosionForce(ragdollKb, other.transform.position, 50f, 70f, ForceMode.Impulse);
-	//		}
-	//	}
-	//}
+
 	[Command(requiresAuthority=false)] public void CmdPlayerToggle(bool active) => RpcPlayerToggle(active);
 	[ClientRpc] private void RpcPlayerToggle(bool active) => model.gameObject.SetActive(active);
 

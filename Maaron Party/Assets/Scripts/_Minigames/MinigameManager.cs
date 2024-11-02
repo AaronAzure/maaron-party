@@ -66,7 +66,7 @@ public class MinigameManager : NetworkBehaviour
 	[Command(requiresAuthority=false)] public void CmdReadyUp()
 	{
 		++nBmReady;
-		Debug.Log($"<color=white>{nBmReady} >= {nm.numPlayers}</color>");
+		//Debug.Log($"<color=white>{nBmReady} >= {nm.numPlayers}</color>");
 		if (nBmReady >= nm.numPlayers)
 		{
 			if (pm != null && pm.gameObject.activeInHierarchy)

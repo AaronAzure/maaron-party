@@ -33,8 +33,10 @@ public class MinigameControls : NetworkBehaviour
 	[SyncVar] public int id;
 	[SyncVar] public int boardOrder;
 	[SerializeField] private GameObject[] models;
+	[SerializeField] private GameObject[] ragdolls;
 	[SerializeField] private Animator anim;
 	[SerializeField] private Rigidbody rb;
+	[SerializeField] private Collider col;
 
 	#endregion
 
@@ -61,9 +63,6 @@ public class MinigameControls : NetworkBehaviour
 	// Start is called before the first frame update
 	void Start()
 	{
-		//SetModel( characterInd );
-		//transform.parent = mm.transform;
-		//if (!IsOwner) enabled = false;
 		transform.Rotate(0,180,0);	
 		if (!isOwned) {
 			enabled = false;
@@ -79,6 +78,7 @@ public class MinigameControls : NetworkBehaviour
 	[ClientRpc] public void RpcSetModel()
 	{
 		name = $"__ PLAYER {id} __";
+		col.enabled = true;
 		transform.parent = mm.transform;
 		for (int i=0 ; i<models.Length ; i++)
 			models[i].SetActive(false);
@@ -96,6 +96,7 @@ public class MinigameControls : NetworkBehaviour
 		transform.position = mm.GetPlayerSpawn(id);
 		rb.useGravity = true;
 		CmdReactivate();
+		Debug.Log($"<color=magenta>MinigameControls = Setting Up ({transform.position})</color>");
 		//gameObject.SetActive(true);
 		model.rotation = Quaternion.identity;
 		model.Rotate(0,180,0);
@@ -140,13 +141,21 @@ public class MinigameControls : NetworkBehaviour
 		var rotation = Quaternion.LookRotation(lookPos);
 		model.rotation = Quaternion.Slerp(model.rotation, rotation, Time.fixedDeltaTime * rotateSpeed);
 	}
-	[Command] public void CmdDeath()
+	[Command] public void CmdDeath(Vector3 src, int ind)
 	{
-		RpcDeath();
+		RpcDeath(src, ind);
 	}
-	[ClientRpc] public void RpcDeath()
+	[ClientRpc] public void RpcDeath(Vector3 src, int ind)
 	{
-		gameObject.SetActive(false);
+		model.gameObject.SetActive(false);
+
+		Rigidbody[] bones = ragdolls[ind].GetComponentsInChildren<Rigidbody>();
+		foreach (Rigidbody bone in bones) {
+			bone.velocity = src * 7.5f * 2;
+		}
+		ragdolls[ind].transform.rotation = model.rotation;
+		ragdolls[ind].SetActive(true);
+		//col.enabled = false;
 	}
 	public void EndGame()
 	{
@@ -159,8 +168,7 @@ public class MinigameControls : NetworkBehaviour
 		{
 			mm.CmdPlayerEliminated(id);
 			gameStarted = false;
-			CmdDeath();
-			gameObject.SetActive(false);
+			CmdDeath((transform.position - other.transform.position).normalized, characterInd);
 		}
 	}
 
