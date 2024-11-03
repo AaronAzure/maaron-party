@@ -632,7 +632,7 @@ public class BoardManager : NetworkBehaviour
 	#region Turret
 	IEnumerator TurretCo(bool goToNextPlayer=true)
 	{
-		yield return new WaitForSeconds(goToNextPlayer ? 1 : 0.5f);
+		yield return new WaitForSeconds(goToNextPlayer ? 0 : 0.5f);
 		CmdToggleTurretCam(true);
 
 		// ui showing Freakin' giant turret's turn!

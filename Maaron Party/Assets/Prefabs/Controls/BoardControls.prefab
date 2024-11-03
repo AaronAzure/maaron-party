@@ -6577,7 +6577,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 5}
+  m_AnchoredPosition: {x: 12, y: 5}
   m_SizeDelta: {x: 51, y: 85}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &658846162686608479
@@ -35877,7 +35877,6 @@ MonoBehaviour:
   - {fileID: 8067011425323713854}
   - {fileID: 1189666685544941031}
   - {fileID: 3869822396998208493}
-  ragdollRb: []
   ragdollKb: 7.5
   mana: 5
   currencyT: 0

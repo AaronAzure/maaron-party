@@ -151,7 +151,7 @@ public class Node : MonoBehaviour
 	}
 	public void SetNewToll(int newToll)
 	{
-		Debug.Log($"<color=yellow>{name} - SETTING NEW TOLL {newToll}</color>");
+		//Debug.Log($"<color=yellow>{name} - SETTING NEW TOLL {newToll}</color>");
 		if (tollTxts != null) 
 			foreach (TextMeshPro tollTxt in tollTxts)
 				tollTxt.text = $"{newToll}";

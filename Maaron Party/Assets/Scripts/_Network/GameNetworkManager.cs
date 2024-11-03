@@ -208,6 +208,7 @@ public class GameNetworkManager : NetworkManager
 					PlayerControls player = Instantiate(boardPlayerPrefab);
 					player.characterInd = lobbyPlayers[i].characterInd;
 					player.id = i;
+					player.boardOrder = i;
 
 					NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
 				}
@@ -477,8 +478,18 @@ public class GameNetworkManager : NetworkManager
 	}
 
 
+	bool previewProfileLoaded;
 	public void PreviewManagerLoaded() 
 	{
+		if (!previewProfileLoaded)
+		{
+			previewProfileLoaded = true;
+			int[] characterInds = new int[boardControls.Count];
+			for (int i=0; i >= 0 && i < boardControls.Count && boardControls[i] != null ; i++)
+				characterInds[i] = boardControls[i].characterInd;
+			Debug.Log($"<color=yellow>PreviewManagerLoaded = {characterInds.Length}</color>");
+			gm.SetProfilePic(characterInds);
+		}
 		minigameName = minigameScenes[fixedGame == -1 ? nMinigame++ % minigameScenes.Length : fixedGame];
 		ServerChangeScene(minigameName);
 	}
@@ -531,6 +542,7 @@ public class GameNetworkManager : NetworkManager
 		actualMinigameCo = null;
 	}
 
+
 	/// <summary>
 	/// Called when all preview (on all clients) have loaded
 	/// </summary>
@@ -540,24 +552,8 @@ public class GameNetworkManager : NetworkManager
 	}
 	public void ReloadPreviewMinigame()
 	{
-		//Debug.Log($"<color=yellow>STARTING MINIGAME</color>");
-		//for (int i = 0; i < minigameControls.Count; i++)
-		//{
-		//	var conn = minigameControls[i].connectionToClient;
-		//	int temp = minigameControls[i].characterInd;
-		//	minigameControls.Remove(minigameControls[i]);
-
-		//	MinigameControls player = Instantiate(gamePlayerPrefab);
-		//	player.characterInd = temp;
-		//	player.id = i;
-
-		//	NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
-		//}
 		if (actualMinigameCo == null)
 			ServerChangeScene(minigameName);
-		//gm.StartMinigame(minigameScene);
-		//gm.CmdReloadPreviewMinigameUnload();
-		//StartCoroutine(LoadPreviewMinigameCo());
 	}
 
 

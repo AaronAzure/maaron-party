@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,12 +6,12 @@ public class PreviewManager : NetworkBehaviour
 {
 	public static PreviewManager Instance;
 	[SerializeField] private Animator anim;
-	private GameManager gm {get{return GameManager.Instance;}}
+	//private GameManager gm {get{return GameManager.Instance;}}
 	private GameNetworkManager nm {get{return GameNetworkManager.Instance;}}
 	[SyncVar] public int nReady;
 	public Transform readyLayoutHolder;
 	[SerializeField] private Button[] readyBtns;
-	[SyncVar] bool[] readys;
+	[SerializeField] private PreviewControls[] pcs;
 	bool hasSetup;
 	bool started;
 
@@ -21,7 +19,6 @@ public class PreviewManager : NetworkBehaviour
 
 	private void Awake()
 	{
-		Debug.Log($"<color=cyan>PreviewManager = OnEnable() {nm.GetNumMinigamePlayers()}</color>");
 		Instance = this;
 	} 
 	private void OnEnable() 
@@ -37,6 +34,7 @@ public class PreviewManager : NetworkBehaviour
 	{
 		if (started) nm.PreviewManagerUnLoaded();
 		started = hasSetup = false;
+		nReady = 0;
 	}
 	
 
@@ -49,12 +47,11 @@ public class PreviewManager : NetworkBehaviour
 
 	[Command(requiresAuthority=false)] public void CmdSetup() 
 	{
-		Debug.Log($"<color=cyan>PreviewManager = CmdSetup() {nm.GetNumMinigamePlayers()}</color>");
 		if (!hasSetup)
 		{
 			hasSetup = true;
 			nReady = 0;
-			RpcToggleReadyButton(true);
+			RpcToggleReadyButton(true, nm.GetNumMinigamePlayers());
 			for (int i=0 ; i<readyBtns.Length && i<nm.GetNumMinigamePlayers() ; i++)
 				RpcSetReadyButton(i);
 		}
@@ -63,19 +60,29 @@ public class PreviewManager : NetworkBehaviour
 
 	[ClientRpc] void RpcSetReadyButton(int i)
 	{
-		Debug.Log($"<color=cyan>PreviewManager = RpcSetReadyButton({i}) {MinigameControls.Instance.id == i}</color>");
 		if (i >= 0 && i < readyBtns.Length && readyBtns[i] != null)
 			readyBtns[i].interactable = MinigameControls.Instance.id == i;
 	}
-	[ClientRpc] void RpcToggleReadyButton(bool active)
+	[ClientRpc] void RpcToggleReadyButton(bool active, int n)
 	{
-		Debug.Log($"<color=cyan>PreviewManager = RpcToggleReadyButton({active}) {nm.GetNumMinigamePlayers()}</color>");
-		for (int i=0 ; i<readyBtns.Length && i<nm.GetNumMinigamePlayers() ; i++)
+		for (int i=0 ; i<readyBtns.Length && i<n ; i++)
 			if (readyBtns[i] != null)
 				readyBtns[i].gameObject.SetActive(active);
 	}
 
 
+	[Command(requiresAuthority=false)] public void CmdSetProfilePic(int[] inds)
+	{
+		Debug.Log($"<color=yellow>CmdSetProfilePic = {inds.Length}</color>");
+		RpcSetProfilePic(inds);
+	}
+	[ClientRpc] void RpcSetProfilePic(int[] inds)
+	{
+		Debug.Log($"<color=yellow>RpcSetProfilePic = {inds.Length}</color>");
+		for (int i=0 ; i<pcs.Length && i<inds.Length ; i++)
+			if (pcs[i] != null)
+				pcs[i].Setup(inds[i]);
+	}
 
 
 

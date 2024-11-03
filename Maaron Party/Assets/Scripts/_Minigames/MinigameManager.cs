@@ -37,7 +37,6 @@ public class MinigameManager : NetworkBehaviour
 	[SerializeField] private int[] rewards;
 	[SerializeField] private RewardUi[] rewardUis;
 	int nOut;
-	int nPlayers=4;
 
 
 
@@ -46,13 +45,13 @@ public class MinigameManager : NetworkBehaviour
 		Instance = this;
 	}	
 
+	public int GetNumPlayers() => GameObject.FindGameObjectsWithTag("Player").Length;
+
 	private void Start() 
 	{
-		//nPlayers = GameObject.FindGameObjectsWithTag("Player").Length;
-		nPlayers = nm.GetNumMinigamePlayers();
 		if (isServer)
 		{
-			rewards = new int[nPlayers];
+			rewards = new int[GetNumPlayers()];
 			for (int i=0 ; i<rewards.Length ; i++)
 				rewards[i] = -1;
 		}
@@ -66,7 +65,6 @@ public class MinigameManager : NetworkBehaviour
 	[Command(requiresAuthority=false)] public void CmdReadyUp()
 	{
 		++nBmReady;
-		//Debug.Log($"<color=white>{nBmReady} >= {nm.numPlayers}</color>");
 		if (nBmReady >= nm.numPlayers)
 		{
 			if (pm != null && pm.gameObject.activeInHierarchy)
@@ -77,7 +75,6 @@ public class MinigameManager : NetworkBehaviour
 	} 
 	[ClientRpc] private void RpcSetUpPlayer()
 	{
-		//!Debug.Log($"<color=white>Setting Up</color>");
 		_player.canMove = playersCanMove;
 		_player.canJump = playersCanJump;
 		_player.canKb = playersCanKb;
@@ -98,10 +95,11 @@ public class MinigameManager : NetworkBehaviour
 
 	public Vector3 GetPlayerSpawn(int id)
 	{
+		Debug.Log($"<color=cyan>spawnInLine={spawnInLine} | players={GetNumPlayers()} </color>");
 		if (spawnInLine)
 		{
 			/* Distance around the circle */  
-			if (nPlayers == 2)
+			if (GetNumPlayers() == 2)
 			{
 				float dist = (id + 1f) / 3f;
 				Vector3 diff = spawnPosB.position - spawnPosA.position;
@@ -109,7 +107,7 @@ public class MinigameManager : NetworkBehaviour
 			}
 			else
 			{
-				float dist = (float)id / (float)(nPlayers-1);
+				float dist = (float)id / (float)(GetNumPlayers()-1);
 				Vector3 diff = spawnPosB.position - spawnPosA.position;
 				return spawnPosA.position + diff * dist;
 			}
@@ -118,7 +116,7 @@ public class MinigameManager : NetworkBehaviour
 		else
 		{
 			/* Distance around the circle */  
-			float radians = 2 * Mathf.PI * ((float)id / (float)nPlayers);
+			float radians = 2 * Mathf.PI * ((float)id / (float)GetNumPlayers());
 			
 			/* Get the vector direction */ 
 			float vertical = Mathf.Sin(radians);
@@ -170,7 +168,7 @@ public class MinigameManager : NetworkBehaviour
 		if (id < rewards.Length)
 			rewards[id] = gm.GetPrizeValue(nOut++);
 		//RpcPlayerEliminated((ulong) id);
-		if (lastManStanding && nOut >= nPlayers - 1)
+		if (lastManStanding && nOut >= GetNumPlayers() - 1)
 		{
 			if (countdownCo != null) StopCoroutine( countdownCo );
 			GameOver();
@@ -205,7 +203,7 @@ public class MinigameManager : NetworkBehaviour
 			if (countdownCo != null) StopCoroutine( countdownCo );
 			for (int i=0 ; i<rewards.Length ; i++)
 				if (rewards[i] == -1)
-					rewards[i] = gm.GetPrizeValue(nPlayers - 1);
+					rewards[i] = gm.GetPrizeValue(GetNumPlayers() - 1);
 			string d = "Prizes: ";
 			for (int i=0 ; i<rewards.Length ; i++)
 				d += $"{rewards[i]} ";
@@ -214,7 +212,7 @@ public class MinigameManager : NetworkBehaviour
 
 			yield return new WaitForSeconds(1f);
 			CmdChangeText("");
-			for (int i=0 ; i<rewardUis.Length && i<nm.GetNumMinigamePlayers() ; i++)
+			for (int i=0 ; i<rewardUis.Length && i<GetNumPlayers() ; i++)
 			{
 				int[] details = nm.GetMinigamePlayerInfo(i);
 				CmdShowRewards(i, details[0], details[1], details[2], details[3], details[4]);
@@ -224,7 +222,7 @@ public class MinigameManager : NetworkBehaviour
 			// show reward
 			yield return new WaitForSeconds(2f);
 			gm.AwardMinigamePrize(rewards);
-			for (int i=0 ; i<rewardUis.Length && i<nm.GetNumMinigamePlayers() ; i++)
+			for (int i=0 ; i<rewardUis.Length && i<GetNumPlayers() ; i++)
 			{
 				int[] details = nm.GetMinigamePlayerInfo(i);
 				CmdShowRewards(i, details[0], details[1], details[2], details[3], details[4]);

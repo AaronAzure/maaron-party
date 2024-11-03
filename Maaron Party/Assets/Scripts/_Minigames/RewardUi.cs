@@ -8,7 +8,6 @@ public class RewardUi : MonoBehaviour
 	[Space] [Header("Main")]
 	[SerializeField] private RectTransform rect;
 	[SerializeField] private GameObject[] profilePics;
-	//[SerializeField] private Image profilePic;
 	[SerializeField] private Image profileBg;
 	[SerializeField] private TextMeshProUGUI coinTxt;
 	[SerializeField] private TextMeshProUGUI starTxt;

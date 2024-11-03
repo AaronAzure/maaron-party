@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using Rewired;
+using Unity.Mathematics;
 
 public class MinigameControls : NetworkBehaviour
 {
 	#region Variables
 
 	public static MinigameControls Instance;
-	//private GameManager gm { get { return GameManager.Instance; } }
 	private GameNetworkManager nm { get { return GameNetworkManager.Instance; } }
 	private MinigameManager mm { get { return MinigameManager.Instance; } }
 	private Player player;
@@ -49,6 +49,7 @@ public class MinigameControls : NetworkBehaviour
 	public override void OnStartClient()
 	{
 		base.OnStartClient();
+		//Debug.Log($"<color=magenta>MinigameControls = StartClient ({Instance != null})</color>");
 		if (isOwned)
 			Instance = this;	
 		nm.AddMinigameConnection(this);
@@ -63,11 +64,11 @@ public class MinigameControls : NetworkBehaviour
 	// Start is called before the first frame update
 	void Start()
 	{
-		transform.Rotate(0,180,0);	
 		if (!isOwned) {
 			enabled = false;
 			return;
 		}
+		transform.Rotate(0,180,0);	
 
 		player = ReInput.players.GetPlayer(0);
 	}
@@ -93,10 +94,10 @@ public class MinigameControls : NetworkBehaviour
 	{
 		CmdSetModel();
 		rb.velocity = Vector3.zero;
+		col.enabled = rb.useGravity = true;
 		transform.position = mm.GetPlayerSpawn(id);
-		rb.useGravity = true;
 		CmdReactivate();
-		Debug.Log($"<color=magenta>MinigameControls = Setting Up ({transform.position})</color>");
+		//Debug.Log($"<color=magenta>MinigameControls = Setting Up ({transform.position})</color>");
 		//gameObject.SetActive(true);
 		model.rotation = Quaternion.identity;
 		model.Rotate(0,180,0);
@@ -151,9 +152,9 @@ public class MinigameControls : NetworkBehaviour
 
 		Rigidbody[] bones = ragdolls[ind].GetComponentsInChildren<Rigidbody>();
 		foreach (Rigidbody bone in bones) {
-			bone.velocity = src * 7.5f * 2;
+			bone.velocity = src * UnityEngine.Random.Range(12,18);
 		}
-		ragdolls[ind].transform.rotation = model.rotation;
+		ragdolls[ind].transform.rotation = Quaternion.LookRotation(new Vector3(src.x, 0, src.z));
 		ragdolls[ind].SetActive(true);
 		//col.enabled = false;
 	}
@@ -168,7 +169,7 @@ public class MinigameControls : NetworkBehaviour
 		{
 			mm.CmdPlayerEliminated(id);
 			gameStarted = false;
-			CmdDeath((transform.position - other.transform.position).normalized, characterInd);
+			CmdDeath(((transform.position - other.transform.position).normalized + Vector3.up).normalized, characterInd);
 		}
 	}
 

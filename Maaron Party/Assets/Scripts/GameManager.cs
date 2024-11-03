@@ -238,6 +238,11 @@ public class GameManager : NetworkBehaviour
 	[SyncVar] public string minigameName;
 
 	#region minigame
+	public void SetProfilePic(int[] inds) 
+	{
+		Debug.Log($"<color=yellow>gm.SetProfilePic = {inds.Length}</color>");
+		pm.CmdSetProfilePic(inds);
+	}
 	public void IncreaseTurnNum()
 	{
 		nTurn++;

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using UnityEngine.UI;
@@ -10,49 +8,36 @@ public class PreviewControls : NetworkBehaviour
 
 	private GameNetworkManager nm { get { return GameNetworkManager.Instance; } }
 	public Button btn;
-	[SyncVar] public int characterInd=-1;
-	[SyncVar] public int id=-1;
 	[SerializeField] private GameObject readyObj;
+	[SerializeField] private GameObject[] profilePics;
+	[SerializeField] private Image profileBg;
 
-	//public override void OnStartClient()
-	//{
-	//	base.OnStartClient();
-	//	btn.interactable = isOwned;
-	//	if (isOwned)
-	//		Instance = this;	
-	//	nm.AddPreviewConnection(this);
-	//}
-	//public override void OnStopClient()
-	//{
-	//	//Debug.Log($"<color=#FF9900>PLAYER DISCONNECT ({isOwned}) | {isServer} | {yourTurn}</color>");
-	//	base.OnStopClient();
-	//	if (isOwned)
-	//		nm.RemovePreviewConnection(this);
-	//	// if disconnect and not ready
-	//	//if (isServer && yourTurn)
-	//	//	bm.NextPlayerTurn();
-	//}
+	private void OnDisable() 
+	{
+		readyObj.SetActive(false);
+	}
 
-	//private void Start() 
-	//{
-	//	if (PreviewManager.Instance != null)
-	//	{
-	//		transform.parent = PreviewManager.Instance.readyLayoutHolder;
-	//		transform.localScale = Vector3.one;
-	//	}
-	//	name = $"__ {id} __";
-	//}
+	public void Setup(int ind)
+	{
+		Debug.Log($"<color=cyan>PreviewControls = Setup({ind})</color>");
+		if (profilePics != null) profilePics[ind].SetActive(true);
+		//if (profileBg != null) profileBg.color = ind == 0 ? new Color(0.7f,0.13f,0.13f) : ind == 1 ? new Color(0.4f,0.7f,0.3f) 
+		//		: ind == 2 ? new Color(0.85f,0.85f,0.5f) : new Color(0.7f,0.5f,0.8f);
+	}
 
 	public void _READY_UP()
 	{
 		CmdReady();
 	}
-	[Command(requiresAuthority=false)] void CmdReady() => RpcReady();
+	[Command(requiresAuthority=false)] void CmdReady() 
+	{
+		PreviewManager.Instance.CmdReadyUp();
+		RpcReady();
+	}
 	[ClientRpc] void RpcReady()
 	{
 		btn.interactable = false;
 		readyObj.SetActive(true);
-		PreviewManager.Instance.CmdReadyUp();
 	}
 	[Command(requiresAuthority=false)] public void CmdUnparent() => RpcUnparent();
 	[ClientRpc] void RpcUnparent() => transform.parent = MinigameManager.Instance.transform;
