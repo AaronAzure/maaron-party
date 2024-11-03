@@ -192,6 +192,7 @@ public class GameNetworkManager : NetworkManager
 
 
 	#region ServerChangeScene
+	bool inPreview;
 	public override void ServerChangeScene(string newSceneName)
 	{
 		// transitioning from lobby to board
@@ -251,8 +252,8 @@ public class GameNetworkManager : NetworkManager
 					var conn = boardControls[i].connectionToClient;
 					MinigameControls player = Instantiate(gamePlayerPrefab);
 					player.characterInd = boardControls[i].characterInd;
-					player.id = i;
 					player.boardOrder = boardControls[i].boardOrder;
+					player.id = i;
 					
 					NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
 				}
@@ -264,6 +265,7 @@ public class GameNetworkManager : NetworkManager
 		// transitioning from minigame to minigame
 		else if (SceneManager.GetActiveScene().name.Contains("Minigame") && newSceneName.Contains("Minigame"))
 		{
+			inPreview = true;
 			//* Add minigame controls
 			int temp = minigameControls.Count;
 			for (int i = 0; i < temp; i++)
@@ -286,6 +288,7 @@ public class GameNetworkManager : NetworkManager
 		// transitioning from minigame to board
 		else if (SceneManager.GetActiveScene().name.Contains("Minigame"))
 		{
+			inPreview = false;
 			//* Add board controls
 			for (int i = 0; i < minigameControls.Count; i++)
 			{
@@ -294,6 +297,7 @@ public class GameNetworkManager : NetworkManager
 					var conn = minigameControls[i].connectionToClient;
 					PlayerControls player = Instantiate(boardPlayerPrefab);
 					player.characterInd = minigameControls[i].characterInd;
+					player.boardOrder = minigameControls[i].boardOrder;
 					player.id = i;
 
 					NetworkServer.ReplacePlayerForConnection(conn, player.gameObject);
@@ -452,9 +456,9 @@ public class GameNetworkManager : NetworkManager
 	public override void OnServerSceneChanged(string sceneName)
 	{
 		base.OnServerSceneChanged(sceneName);
-		Debug.Log($"==> Scene Loaded = {sceneName}");
 		//if (PreviewManager.Instance == null)
-		gm.TriggerTransitionDelay(false);
+		if (!inPreview)
+			gm.TriggerTransitionDelay(false);
 	}
 	#endregion
 

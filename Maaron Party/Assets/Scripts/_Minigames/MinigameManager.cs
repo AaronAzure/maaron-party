@@ -95,7 +95,6 @@ public class MinigameManager : NetworkBehaviour
 
 	public Vector3 GetPlayerSpawn(int id)
 	{
-		Debug.Log($"<color=cyan>spawnInLine={spawnInLine} | players={GetNumPlayers()} </color>");
 		if (spawnInLine)
 		{
 			/* Distance around the circle */  
