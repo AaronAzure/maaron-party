@@ -21,8 +21,9 @@ public class PreviewControls : NetworkBehaviour
 	{
 		Debug.Log($"<color=cyan>PreviewControls = Setup({ind})</color>");
 		if (profilePics != null) profilePics[ind].SetActive(true);
-		//if (profileBg != null) profileBg.color = ind == 0 ? new Color(0.7f,0.13f,0.13f) : ind == 1 ? new Color(0.4f,0.7f,0.3f) 
-		//		: ind == 2 ? new Color(0.85f,0.85f,0.5f) : new Color(0.7f,0.5f,0.8f);
+		if (profileBg != null) profileBg.color = ind == 0 ? new Color(0.7f,0.13f,0.13f) : ind == 1 ? new Color(0.4f,0.7f,0.3f) 
+				: ind == 2 ? new Color(0.85f,0.85f,0.5f) : new Color(0.7f,0.5f,0.8f);
+		btn.targetGraphic = profilePics[ind].GetComponent<Graphic>();
 	}
 
 	public void _READY_UP()

@@ -499,6 +499,7 @@ public class GameNetworkManager : NetworkManager
 	}
 	public void PreviewManagerUnLoaded() 
 	{
+		inPreview = false;
 		ServerChangeScene(minigameName);
 	}
 	IEnumerator StartMiniGameCo()
@@ -547,13 +548,6 @@ public class GameNetworkManager : NetworkManager
 	}
 
 
-	/// <summary>
-	/// Called when all preview (on all clients) have loaded
-	/// </summary>
-	public void LoadPreviewMinigame()
-	{
-		gm.StartMinigame(minigameScenes[fixedGame == -1 ? nMinigame++ % minigameScenes.Length : fixedGame]);
-	}
 	public void ReloadPreviewMinigame()
 	{
 		if (actualMinigameCo == null)

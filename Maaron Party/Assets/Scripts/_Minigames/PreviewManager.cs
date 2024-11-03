@@ -58,6 +58,7 @@ public class PreviewManager : NetworkBehaviour
 	}
 
 
+	#region Ready Btn
 	[ClientRpc] void RpcSetReadyButton(int i)
 	{
 		if (i >= 0 && i < readyBtns.Length && readyBtns[i] != null)
@@ -69,23 +70,22 @@ public class PreviewManager : NetworkBehaviour
 			if (readyBtns[i] != null)
 				readyBtns[i].gameObject.SetActive(active);
 	}
+	#endregion
 
 
-	[Command(requiresAuthority=false)] public void CmdSetProfilePic(int[] inds)
+
+	#region Profiles
+	public void SetProfilePic(int[] inds)
 	{
-		Debug.Log($"<color=yellow>CmdSetProfilePic = {inds.Length}</color>");
-		RpcSetProfilePic(inds);
-	}
-	[ClientRpc] void RpcSetProfilePic(int[] inds)
-	{
-		Debug.Log($"<color=yellow>RpcSetProfilePic = {inds.Length}</color>");
 		for (int i=0 ; i<pcs.Length && i<inds.Length ; i++)
 			if (pcs[i] != null)
 				pcs[i].Setup(inds[i]);
 	}
+	#endregion
 
 
 
+	#region Transition
 	[Command(requiresAuthority=false)] public void CmdTriggerTransition(bool fadeIn)
 	{
 		RpcTriggerTransition(fadeIn);
@@ -94,4 +94,5 @@ public class PreviewManager : NetworkBehaviour
 	{
 		anim.SetTrigger(fadeIn ? "in" : "out");
 	}
+	#endregion
 }

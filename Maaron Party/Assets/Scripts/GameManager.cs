@@ -9,6 +9,7 @@ public class GameManager : NetworkBehaviour
 	#region Variables
 	public static GameManager Instance;
 	private GameNetworkManager nm {get{return GameNetworkManager.Instance;}}
+	[SerializeField] private PreviewManager pm;
 
 
 	[Space] [Header("Lobby Manager")]
@@ -35,7 +36,6 @@ public class GameManager : NetworkBehaviour
 	[SyncVar] public int maxTurns=20; 
 	
 	[Space] [SyncVar] public bool isPractice; 
-	[SerializeField] private PreviewManager pm;
 	[SerializeField] private GameObject pmObj;
 
 	[Space] public bool gameStarted; 
@@ -238,15 +238,10 @@ public class GameManager : NetworkBehaviour
 	[SyncVar] public string minigameName;
 
 	#region minigame
-	public void SetProfilePic(int[] inds) 
-	{
-		Debug.Log($"<color=yellow>gm.SetProfilePic = {inds.Length}</color>");
-		pm.CmdSetProfilePic(inds);
-	}
-	public void IncreaseTurnNum()
-	{
-		nTurn++;
-	}
+	public void SetProfilePic(int[] inds) => RpcSetProfilePic(inds);
+	[ClientRpc] public void RpcSetProfilePic(int[] inds) => pm.SetProfilePic(inds);
+	public void IncreaseTurnNum() => nTurn++;
+	
 
 	[Command(requiresAuthority=false)] public void CmdTogglePreviewManager(bool active) => RpcTogglePreviewManager(active);
 	[ClientRpc] void RpcTogglePreviewManager(bool active) => pmObj.SetActive(active);
