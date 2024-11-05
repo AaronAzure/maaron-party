@@ -304,6 +304,15 @@ public class Node : MonoBehaviour
 			_ => true,
 		};
 	}
+	public bool CanBeTrap()
+	{
+		return nodeSpace switch
+		{
+			NodeSpace.blue => true,
+			NodeSpace.red => true,
+			_ => false,
+		};
+	}
 
 
 	#region Distance
@@ -419,7 +428,11 @@ public class Node : MonoBehaviour
 
 	private void OnTriggerEnter(Collider other) 
 	{
-		if (other.CompareTag("Range") && canSpellTarget && DoesConsumeMovement())
+		// blue + red spaces
+		if (other.CompareTag("Range") && canSpellTarget && CanBeTrap())
+			targetObj.SetActive(true);
+		// all spaces except star/shop
+		if (other.CompareTag("Range2") && canSpellTarget && DoesConsumeMovement())
 			targetObj.SetActive(true);
 		if (other.CompareTag("Death"))
 		{
@@ -436,7 +449,7 @@ public class Node : MonoBehaviour
 	}
 	private void OnTriggerExit(Collider other) 
 	{
-		if (other.CompareTag("Range"))		
+		if (other.CompareTag("Range") || other.CompareTag("Range2"))		
 			targetObj.SetActive(false);
 	}
 

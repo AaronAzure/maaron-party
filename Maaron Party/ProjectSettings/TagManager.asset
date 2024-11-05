@@ -8,6 +8,7 @@ TagManager:
   - Enemy
   - Node
   - Range
+  - Range2
   layers:
   - Default
   - TransparentFX

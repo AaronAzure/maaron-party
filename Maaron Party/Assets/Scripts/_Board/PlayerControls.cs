@@ -39,8 +39,10 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private GameObject starCam;
 	[SerializeField] private GameObject doorCam;
 	[SerializeField] private CinemachineVirtualCamera nodeCam;
-	[SerializeField] private GameObject rangeObj;
-	[SerializeField] private Animator rangeAnim;
+	[SerializeField] private GameObject rangeObj; // trap
+	[SerializeField] private GameObject rangeObj2; // fireball
+	[SerializeField] private Animator rangeAnim; // trap
+	[SerializeField] private Animator rangeAnim2; // fireball
 
 	[Space] [SerializeField] private GameObject bonusObj;
 	[SerializeField] private TextMeshPro bonusTxt;
@@ -606,7 +608,10 @@ public class PlayerControls : NetworkBehaviour
 	public void _BACK_TO_BASE_UI()
 	{
 		// show base ui
-		CmdUseSpell(false, currNode != null ? currNode.nodeId : -1);
+		if (rangeObj.activeSelf)
+			CmdUseSpell(false, currNode != null ? currNode.nodeId : -1);
+		if (rangeObj2.activeSelf)
+			CmdUseSpell2(false, currNode != null ? currNode.nodeId : -1);
 		backToBaseUi.SetActive(false);
 		spellUi.SetActive(false);
 		baseUi.SetActive(true);
@@ -1223,8 +1228,15 @@ public class PlayerControls : NetworkBehaviour
 		_spellInd = ind;
 		CmdUseSpell(!rangeObj.activeSelf, currNode != null ? currNode.nodeId : -1);
 	}
+	public void _USE_SPELL_2(int slot, int ind) 
+	{
+		_spellSlot = slot;
+		_spellInd = ind;
+		CmdUseSpell2(!rangeObj.activeSelf, currNode != null ? currNode.nodeId : -1);
+	}
 	
-	[Command(requiresAuthority=false)] private void CmdToggleRange(bool active, int nodeId) => RpcToggleRange(active, nodeId);
+	[Command(requiresAuthority=false)] private void CmdToggleRange(
+		bool active, int nodeId) => RpcToggleRange(active, nodeId);
 	[ClientRpc] private void RpcToggleRange(bool active, int nodeId)
 	{
 		if (!active && nodeId != -1)
@@ -1235,10 +1247,25 @@ public class PlayerControls : NetworkBehaviour
 		if (active)
 			spellCam.transform.localPosition = new Vector3(0,25,-10);
 		spellCam.SetActive(active);
-	 	rangeAnim.SetTrigger(active ? "on" : "off");
+		rangeAnim.SetTrigger(active ? "on" : "off");
+	}
+	[Command(requiresAuthority=false)] private void CmdToggleRange2(
+		bool active, int nodeId) => RpcToggleRange2(active, nodeId);
+	[ClientRpc] private void RpcToggleRange2(bool active, int nodeId)
+	{
+		if (!active && nodeId != -1)
+			NodeManager.Instance.GetNode(nodeId).SetCanSpellTargetDelay(true);
+		else if (active && nodeId != -1) 
+			NodeManager.Instance.GetNode(nodeId).SetCanSpellTarget(false);
+
+		if (active)
+			spellCam.transform.localPosition = new Vector3(0,25,-10);
+		spellCam.SetActive(active);
+		rangeAnim2.SetTrigger(active ? "on" : "off");
 	}
 	
-	[Command(requiresAuthority=false)] private void CmdUseSpell(bool active, int nodeId) => RpcUseSpell(active, nodeId);
+	[Command(requiresAuthority=false)] private void CmdUseSpell(
+		bool active, int nodeId) => RpcUseSpell(active, nodeId);
 	[ClientRpc] private void RpcUseSpell(bool active, int nodeId)
 	{
 		if (!active && nodeId != -1)
@@ -1250,6 +1277,26 @@ public class PlayerControls : NetworkBehaviour
 			spellCam.transform.localPosition = new Vector3(0,25,-10);
 		spellCam.SetActive(active);
 	 	rangeAnim.SetTrigger(active ? "on" : "off");
+		if (isOwned)
+		{
+			isUsingSpell = active;
+			backToBaseUi.SetActive(active);
+			ToggleSpellUi(false);
+		}
+	}
+	[Command(requiresAuthority=false)] private void CmdUseSpell2(
+		bool active, int nodeId) => RpcUseSpell2(active, nodeId);
+	[ClientRpc] private void RpcUseSpell2(bool active, int nodeId)
+	{
+		if (!active && nodeId != -1)
+			NodeManager.Instance.GetNode(nodeId).SetCanSpellTargetDelay(true);
+		else if (active && nodeId != -1) 
+			NodeManager.Instance.GetNode(nodeId).SetCanSpellTarget(false);
+
+		if (active)
+			spellCam.transform.localPosition = new Vector3(0,25,-10);
+		spellCam.SetActive(active);
+	 	rangeAnim2.SetTrigger(active ? "on" : "off");
 		if (isOwned)
 		{
 			isUsingSpell = active;
@@ -1382,7 +1429,7 @@ public class PlayerControls : NetworkBehaviour
 		//yield return new WaitForSeconds(0.5f);
 		nodeCam.m_Follow = target.transform;
 		CmdToggleNodeCam(true);
-		CmdToggleRange(false, currNode != null ? currNode.nodeId : -1);
+		CmdToggleRange2(false, currNode != null ? currNode.nodeId : -1);
 		RemoveSpell(_spellSlot);
 		ConsumeMana(manaCost);
 

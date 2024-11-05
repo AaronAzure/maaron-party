@@ -3,7 +3,8 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 
-public class ItemShopButton : MonoBehaviour, IPointerEnterHandler
+public class ItemShopButton : MonoBehaviour
+//public class ItemShopButton : MonoBehaviour, IPointerEnterHandler
 {
 	public int ind;
 	[SerializeField] private Image img;
@@ -75,8 +76,8 @@ public class ItemShopButton : MonoBehaviour, IPointerEnterHandler
 		//	PlayerControls.Instance.NoCoinAlert();
 	}
 
-	public void OnPointerEnter(PointerEventData eventData)
-	{
-		_CHECK_OUT_ITEM();
-	}
+	//public void OnPointerEnter(PointerEventData eventData)
+	//{
+	//	_CHECK_OUT_ITEM();
+	//}
 }

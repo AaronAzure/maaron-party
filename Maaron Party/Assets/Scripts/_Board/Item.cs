@@ -89,7 +89,7 @@ public class Item : MonoBehaviour, IPointerEnterHandler
 				case 9: p.UseShieldSpell(); break;
 
 				// target node (fire)
-				default: p._USE_SPELL(slot, ind); break;
+				default: p._USE_SPELL_2(slot, ind); break;
 			}
 		}
 		else if (p != null)
