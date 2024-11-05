@@ -265,7 +265,6 @@ public class GameNetworkManager : NetworkManager
 		// transitioning from minigame to minigame
 		else if (SceneManager.GetActiveScene().name.Contains("Minigame") && newSceneName.Contains("Minigame"))
 		{
-			inPreview = true;
 			//* Add minigame controls
 			int temp = minigameControls.Count;
 			for (int i = 0; i < temp; i++)
@@ -288,7 +287,6 @@ public class GameNetworkManager : NetworkManager
 		// transitioning from minigame to board
 		else if (SceneManager.GetActiveScene().name.Contains("Minigame"))
 		{
-			inPreview = false;
 			//* Add board controls
 			for (int i = 0; i < minigameControls.Count; i++)
 			{
@@ -491,7 +489,7 @@ public class GameNetworkManager : NetworkManager
 			int[] characterInds = new int[boardControls.Count];
 			for (int i=0; i >= 0 && i < boardControls.Count && boardControls[i] != null ; i++)
 				characterInds[i] = boardControls[i].characterInd;
-			Debug.Log($"<color=yellow>PreviewManagerLoaded = {characterInds.Length}</color>");
+			//Debug.Log($"<color=yellow>PreviewManagerLoaded = {characterInds.Length}</color>");
 			gm.SetProfilePic(characterInds);
 		}
 		minigameName = minigameScenes[fixedGame == -1 ? nMinigame++ % minigameScenes.Length : fixedGame];
@@ -550,6 +548,7 @@ public class GameNetworkManager : NetworkManager
 
 	public void ReloadPreviewMinigame()
 	{
+		inPreview = true;
 		if (actualMinigameCo == null)
 			ServerChangeScene(minigameName);
 	}
