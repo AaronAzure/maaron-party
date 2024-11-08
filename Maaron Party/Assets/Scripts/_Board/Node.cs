@@ -53,8 +53,11 @@ public class Node : MonoBehaviour
 	public Transform maaronPos;
 	
 	[Space] [SerializeField] private GameObject thornObj;
+	[SerializeField] private GameObject thornObj2;
+	[SerializeField] private GameObject thornObj3;
 	[SerializeField] private GameObject thornExplosionObj;
 	[SerializeField] private int thornId;
+	[SerializeField] private int trapId;
 	
 	[Space] [SerializeField] private TextMeshPro txt;
 	private bool canSpellTarget=true;
@@ -217,6 +220,15 @@ public class Node : MonoBehaviour
 			p.NodeEffect(penalty);
 		}
 	}
+	public void HitPlayersStars()
+	{
+		if (players != null && players.Contains(p) && !p.isShield)
+		{
+			p.CmdPlayerToggle(false);
+			p.CmdRagdollToggle(true);
+			p.NodeEffect(-1, true);
+		}
+	}
 
 	/// <summary>
 	/// Returns true if no event, else false
@@ -224,7 +236,7 @@ public class Node : MonoBehaviour
 	/// <returns></returns>
 	public float GetNodeLandEffect(PlayerControls p)
 	{
-		if (thornObj.activeSelf)
+		if (IsTrapped())
 		{
 			// own trap
 			if (p.id == thornId)
@@ -282,9 +294,24 @@ public class Node : MonoBehaviour
 		{
 			p.CmdPlayerToggle(false);
 			p.CmdRagdollToggle(true);
-			int stolenCoins = p.GetCoins() < 10 ? p.GetCoins() : 10;
-			BoardManager.Instance.CmdTrapReward(atkId, stolenCoins);
-			p.NodeEffect(-stolenCoins);
+			if (trapId == 3) // 1 star
+			{
+				int stolenStars = p.GetStars() > 0 ? 1 : 0;
+				BoardManager.Instance.CmdTrapReward(atkId, stolenStars, true);
+				p.NodeEffect(-stolenStars, true);
+			}
+			if (trapId == 2) // 20 coins
+			{
+				int stolenCoins = p.GetCoins() < 20 ? p.GetCoins() : 20;
+				BoardManager.Instance.CmdTrapReward(atkId, stolenCoins, false);
+				p.NodeEffect(-stolenCoins);
+			}
+			if (trapId == 1) // 10 coins
+			{
+				int stolenCoins = p.GetCoins() < 10 ? p.GetCoins() : 10;
+				BoardManager.Instance.CmdTrapReward(atkId, stolenCoins, false);
+				p.NodeEffect(-stolenCoins);
+			}
 		}
 	}
 	#endregion
@@ -420,11 +447,19 @@ public class Node : MonoBehaviour
 		else
 			starPs.Stop();
 	} 
-	public void ToggleThorn(bool active, int playerId) 
+	public void ToggleThorn(bool active, int playerId, int trapId) 
 	{
-		thornObj.SetActive(active);
+		switch (trapId)
+		{
+			default: thornObj.SetActive(active); break;
+			case 1: thornObj.SetActive(active); break;
+			case 2: thornObj2.SetActive(active); break;
+			case 3: thornObj3.SetActive(active); break;
+		}
 		thornId = playerId;
+		this.trapId = trapId;
 	}
+	public bool IsTrapped() => thornObj.activeSelf || thornObj2.activeSelf || thornObj3.activeSelf;
 
 	private void OnTriggerEnter(Collider other) 
 	{
@@ -465,28 +500,25 @@ public class Node : MonoBehaviour
 				switch (p._spellInd)
 				{
 					case 0: 
-						BoardManager.Instance.CmdThornNode(nodeId, p.id);
-						//ToggleThorn(true, PlayerControls.Instance.id);
-						PlayerControls.Instance.UseThornSpell(this, 1);
+						BoardManager.Instance.CmdThornNode(nodeId, p.id, 1);
+						PlayerControls.Instance.UseThornSpell(this, 1, 1);
 						break;
 					case 1: 
-						BoardManager.Instance.CmdThornNode(nodeId, p.id);
-						//ToggleThorn(true, PlayerControls.Instance.id);
-						PlayerControls.Instance.UseThornSpell(this, 2);
+						BoardManager.Instance.CmdThornNode(nodeId, p.id, 2);
+						PlayerControls.Instance.UseThornSpell(this, 2, 2);
 						break;
 					case 2: 
-						BoardManager.Instance.CmdThornNode(nodeId, p.id);
-						//ToggleThorn(true, PlayerControls.Instance.id);
-						PlayerControls.Instance.UseThornSpell(this, 3);
+						BoardManager.Instance.CmdThornNode(nodeId, p.id, 3);
+						PlayerControls.Instance.UseThornSpell(this, 3, 3);
 						break;
 					case 3:
-						PlayerControls.Instance.UseFireSpell(this, 2);
+						PlayerControls.Instance.UseFireSpell(this, 2, 1);
 						break;
 					case 4:
-						PlayerControls.Instance.UseFireSpell(this, 3);
+						PlayerControls.Instance.UseFireSpell(this, 3, 2);
 						break;
 					case 5:
-						PlayerControls.Instance.UseFireSpell(this, 4);
+						PlayerControls.Instance.UseFireSpell(this, 4, 3);
 						break;
 				}
 			}

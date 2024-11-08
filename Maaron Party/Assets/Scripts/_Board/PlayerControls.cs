@@ -192,6 +192,8 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private GameObject spellCam;
 	[SerializeField] private float spellCamSpeed=0.5f;
 	[SerializeField] private GameObject fireSpell1;
+	[SerializeField] private GameObject fireSpell2;
+	[SerializeField] private GameObject fireSpell3;
 	[SerializeField] private ParticleSystem dashSpellPs1;
 	[SerializeField] private GameObject shieldSpell1;
 	[SerializeField] private int newSpellId;
@@ -575,6 +577,18 @@ public class PlayerControls : NetworkBehaviour
 
 
 	#region Saving data
+	[Command(requiresAuthority=false)] public void CmdSaveData() => TargetSaveData(netIdentity.connectionToClient);
+	[TargetRpc] public void TargetSaveData(NetworkConnectionToClient target) 
+	{
+		gm.SaveCurrNode(currNode.nodeId, id);
+		gm.CmdSaveCoins(coins, id);
+		gm.CmdSaveStars(stars, id);
+		gm.CmdSaveMana(mana, id);
+		gm.CmdSaveItems(itemInds, id);
+		CmdDataSaved();
+	}
+	[Command(requiresAuthority=false)] void CmdDataSaved() => nm.IncreasePlayerDataSaved();
+	
 	private void SaveData()
 	{
 		gm.SaveCurrNode(currNode.nodeId, id);
@@ -691,6 +705,7 @@ public class PlayerControls : NetworkBehaviour
 		isBuyingStar = false;
 	}
 
+	public bool HasFreeShop() => freeShop;
 	public void _BUY_ITEM(int itemId, int itemCost)
 	{
 		if (!freeShop)
@@ -989,15 +1004,29 @@ public class PlayerControls : NetworkBehaviour
 	public int GetMana() => mana;
 	public int GetCoins() => coins;
 	public int GetStars() => stars;
-	[Command(requiresAuthority=false)] public void CmdNodeEffect(int bonus) => TargetNodeEffect(netIdentity.connectionToClient, bonus);
-	[TargetRpc] public void TargetNodeEffect(NetworkConnectionToClient target, int bonus) => NodeEffect(bonus);
-	public void NodeEffect(int bonus)
+	[Command(requiresAuthority=false)] public void CmdNodeEffect(int bonus, bool isStar) 
+		=> TargetNodeEffect(netIdentity.connectionToClient, bonus, isStar);
+	[TargetRpc] public void TargetNodeEffect(NetworkConnectionToClient target, int bonus, bool isStar) 
+		=> NodeEffect(bonus, isStar);
+	public void NodeEffect(int bonus, bool isStar=false)
 	{
-		if (bonus != 0) currencySpeedT = 0.5f / Mathf.Abs(bonus);
-		coins = Mathf.Clamp(coins + bonus, 0, 999);
-		if (coins != 0)
-			this.enabled = isCurrencyAsync = true;
-		CmdShowBonusTxt(bonus);
+		// star related
+		if (isStar)
+		{
+			currencySpeedT = 0.05f;
+			stars = Mathf.Max(stars+bonus, 0);
+			if (stars != 0)
+				this.enabled = isCurrencyAsync = true;
+		}
+		// coin related
+		else
+		{
+			if (bonus != 0) currencySpeedT = 0.5f / Mathf.Abs(bonus);
+			coins = Mathf.Clamp(coins + bonus, 0, 999);
+			if (coins != 0)
+				this.enabled = isCurrencyAsync = true;
+		}
+		CmdShowBonusTxt(bonus, isStar);
 	}
 	public void LoseAllCoins()
 	{
@@ -1006,14 +1035,15 @@ public class PlayerControls : NetworkBehaviour
 		int temp = coins;
 		coins = 0;
 		this.enabled = isCurrencyAsync = true;
-		CmdShowBonusTxt(-temp);
+		CmdShowBonusTxt(-temp, false);
 	}
-	[Command] private void CmdShowBonusTxt(int n) => RpcShowBonusTxt(n);
-	[ClientRpc] private void RpcShowBonusTxt(int n)
+	[Command] private void CmdShowBonusTxt(int n, bool isStar) => RpcShowBonusTxt(n, isStar);
+	[ClientRpc] private void RpcShowBonusTxt(int n, bool isStar)
 	{
 		bonusObj.SetActive(false);
 		bonusObj.SetActive(true);
-		bonusTxt.text = n > 0 ? $"+{n}" : $"{n}";
+		bonusTxt.text = isStar ? "<sprite name=\"star\">" : $"<sprite name=\"coin\">";
+		bonusTxt.text += n >= 0 ? $"+{n}" : $"{n}";
 	}
 
 	[Command(requiresAuthority=false)] private void CmdToggleStarCam(bool active) => RpcToggleStarCam(active);
@@ -1264,8 +1294,8 @@ public class PlayerControls : NetworkBehaviour
 		rangeAnim2.SetTrigger(active ? "on" : "off");
 	}
 	
-	[Command(requiresAuthority=false)] private void CmdUseSpell(
-		bool active, int nodeId) => RpcUseSpell(active, nodeId);
+	[Command(requiresAuthority=false)] private void CmdUseSpell(bool active, int nodeId) 
+		=> RpcUseSpell(active, nodeId);
 	[ClientRpc] private void RpcUseSpell(bool active, int nodeId)
 	{
 		if (!active && nodeId != -1)
@@ -1276,7 +1306,7 @@ public class PlayerControls : NetworkBehaviour
 		if (active)
 			spellCam.transform.localPosition = new Vector3(0,25,-10);
 		spellCam.SetActive(active);
-	 	rangeAnim.SetTrigger(active ? "on" : "off");
+		rangeAnim.SetTrigger(active ? "on" : "off");
 		if (isOwned)
 		{
 			isUsingSpell = active;
@@ -1284,8 +1314,8 @@ public class PlayerControls : NetworkBehaviour
 			ToggleSpellUi(false);
 		}
 	}
-	[Command(requiresAuthority=false)] private void CmdUseSpell2(
-		bool active, int nodeId) => RpcUseSpell2(active, nodeId);
+	[Command(requiresAuthority=false)] private void CmdUseSpell2(bool active, int nodeId) 
+		=> RpcUseSpell2(active, nodeId);
 	[ClientRpc] private void RpcUseSpell2(bool active, int nodeId)
 	{
 		if (!active && nodeId != -1)
@@ -1387,18 +1417,18 @@ public class PlayerControls : NetworkBehaviour
 		isShield = active;
 	} 
 	
-	public void UseThornSpell(Node target, int manaCost)
+	public void UseThornSpell(Node target, int manaCost, int trapId)
 	{
 		ToggleSpellUi(false);
 		backToBaseUi.SetActive(false);
 
 		if (spellCo == null)
-			spellCo = StartCoroutine( ThornCo(target, manaCost) );
+			spellCo = StartCoroutine( ThornCo(target, manaCost, trapId) );
 	}
-	IEnumerator ThornCo(Node target, int manaCost)
+	IEnumerator ThornCo(Node target, int manaCost, int trapId)
 	{
 		nodeCam.m_Follow = target.transform;
-		CmdSaveTrap(target.nodeId);
+		CmdSaveTrap(target.nodeId, trapId);
 		CmdToggleNodeCam(true);
 		CmdToggleRange(false, currNode != null ? currNode.nodeId : -1);
 		RemoveSpell(_spellSlot);
@@ -1414,19 +1444,18 @@ public class PlayerControls : NetworkBehaviour
 		spellCo = null;
 		StopUsingSpells();
 	}
-	[Command(requiresAuthority=false)] private void CmdSaveTrap(int nodeId) => gm.SaveTrap(nodeId, id);
-	public void UseFireSpell(Node target, int manaCost)
+	[Command(requiresAuthority=false)] private void CmdSaveTrap(int nodeId, int trapId) => gm.SaveTrap(nodeId, id, trapId);
+	public void UseFireSpell(Node target, int manaCost, int fireSpellInd)
 	{
 		ToggleSpellUi(false);
 		backToBaseUi.SetActive(false);
 
 		usingFireSpell1 = true;
 		if (spellCo == null)
-			spellCo = StartCoroutine( SpellCo(target, manaCost) );
+			spellCo = StartCoroutine( SpellCo(target, manaCost, fireSpellInd) );
 	}
-	IEnumerator SpellCo(Node target, int manaCost)
+	IEnumerator SpellCo(Node target, int manaCost, int fireSpellInd)
 	{
-		//yield return new WaitForSeconds(0.5f);
 		nodeCam.m_Follow = target.transform;
 		CmdToggleNodeCam(true);
 		CmdToggleRange2(false, currNode != null ? currNode.nodeId : -1);
@@ -1434,14 +1463,14 @@ public class PlayerControls : NetworkBehaviour
 		ConsumeMana(manaCost);
 
 		yield return new WaitForSeconds(1f);
-		CmdFireSpell1(target.transform.position);
-		//fireSpell1.transform.position = target.transform.position;
-		//fireSpell1.SetActive(false);
-		//fireSpell1.SetActive(true);
+		if (fireSpellInd == 1) CmdFireSpell1(target.transform.position);
+		if (fireSpellInd == 2) CmdFireSpell2(target.transform.position);
+		if (fireSpellInd == 3) CmdFireSpell3(target.transform.position);
 
 		yield return new WaitForSeconds(0.5f);
-		gm.CmdHitPlayersAtNode(target.nodeId);
-		//Debug.Log($"{CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera.VirtualCameraGameObject.name}");
+		if (fireSpellInd == 1) gm.CmdHitPlayersAtNode(target.nodeId, -15);
+		if (fireSpellInd == 2) gm.CmdHitPlayersAtNode(target.nodeId, -25);
+		if (fireSpellInd == 3) gm.CmdHitPlayersStarsAtNode(target.nodeId);
 		
 		yield return new WaitForSeconds(1.5f);
 		CmdToggleNodeCam(false);
@@ -1456,6 +1485,20 @@ public class PlayerControls : NetworkBehaviour
 		fireSpell1.transform.position = target;
 		fireSpell1.SetActive(false);
 		fireSpell1.SetActive(true);
+	}
+	[Command(requiresAuthority=false)] private void CmdFireSpell2(Vector3 target) => RpcFireSpell2(target);
+	[ClientRpc] private void RpcFireSpell2(Vector3 target)
+	{
+		fireSpell2.transform.position = target;
+		fireSpell2.SetActive(false);
+		fireSpell2.SetActive(true);
+	}
+	[Command(requiresAuthority=false)] private void CmdFireSpell3(Vector3 target) => RpcFireSpell3(target);
+	[ClientRpc] private void RpcFireSpell3(Vector3 target)
+	{
+		fireSpell3.transform.position = target;
+		fireSpell3.SetActive(false);
+		fireSpell3.SetActive(true);
 	}
 
 	#endregion

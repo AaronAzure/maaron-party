@@ -129,10 +129,10 @@ public class GameNetworkManager : NetworkManager
 		if (boardControls != null && id >= 0 && id < boardControls.Count)
 			boardControls[id].CmdCamToggle(active);
 	}
-	public void RewardBoardControl(int id, int reward)
+	public void RewardBoardControl(int id, int reward, bool isStar)
 	{
 		if (boardControls != null && id >= 0 && id < boardControls.Count)
-			boardControls[id].CmdNodeEffect(reward);
+			boardControls[id].CmdNodeEffect(reward, isStar);
 	}
 	public void AddBoardConnection(PlayerControls pc)
 	{
@@ -346,8 +346,10 @@ public class GameNetworkManager : NetworkManager
 	public bool StillHavePlayerTurns() => nPlayerOrder < boardControls.Count;
 	public void NextBoardPlayerTurn()
 	{
+		// no player turns
 		if (skipBoard)
 			StartCoroutine(StartMiniGameCo());
+		// still have player turns
 		else if (nPlayerOrder < boardControls.Count)
 		{
 			if (skipIntro)
@@ -371,6 +373,7 @@ public class GameNetworkManager : NetworkManager
 				}
 			}
 		}
+		// all player turns done
 		else
 			StartCoroutine(StartMiniGameCo());
 	}
@@ -500,11 +503,19 @@ public class GameNetworkManager : NetworkManager
 		inPreview = false;
 		ServerChangeScene(minigameName);
 	}
+	int nSaved;
+	public void IncreasePlayerDataSaved() => ++nSaved;
 	IEnumerator StartMiniGameCo()
 	{
+		nSaved = 0;
+		foreach (PlayerControls p in boardControls)
+			p.CmdSaveData();
 		gm.CmdTriggerTransition(true);
 		
 		yield return new WaitForSeconds(0.5f);
+		while (nSaved < boardControls.Count)
+			yield return null;
+
 		nPlayerOrder = 0;
 		//nTurn++;
 		gm.IncreaseTurnNum();

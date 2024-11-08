@@ -8,7 +8,7 @@ public class GameManager : NetworkBehaviour
 {
 	#region Variables
 	public static GameManager Instance;
-	private GameNetworkManager nm {get{return GameNetworkManager.Instance;}}
+	//private GameNetworkManager nm {get{return GameNetworkManager.Instance;}}
 	[SerializeField] private PreviewManager pm;
 
 
@@ -23,8 +23,7 @@ public class GameManager : NetworkBehaviour
 
 	[Space] [Header("In game references")]
 	[SerializeField] private List<ushort> currNodes;
-	//[SyncVar] [SerializeField] private Dictionary<int, int> traps;
-	public readonly SyncDictionary<int, int> traps = new SyncDictionary<int, int>();
+	public readonly SyncDictionary<int, int[]> traps = new SyncDictionary<int, int[]>();
 	[SyncVar] [SerializeField] private List<int> placements;
 	[SyncVar] [SerializeField] private List<int> coins;
 	[SyncVar] [SerializeField] private List<int> stars;
@@ -42,9 +41,6 @@ public class GameManager : NetworkBehaviour
 	public int prevStarInd=-1; 
 	[SyncVar] public int turretReady; 
 	[SyncVar] public int turretRot; 
-	//private int nPlayers {get{return GameObject.FindGameObjectsWithTag("Player").Length;}}
-	//public bool hasStarted {get; private set;}
-	//public bool lobbyCreated {get; private set;}
 	[SerializeField] Animator anim;
 
 	#endregion
@@ -63,7 +59,6 @@ public class GameManager : NetworkBehaviour
 	public void Start() 
 	{
 		currNodes = new();
-		//traps = new SyncDictionary<int, int>();
 		placements = new();
 		coins = new();
 		stars = new();
@@ -101,14 +96,10 @@ public class GameManager : NetworkBehaviour
 		return currNodes[playerId];
 	}
 
-	public void SaveTrap(int nodeId, int playerId)
+	public void SaveTrap(int nodeId, int playerId, int trapId)
 	{
-		//if (traps == null)
-		//	traps = new();
-		//while (traps.Count <= playerId)
-		//	traps.Add(0);
 		if (!traps.ContainsKey(nodeId))
-			traps.Add(nodeId, playerId);
+			traps.Add(nodeId, new int[2] {playerId, trapId});
 	}
 
 	[Command(requiresAuthority=false)] public void CmdSaveCoins(int newCoin, int playerId)
@@ -180,8 +171,11 @@ public class GameManager : NetworkBehaviour
 
 	#region Board
 
-	[Command(requiresAuthority=false)] public void CmdHitPlayersAtNode(int nodeId) => RpcHitPlayersAtNode(nodeId);
-	[ClientRpc] private void RpcHitPlayersAtNode(int nodeId) => NodeManager.Instance.GetNode(nodeId).HitPlayers(-10);
+	[Command(requiresAuthority=false)] public void CmdHitPlayersAtNode(int nodeId, int penalty) => RpcHitPlayersAtNode(nodeId, penalty);
+	[ClientRpc] private void RpcHitPlayersAtNode(int nodeId, int penalty) => NodeManager.Instance.GetNode(nodeId).HitPlayers(penalty);
+
+	[Command(requiresAuthority=false)] public void CmdHitPlayersStarsAtNode(int nodeId) => RpcHitPlayersStarsAtNode(nodeId);
+	[ClientRpc] private void RpcHitPlayersStarsAtNode(int nodeId) => NodeManager.Instance.GetNode(nodeId).HitPlayersStars();
 
 	[Command(requiresAuthority=false)] public void CmdSetupDoorTolls(int nDoors)
 	{

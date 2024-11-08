@@ -81,6 +81,7 @@ public class Item : MonoBehaviour, IPointerEnterHandler
 				case -1: break;
 				case 0: p._USE_SPELL(slot, 0); break;
 				case 1: p._USE_SPELL(slot, 1); break;
+				case 2: p._USE_SPELL(slot, 2); break;
 
 				case 6: p.UseDashSpell(4, 2); break;
 				case 7: p.UseDashSpell(8, 3); break;

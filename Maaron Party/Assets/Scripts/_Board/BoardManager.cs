@@ -377,21 +377,24 @@ public class BoardManager : NetworkBehaviour
 
 	#region Trap
 
-	[Command(requiresAuthority=false)] public void CmdTrapReward(int atkId, int stolen) => StartCoroutine(TrapCo(atkId, stolen));
-	IEnumerator TrapCo(int atkId, int stolen)
+	[Command(requiresAuthority=false)] public void CmdTrapReward(int atkId, int stolen, bool isStar) 
+		=> StartCoroutine(TrapCo(atkId, stolen, isStar));
+	IEnumerator TrapCo(int atkId, int stolen, bool isStar)
 	{
 		yield return new WaitForSeconds(1);
 		nm.ToggleBoardControlCam(atkId, true);
 
 		yield return new WaitForSeconds(1);
-		nm.RewardBoardControl(atkId, stolen);
+		nm.RewardBoardControl(atkId, stolen, isStar);
 
 		yield return new WaitForSeconds(1);
 		nm.ToggleBoardControlCam(atkId, false);
 	}
 
-	[Command(requiresAuthority=false)] public void CmdThornNode(int nodeId, int playerId) => RpcThornNode(nodeId, playerId);
-	[ClientRpc] private void RpcThornNode(int nodeId, int playerId) => NodeManager.Instance.GetNode(nodeId).ToggleThorn(true, playerId);
+	[Command(requiresAuthority=false)] public void CmdThornNode(int nodeId, int playerId, int trapId) 
+		=> RpcThornNode(nodeId, playerId, trapId);
+	[ClientRpc] private void RpcThornNode(int nodeId, int playerId, int trapId) 
+		=> NodeManager.Instance.GetNode(nodeId).ToggleThorn(true, playerId, trapId);
 
 	[Command(requiresAuthority=false)] public void CmdPlayDoorAnim(int nodeId) => RpcPlayDoorAnim(nodeId);
 	[ClientRpc] private void RpcPlayDoorAnim(int nodeId) => NodeManager.Instance.GetNode(nodeId).PlayDoorAnim();

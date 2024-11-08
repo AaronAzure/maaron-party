@@ -18,12 +18,9 @@ public class NodeManager : MonoBehaviour
 	{
 		nodes = GetComponentsInChildren<Node>();
 		for (ushort i=0 ; i<nodes.Length ; i++)
-		{
 			nodes[i].nodeId = i;
-		}
-		//Dictionary<int, int> traps = GameManager.Instance.traps;
 		foreach (int trapId in GameManager.Instance.traps.Keys)
-			nodes[trapId].ToggleThorn(true, GameManager.Instance.traps[trapId]);
+			nodes[trapId].ToggleThorn(true, GameManager.Instance.traps[trapId][0], GameManager.Instance.traps[trapId][1]);
 	}
 
 	public Node GetNode(int ind)

@@ -524,7 +524,7 @@ MonoBehaviour:
   startBtn: {fileID: 1516030785}
   anim: {fileID: 0}
   fixedGame: -1
-  skipSideQuests: 0
+  skipSideQuests: 1
   skipIntro: 1
   skipBoard: 0
   minPlayers: 2
