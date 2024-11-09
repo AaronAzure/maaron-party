@@ -391,10 +391,10 @@ public class BoardManager : NetworkBehaviour
 		nm.ToggleBoardControlCam(atkId, false);
 	}
 
-	[Command(requiresAuthority=false)] public void CmdThornNode(int nodeId, int playerId, int trapId) 
-		=> RpcThornNode(nodeId, playerId, trapId);
-	[ClientRpc] private void RpcThornNode(int nodeId, int playerId, int trapId) 
-		=> NodeManager.Instance.GetNode(nodeId).ToggleThorn(true, playerId, trapId);
+	[Command(requiresAuthority=false)] public void CmdThornNode(int nodeId, int playerId, int characterInd, int trapId) 
+		=> RpcThornNode(nodeId, playerId, characterInd, trapId);
+	[ClientRpc] private void RpcThornNode(int nodeId, int playerId, int characterInd, int trapId) 
+		=> NodeManager.Instance.GetNode(nodeId).ToggleThorn(true, playerId, characterInd, trapId);
 
 	[Command(requiresAuthority=false)] public void CmdPlayDoorAnim(int nodeId) => RpcPlayDoorAnim(nodeId);
 	[ClientRpc] private void RpcPlayDoorAnim(int nodeId) => NodeManager.Instance.GetNode(nodeId).PlayDoorAnim();

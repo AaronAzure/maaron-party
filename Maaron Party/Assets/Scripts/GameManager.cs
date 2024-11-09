@@ -96,10 +96,10 @@ public class GameManager : NetworkBehaviour
 		return currNodes[playerId];
 	}
 
-	public void SaveTrap(int nodeId, int playerId, int trapId)
+	public void SaveTrap(int nodeId, int playerId, int characterInd, int trapId)
 	{
 		if (!traps.ContainsKey(nodeId))
-			traps.Add(nodeId, new int[2] {playerId, trapId});
+			traps.Add(nodeId, new int[3]{playerId, characterInd, trapId});
 	}
 
 	[Command(requiresAuthority=false)] public void CmdSaveCoins(int newCoin, int playerId)

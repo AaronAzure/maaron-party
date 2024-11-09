@@ -4972,6 +4972,13 @@ MonoBehaviour:
   thornObj: {fileID: 930303586874183292}
   thornObj2: {fileID: 298395396528016569}
   thornObj3: {fileID: 7572647079195323972}
+  thornPs:
+  - {fileID: 6797514994597540295}
+  - {fileID: 1548119176657253771}
+  - {fileID: 1437751346301195501}
+  thornMat1: {fileID: 2100000, guid: 322a05ffe4e5e874dad62e0b435df763, type: 2}
+  thornMat2: {fileID: 2100000, guid: 02ccedd19889f434194ceff7a5988e0b, type: 2}
+  thornMat3: {fileID: 2100000, guid: 9ca12568ce2beb344bae16653e1a277e, type: 2}
   thornExplosionObj: {fileID: 8943955186707270363}
   thornId: 0
   trapId: 0

@@ -1434,7 +1434,6 @@ public class PlayerControls : NetworkBehaviour
 		RemoveSpell(_spellSlot);
 		ConsumeMana(manaCost);
 
-
 		//yield return new WaitForSeconds(1f);
 		//CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera.VirtualCameraGameObject.name;
 		//Debug.Log($"{CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera.VirtualCameraGameObject.name}");
@@ -1444,7 +1443,8 @@ public class PlayerControls : NetworkBehaviour
 		spellCo = null;
 		StopUsingSpells();
 	}
-	[Command(requiresAuthority=false)] private void CmdSaveTrap(int nodeId, int trapId) => gm.SaveTrap(nodeId, id, trapId);
+	[Command(requiresAuthority=false)] private void CmdSaveTrap(int nodeId, int trapId) 
+		=> gm.SaveTrap(nodeId, id, characterInd, trapId);
 	public void UseFireSpell(Node target, int manaCost, int fireSpellInd)
 	{
 		ToggleSpellUi(false);

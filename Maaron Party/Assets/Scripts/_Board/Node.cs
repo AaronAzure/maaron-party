@@ -52,10 +52,16 @@ public class Node : MonoBehaviour
 	[SerializeField] private ParticleSystem starPs;
 	public Transform maaronPos;
 	
-	[Space] [SerializeField] private GameObject thornObj;
-	[SerializeField] private GameObject thornObj2;
-	[SerializeField] private GameObject thornObj3;
-	[SerializeField] private GameObject thornExplosionObj;
+	[Space] [Header("Traps")]
+	[SerializeField] private GameObject thornObj;
+	//[SerializeField] private GameObject thornObj2;
+	//[SerializeField] private GameObject thornObj3;
+	[SerializeField] private ParticleSystem[] thornPs;
+	[SerializeField] private Material thornMat1;
+	[SerializeField] private Material thornMat2;
+	[SerializeField] private Material thornMat3;
+
+	[Space] [SerializeField] private GameObject thornExplosionObj;
 	[SerializeField] private int thornId;
 	[SerializeField] private int trapId;
 	
@@ -447,19 +453,29 @@ public class Node : MonoBehaviour
 		else
 			starPs.Stop();
 	} 
-	public void ToggleThorn(bool active, int playerId, int trapId) 
+	public void ToggleThorn(bool active, int pId, int cId, int trapId) 
 	{
-		switch (trapId)
+		thornObj.SetActive(active);
+		//switch (trapId)
+		//{
+		//	default: thornObj.SetActive(active); break;
+		//	case 1: thornObj.SetActive(active); break;
+		//	case 2: thornObj2.SetActive(active); break;
+		//	case 3: thornObj3.SetActive(active); break;
+		//}
+		foreach (ParticleSystem thornP in thornPs)
 		{
-			default: thornObj.SetActive(active); break;
-			case 1: thornObj.SetActive(active); break;
-			case 2: thornObj2.SetActive(active); break;
-			case 3: thornObj3.SetActive(active); break;
+			thornP.GetComponent<ParticleSystemRenderer>().material = 
+				trapId == 3 ? thornMat3 : trapId == 2 ? thornMat2 : thornMat1;
+
+			var main = thornP.main;
+			main.startColor = cId == 0 ? new Color(0.7f,0.13f,0.13f) : cId == 1 ? new Color(0.4f,0.7f,0.3f) 
+				: cId == 2 ? new Color(0.85f,0.85f,0.5f) : new Color(0.7f,0.5f,0.8f);
 		}
-		thornId = playerId;
+		thornId = pId;
 		this.trapId = trapId;
 	}
-	public bool IsTrapped() => thornObj.activeSelf || thornObj2.activeSelf || thornObj3.activeSelf;
+	public bool IsTrapped() => thornObj.activeSelf;
 
 	private void OnTriggerEnter(Collider other) 
 	{
@@ -500,15 +516,15 @@ public class Node : MonoBehaviour
 				switch (p._spellInd)
 				{
 					case 0: 
-						BoardManager.Instance.CmdThornNode(nodeId, p.id, 1);
+						BoardManager.Instance.CmdThornNode(nodeId, p.id, p.characterInd, 1);
 						PlayerControls.Instance.UseThornSpell(this, 1, 1);
 						break;
 					case 1: 
-						BoardManager.Instance.CmdThornNode(nodeId, p.id, 2);
+						BoardManager.Instance.CmdThornNode(nodeId, p.id, p.characterInd, 2);
 						PlayerControls.Instance.UseThornSpell(this, 2, 2);
 						break;
 					case 2: 
-						BoardManager.Instance.CmdThornNode(nodeId, p.id, 3);
+						BoardManager.Instance.CmdThornNode(nodeId, p.id, p.characterInd, 3);
 						PlayerControls.Instance.UseThornSpell(this, 3, 3);
 						break;
 					case 3:
