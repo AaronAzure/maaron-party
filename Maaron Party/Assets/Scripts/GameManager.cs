@@ -100,6 +100,9 @@ public class GameManager : NetworkBehaviour
 	{
 		if (!traps.ContainsKey(nodeId))
 			traps.Add(nodeId, new int[3]{playerId, characterInd, trapId});
+		// overwrite trap
+		else
+			traps[nodeId] = new int[3]{playerId, characterInd, trapId};
 	}
 
 	[Command(requiresAuthority=false)] public void CmdSaveCoins(int newCoin, int playerId)

@@ -5,8 +5,14 @@ using Mirror;
 
 public class LavaMonster : NetworkBehaviour
 {
+	[SerializeField] private Transform model;
 	[SerializeField] private Transform[] points;
 	[SerializeField] private float moveSpeed=9;
+	[SerializeField] private float rotateSpeed=7.5f;
+
+	[Space] [SerializeField] private GameObject[] fireTrails;
+	[SerializeField] private Vector3 offset;
+	[SerializeField] private float timeRepeat=1;
 	private Vector3 startPos;
 	private Vector3 destPos;
 	private bool canMove;
@@ -21,6 +27,9 @@ public class LavaMonster : NetworkBehaviour
 		var p = points[prevP].position;
 		destPos = new Vector3(p.x, 0, p.z);
 		canMove = true;
+		for (int i=0 ; i<fireTrails.Length ; i++)
+			if (fireTrails[i] != null)
+				fireTrails[i].transform.parent = null;
 	}
 
 	public void FixedUpdateAction() 
@@ -31,15 +40,45 @@ public class LavaMonster : NetworkBehaviour
 			{
 				transform.position = Vector3.MoveTowards(transform.position, destPos, moveSpeed * Time.fixedDeltaTime);
 
-				if (Vector3.Distance(transform.position, destPos) < 0.001f)
+				if (Vector3.Distance(transform.position, destPos) < 0.01f)
 				{
 					canMove = false;
 					StartCoroutine(RestCo());
 				}
+				// still moving
+				else
+				{
+					if (timer < timeRepeat)
+						timer += Time.fixedDeltaTime;
+					else
+					{
+						timer = 0;
+						SpawnFireTrail();
+					}
+					var lookPos = destPos - transform.position;
+					lookPos.y = 0;
+					var rotation = Quaternion.LookRotation(lookPos);
+					model.rotation = Quaternion.Slerp(model.rotation, rotation, Time.fixedDeltaTime * rotateSpeed);
+				}
 			}
 		}
-
 	}
+
+	private void SpawnFireTrail()
+	{
+		for (int i=0 ; i<fireTrails.Length ; i++)
+		{
+			if (fireTrails[i] != null && !fireTrails[i].activeSelf)
+			{
+				fireTrails[i].SetActive(true);
+				fireTrails[i].transform.position = this.transform.position + offset;
+				break;
+			}
+		}
+	}
+
+	//private void RotateDirection(Vector3 dir)
+	//	=> model.rotation = Quaternion.LookRotation(new Vector3(dir.x, 0, dir.z));
 
 	IEnumerator RestCo()
 	{

@@ -12,6 +12,7 @@ public class PreviewManager : NetworkBehaviour
 	public Transform readyLayoutHolder;
 	[SerializeField] private Button[] readyBtns;
 	[SerializeField] private PreviewControls[] pcs;
+	[SerializeField] private Transform previewCam;
 	bool hasSetup;
 	bool started;
 
@@ -35,6 +36,11 @@ public class PreviewManager : NetworkBehaviour
 		if (started) nm.PreviewManagerUnLoaded();
 		started = hasSetup = false;
 		nReady = 0;
+	}
+
+	public void MatchPreviewCamera(Quaternion rot)
+	{
+		previewCam.rotation = rot;
 	}
 	
 

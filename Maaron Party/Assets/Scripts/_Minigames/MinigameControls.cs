@@ -161,6 +161,7 @@ public class MinigameControls : NetworkBehaviour
 	public void EndGame()
 	{
 		gameStarted = false;
+		rb.velocity = new Vector3(0,rb.velocity.y,0);
 	}
 
 	private void OnTriggerEnter(Collider other) 
@@ -169,7 +170,7 @@ public class MinigameControls : NetworkBehaviour
 		{
 			mm.CmdPlayerEliminated(id);
 			gameStarted = false;
-			CmdDeath(((transform.position - other.transform.position).normalized + Vector3.up).normalized, characterInd);
+			CmdDeath(((transform.position - other.transform.position - Vector3.down * 3).normalized + Vector3.up).normalized, characterInd);
 		}
 	}
 

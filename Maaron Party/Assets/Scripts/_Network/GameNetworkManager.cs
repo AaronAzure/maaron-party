@@ -509,7 +509,8 @@ public class GameNetworkManager : NetworkManager
 	{
 		nSaved = 0;
 		foreach (PlayerControls p in boardControls)
-			p.CmdSaveData();
+			if (p != null)
+				p.CmdSaveData();
 		gm.CmdTriggerTransition(true);
 		
 		yield return new WaitForSeconds(0.5f);

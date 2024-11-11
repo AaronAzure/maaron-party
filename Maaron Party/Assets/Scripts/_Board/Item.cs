@@ -43,7 +43,7 @@ public class Item : MonoBehaviour, IPointerEnterHandler
 		{
 			if (titleTxt != null) titleTxt.text = GetTitle(ind);
 			if (descTxt != null) descTxt.text = GetDesc(ind);
-			if (manaTxt != null) manaTxt.text = $"Mana Cost: {GetManaCost(ind)}";
+			if (manaTxt != null) manaTxt.text = $"Mana Cost: <sprite name=\"mana\">{GetManaCost(ind)}";
 		}
 	}
 

@@ -290,6 +290,22 @@ public class Node : MonoBehaviour
 	
 	
 	#region Trap
+	public void ToggleThorn(bool active, int pId, int cId, int trapId) 
+	{
+		thornObj.SetActive(false);
+		thornObj.SetActive(active);
+		foreach (ParticleSystem thornP in thornPs)
+		{
+			thornP.GetComponent<ParticleSystemRenderer>().material = 
+				trapId == 3 ? thornMat3 : trapId == 2 ? thornMat2 : thornMat1;
+
+			var main = thornP.main;
+			main.startColor = cId == 0 ? new Color(0.7f,0.13f,0.13f) : cId == 1 ? new Color(0.4f,0.7f,0.3f) 
+				: cId == 2 ? new Color(0.85f,0.85f,0.5f) : new Color(0.7f,0.5f,0.8f);
+		}
+		thornId = pId;
+		this.trapId = trapId;
+	}
 	public void TriggerTrap(int atkId) => StartCoroutine(TriggerTrapCo(atkId));
 	IEnumerator TriggerTrapCo(int atkId)
 	{
@@ -421,10 +437,7 @@ public class Node : MonoBehaviour
 	#endregion
 
 
-	public Transform GetTargetTransform()
-	{
-		return maaronPos != null ? maaronPos.transform : null;
-	}
+	public Transform GetTargetTransform() => maaronPos != null ? maaronPos.transform : null;
 	
 	Coroutine canTargetCo;
 	public void SetCanSpellTarget(bool canSpellTarget) => this.canSpellTarget = canSpellTarget;
@@ -453,28 +466,6 @@ public class Node : MonoBehaviour
 		else
 			starPs.Stop();
 	} 
-	public void ToggleThorn(bool active, int pId, int cId, int trapId) 
-	{
-		thornObj.SetActive(active);
-		//switch (trapId)
-		//{
-		//	default: thornObj.SetActive(active); break;
-		//	case 1: thornObj.SetActive(active); break;
-		//	case 2: thornObj2.SetActive(active); break;
-		//	case 3: thornObj3.SetActive(active); break;
-		//}
-		foreach (ParticleSystem thornP in thornPs)
-		{
-			thornP.GetComponent<ParticleSystemRenderer>().material = 
-				trapId == 3 ? thornMat3 : trapId == 2 ? thornMat2 : thornMat1;
-
-			var main = thornP.main;
-			main.startColor = cId == 0 ? new Color(0.7f,0.13f,0.13f) : cId == 1 ? new Color(0.4f,0.7f,0.3f) 
-				: cId == 2 ? new Color(0.85f,0.85f,0.5f) : new Color(0.7f,0.5f,0.8f);
-		}
-		thornId = pId;
-		this.trapId = trapId;
-	}
 	public bool IsTrapped() => thornObj.activeSelf;
 
 	private void OnTriggerEnter(Collider other) 
@@ -509,6 +500,11 @@ public class Node : MonoBehaviour
 	{
 		if (targetObj.activeSelf)
 		{
+			// trap spell cost
+			if (p._spellInd >= 0 && p._spellInd <= 2)
+				p.SetSpellCost(p._spellInd + 1, thornId == p.id ? 0 : trapId);
+			else if (p._spellInd >= 3 && p._spellInd <= 5)
+				p.SetSpellCost(p._spellInd - 1, 0);
 			//Debug.Log("<color=white>Mouse over</color>");
 			if (Input.GetMouseButtonDown(0))
 			{
@@ -516,25 +512,40 @@ public class Node : MonoBehaviour
 				switch (p._spellInd)
 				{
 					case 0: 
+						if (p.GetMana() < 1 + (thornId == p.id ? 0 : trapId)) 
+						{
+							p.NoManaAlert();
+							break; // not enough mana to overwrite
+						}
+						p.UseThornSpell(this, 1 + (thornId == p.id ? 0 : trapId), 1);
 						BoardManager.Instance.CmdThornNode(nodeId, p.id, p.characterInd, 1);
-						PlayerControls.Instance.UseThornSpell(this, 1, 1);
 						break;
 					case 1: 
+						if (p.GetMana() < 2 + (thornId == p.id ? 0 : trapId)) 
+						{
+							p.NoManaAlert();
+							break; // not enough mana to overwrite
+						}
+						p.UseThornSpell(this, 2 + (thornId == p.id ? 0 : trapId), 2);
 						BoardManager.Instance.CmdThornNode(nodeId, p.id, p.characterInd, 2);
-						PlayerControls.Instance.UseThornSpell(this, 2, 2);
 						break;
 					case 2: 
+						if (p.GetMana() < 3 + (thornId == p.id ? 0 : trapId)) 
+						{
+							p.NoManaAlert();
+							break; // not enough mana to overwrite
+						}
+						p.UseThornSpell(this, 3 + (thornId == p.id ? 0 : trapId), 3);
 						BoardManager.Instance.CmdThornNode(nodeId, p.id, p.characterInd, 3);
-						PlayerControls.Instance.UseThornSpell(this, 3, 3);
 						break;
 					case 3:
-						PlayerControls.Instance.UseFireSpell(this, 2, 1);
+						p.UseFireSpell(this, 2, 1);
 						break;
 					case 4:
-						PlayerControls.Instance.UseFireSpell(this, 3, 2);
+						p.UseFireSpell(this, 3, 2);
 						break;
 					case 5:
-						PlayerControls.Instance.UseFireSpell(this, 4, 3);
+						p.UseFireSpell(this, 4, 3);
 						break;
 				}
 			}
@@ -556,6 +567,9 @@ public class Node : MonoBehaviour
 			targetObj.SetActive(true);
 			//targetAnim.enabled = false;
 		}
+		// trap spell cost
+		if (p._spellInd >= 0 && p._spellInd <= 2)
+			p.SetSpellCost(p._spellInd + 1, 0);
 	}
 
 }

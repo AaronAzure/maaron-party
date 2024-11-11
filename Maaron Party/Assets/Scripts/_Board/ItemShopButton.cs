@@ -34,13 +34,6 @@ public class ItemShopButton : MonoBehaviour
 			gameObject.SetActive(availability == Availability.turn5 ? gm.nTurn >= 5 :
 				availability == Availability.last5 ? gm.nTurn >= gm.maxTurns - 4 : 
 				availability == Availability.always);
-		//if (isShop && Item.instance != null)
-		//{
-		//	if (titleTxt != null) titleTxt.text = Item.instance.GetTitle(ind);
-		//	if (descTxt != null) descTxt.text = Item.instance.GetDesc(ind);
-		//	if (manaTxt != null) manaTxt.text = $"{Item.instance.GetManaCost(ind)}";
-		//	if (priceTxt != null) priceTxt.text = $"{Item.instance.GetPrice(ind)}";
-		//}
 		title = Item.instance.GetTitle(ind);
 		desc = Item.instance.GetDesc(ind);
 		manaCost = Item.instance.GetManaCost(ind);
@@ -60,8 +53,8 @@ public class ItemShopButton : MonoBehaviour
 			}
 			if (titleTxt != null) titleTxt.text = title;
 			if (descTxt != null) descTxt.text = desc;
-			if (manaTxt != null) manaTxt.text = $"Mana: {manaCost}";
-			if (priceTxt != null) priceTxt.text = $"Buy ({priceCost})";
+			if (manaTxt != null) manaTxt.text = $"Mana: <sprite name=\"mana\">{manaCost}";
+			if (priceTxt != null) priceTxt.text = $"Buy (<sprite name=\"coin\">{priceCost})";
 		}
 		else
 			Debug.Log($"<color=red>Item.instance != null = {Item.instance != null}</color>");

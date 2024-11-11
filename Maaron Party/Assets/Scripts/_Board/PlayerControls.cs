@@ -90,9 +90,9 @@ public class PlayerControls : NetworkBehaviour
 	#region Stats
 
 	[Space] [Header("Stats")]
-	[SyncVar] private int coins=10;
+	[SyncVar] [SerializeField] private int coins=10;
 	private int coinsT;
-	[SyncVar] private int stars;
+	[SyncVar] [SerializeField] private int stars;
 	private int starsT;
 	[SyncVar] [SerializeField] private int mana=5;
 	//private int manaT;
@@ -198,6 +198,7 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private GameObject shieldSpell1;
 	[SerializeField] private int newSpellId;
 	[SerializeField] private ItemShopButton[] newSpellBtns;
+	[SerializeField] private TextMeshProUGUI spellCostTxt;
 	public int _spellInd {get; private set;} 
 	public int _spellSlot {get; private set;} 
 
@@ -283,7 +284,7 @@ public class PlayerControls : NetworkBehaviour
 		
 		CmdSetCoinText(coins);
 		CmdSetStarText(stars);
-		CmdShowMana();
+		CmdShowMana(mana);
 		CmdReplaceItems(itemInds);
 		CmdShowItems();
 	}
@@ -535,15 +536,13 @@ public class PlayerControls : NetworkBehaviour
 	[ClientRpc(includeOwner=false)] private void RpcShoveToggle(bool activate) => shoveObj.SetActive(activate);
 	[TargetRpc] public void TargetYourTurn(NetworkConnectionToClient target)
 	{
-		//if (canvas != null)
-		//	canvas.SetActive(true);
 		if (currNode != null)
 			ShowDistanceAway(currNode.GetDistanceAway(0));
 		else if (nextNode != null)
 			ShowDistanceAway(nextNode.GetDistanceAway(1));
 		this.enabled = true;
 		CmdToggleYourTurn(true);
-		CmdToggleIntroUi(true, characterInd);
+		CmdToggleIntroUi(true);
 		if (ragdollObj[characterInd].activeSelf)
 		{
 			CmdPlayerToggle(true);
@@ -563,8 +562,8 @@ public class PlayerControls : NetworkBehaviour
 		SaveData();
 	}
 	[Command(requiresAuthority=false)] private void CmdToggleYourTurn(bool active) => yourTurn = active;
-	[Command(requiresAuthority=false)] void CmdToggleIntroUi(bool active, int id) => RpcToggleIntroUi(active, id);
-	[ClientRpc] void RpcToggleIntroUi(bool active, int id)
+	[Command(requiresAuthority=false)] void CmdToggleIntroUi(bool active) => RpcToggleIntroUi(active);
+	[ClientRpc] void RpcToggleIntroUi(bool active)
 	{
 		introBtn.interactable = isOwned;
 		clickAnywhereUi.SetActive(isOwned);
@@ -615,7 +614,13 @@ public class PlayerControls : NetworkBehaviour
 	#region BUTTONS
 	public void _START_PLAYER()
 	{
-		CmdToggleIntroUi(false, characterInd);
+		CmdToggleIntroUi(false);
+		if (gm.nTurn % 2 == 1 && gm.nTurn > 1)
+		{
+			mana = Mathf.Min(mana + 1, (int)manaSld.maxValue);
+			CmdShowManaBonusTxt(1);
+			CmdShowMana(mana);
+		}
 		if (canvas != null)
 			canvas.SetActive(true);
 	}
@@ -626,6 +631,8 @@ public class PlayerControls : NetworkBehaviour
 			CmdUseSpell(false, currNode != null ? currNode.nodeId : -1);
 		if (rangeObj2.activeSelf)
 			CmdUseSpell2(false, currNode != null ? currNode.nodeId : -1);
+
+		spellCostTxt.gameObject.SetActive(false);
 		backToBaseUi.SetActive(false);
 		spellUi.SetActive(false);
 		baseUi.SetActive(true);
@@ -1045,6 +1052,14 @@ public class PlayerControls : NetworkBehaviour
 		bonusTxt.text = isStar ? "<sprite name=\"star\">" : $"<sprite name=\"coin\">";
 		bonusTxt.text += n >= 0 ? $"+{n}" : $"{n}";
 	}
+	[Command] private void CmdShowManaBonusTxt(int n) => RpcShowManBonusTxt(n);
+	[ClientRpc] private void RpcShowManBonusTxt(int n)
+	{
+		bonusObj.SetActive(false);
+		bonusObj.SetActive(true);
+		bonusTxt.text = "<sprite name=mana>";
+		bonusTxt.text += n >= 0 ? $"+{n}" : $"{n}";
+	}
 
 	[Command(requiresAuthority=false)] private void CmdToggleStarCam(bool active) => RpcToggleStarCam(active);
 	[ClientRpc] private void RpcToggleStarCam(bool active) => starCam.SetActive(active);
@@ -1206,10 +1221,10 @@ public class PlayerControls : NetworkBehaviour
 	public void ConsumeMana(int cost)
 	{
 		mana = Mathf.Max(mana - cost, 0);
-		CmdShowMana();
+		CmdShowMana(mana);
 	}
-	[Command(requiresAuthority=false)] private void CmdShowMana() => RpcShowMana();
-	[ClientRpc] private void RpcShowMana() 
+	[Command(requiresAuthority=false)] private void CmdShowMana(int mana) => RpcShowMana(mana);
+	[ClientRpc] private void RpcShowMana(int mana) 
 	{
 		manaSld.value = mana;
 		manaTxt.text = $"{mana}/{manaSld.maxValue}";
@@ -1219,6 +1234,7 @@ public class PlayerControls : NetworkBehaviour
 	{
 		if (itemInds != null && ind >= 0 && ind < itemInds.Count)
 			itemInds.RemoveAt(ind);
+		CmdReplaceItems(itemInds);
 		CmdShowItems();
 	}
 	[Command(requiresAuthority=false)] private void CmdShowItems() => RpcShowItems();
@@ -1252,17 +1268,45 @@ public class PlayerControls : NetworkBehaviour
 		itemInds = ints;
 	}
 	
+	public void SetSpellCost(int n, int extra)
+	{
+		if (extra > 0)
+			spellCostTxt.text = $"<sprite name=mana><color=red>-{n+extra}</color>";
+		else
+			spellCostTxt.text = $"<sprite name=mana>-{n}";
+	}
+
 	public void _USE_SPELL(int slot, int ind) 
 	{
 		_spellSlot = slot;
 		_spellInd = ind;
 		CmdUseSpell(!rangeObj.activeSelf, currNode != null ? currNode.nodeId : -1);
+		switch (_spellInd)
+		{
+			case 0: SetSpellCost(1, 0); break;
+			case 1: SetSpellCost(2, 0); break;
+			case 2: SetSpellCost(3, 0); break;
+
+			case 3: SetSpellCost(2, 0); break;
+			case 4: SetSpellCost(3, 0); break;
+			case 5: SetSpellCost(4, 0); break;
+		}
 	}
 	public void _USE_SPELL_2(int slot, int ind) 
 	{
 		_spellSlot = slot;
 		_spellInd = ind;
 		CmdUseSpell2(!rangeObj.activeSelf, currNode != null ? currNode.nodeId : -1);
+		switch (_spellInd)
+		{
+			case 0: SetSpellCost(1, 0); break;
+			case 1: SetSpellCost(2, 0); break;
+			case 2: SetSpellCost(3, 0); break;
+
+			case 3: SetSpellCost(2, 0); break;
+			case 4: SetSpellCost(3, 0); break;
+			case 5: SetSpellCost(4, 0); break;
+		}
 	}
 	
 	[Command(requiresAuthority=false)] private void CmdToggleRange(
@@ -1278,6 +1322,7 @@ public class PlayerControls : NetworkBehaviour
 			spellCam.transform.localPosition = new Vector3(0,25,-10);
 		spellCam.SetActive(active);
 		rangeAnim.SetTrigger(active ? "on" : "off");
+		spellCostTxt.gameObject.SetActive(active);
 	}
 	[Command(requiresAuthority=false)] private void CmdToggleRange2(
 		bool active, int nodeId) => RpcToggleRange2(active, nodeId);
@@ -1292,6 +1337,7 @@ public class PlayerControls : NetworkBehaviour
 			spellCam.transform.localPosition = new Vector3(0,25,-10);
 		spellCam.SetActive(active);
 		rangeAnim2.SetTrigger(active ? "on" : "off");
+		spellCostTxt.gameObject.SetActive(active);
 	}
 	
 	[Command(requiresAuthority=false)] private void CmdUseSpell(bool active, int nodeId) 
@@ -1307,6 +1353,7 @@ public class PlayerControls : NetworkBehaviour
 			spellCam.transform.localPosition = new Vector3(0,25,-10);
 		spellCam.SetActive(active);
 		rangeAnim.SetTrigger(active ? "on" : "off");
+		spellCostTxt.gameObject.SetActive(active);
 		if (isOwned)
 		{
 			isUsingSpell = active;
@@ -1327,6 +1374,7 @@ public class PlayerControls : NetworkBehaviour
 			spellCam.transform.localPosition = new Vector3(0,25,-10);
 		spellCam.SetActive(active);
 	 	rangeAnim2.SetTrigger(active ? "on" : "off");
+		spellCostTxt.gameObject.SetActive(active);
 		if (isOwned)
 		{
 			isUsingSpell = active;
@@ -1368,6 +1416,7 @@ public class PlayerControls : NetworkBehaviour
 		CmdToggleDashVfx(true);
 		RemoveSpell(_spellSlot);
 		ConsumeMana(manaCost);
+		CmdShowManaBonusTxt(-manaCost);
 
 		if (currNode != null)
 		{
@@ -1419,20 +1468,22 @@ public class PlayerControls : NetworkBehaviour
 	
 	public void UseThornSpell(Node target, int manaCost, int trapId)
 	{
+		Debug.Log($"<color=magenta>manaCost = {manaCost}</color>");
 		ToggleSpellUi(false);
 		backToBaseUi.SetActive(false);
+		ConsumeMana(manaCost);
+		CmdShowManaBonusTxt(-manaCost);
 
 		if (spellCo == null)
-			spellCo = StartCoroutine( ThornCo(target, manaCost, trapId) );
+			spellCo = StartCoroutine( ThornCo(target, trapId) );
 	}
-	IEnumerator ThornCo(Node target, int manaCost, int trapId)
+	IEnumerator ThornCo(Node target, int trapId)
 	{
 		nodeCam.m_Follow = target.transform;
 		CmdSaveTrap(target.nodeId, trapId);
 		CmdToggleNodeCam(true);
 		CmdToggleRange(false, currNode != null ? currNode.nodeId : -1);
 		RemoveSpell(_spellSlot);
-		ConsumeMana(manaCost);
 
 		//yield return new WaitForSeconds(1f);
 		//CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera.VirtualCameraGameObject.name;
@@ -1449,18 +1500,19 @@ public class PlayerControls : NetworkBehaviour
 	{
 		ToggleSpellUi(false);
 		backToBaseUi.SetActive(false);
+		ConsumeMana(manaCost);
+		CmdShowManaBonusTxt(-manaCost);
 
 		usingFireSpell1 = true;
 		if (spellCo == null)
-			spellCo = StartCoroutine( SpellCo(target, manaCost, fireSpellInd) );
+			spellCo = StartCoroutine( SpellCo(target, fireSpellInd) );
 	}
-	IEnumerator SpellCo(Node target, int manaCost, int fireSpellInd)
+	IEnumerator SpellCo(Node target, int fireSpellInd)
 	{
 		nodeCam.m_Follow = target.transform;
 		CmdToggleNodeCam(true);
 		CmdToggleRange2(false, currNode != null ? currNode.nodeId : -1);
 		RemoveSpell(_spellSlot);
-		ConsumeMana(manaCost);
 
 		yield return new WaitForSeconds(1f);
 		if (fireSpellInd == 1) CmdFireSpell1(target.transform.position);

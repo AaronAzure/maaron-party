@@ -17,6 +17,7 @@ public class MinigameManager : NetworkBehaviour
 	private int countDownTimer=-1;
 	
 	[Space] [SerializeField] private Transform spawnPos;
+	[SerializeField] private Transform mainCam;
 
 	[Space] [SerializeField] private bool spawnInLine;
 	[SerializeField] private Transform spawnPosA;
@@ -79,8 +80,11 @@ public class MinigameManager : NetworkBehaviour
 		_player.canJump = playersCanJump;
 		_player.canKb = playersCanKb;
 		_player.SetSpawn();
+		// practice game
 		if (pm != null && pm.gameObject.activeInHierarchy)
 		{
+			if (mainCam != null)
+				pm.MatchPreviewCamera(mainCam.rotation);
 			_player.StartGame();
 		}
 		else

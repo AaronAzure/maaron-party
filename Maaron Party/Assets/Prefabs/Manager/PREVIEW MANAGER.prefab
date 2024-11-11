@@ -171,6 +171,7 @@ MonoBehaviour:
   - {fileID: 7995363545641303029}
   - {fileID: 2626557449676941746}
   - {fileID: 4918831916873023874}
+  previewCam: {fileID: 2613815382526741434}
 --- !u!1 &1455064802535451489
 GameObject:
   m_ObjectHideFlags: 0

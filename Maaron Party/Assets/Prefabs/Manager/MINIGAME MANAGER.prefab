@@ -193,6 +193,7 @@ MonoBehaviour:
   timerTxt: {fileID: 7838877402373094799}
   countDownTxt: {fileID: 3601744330860458076}
   spawnPos: {fileID: 3563829462492765074}
+  mainCam: {fileID: 4393035261100666163}
   spawnInLine: 0
   spawnPosA: {fileID: 8145861344120001967}
   spawnPosB: {fileID: 7565612282376592788}
