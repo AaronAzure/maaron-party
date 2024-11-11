@@ -204,14 +204,26 @@ public class MinigameManager : NetworkBehaviour
 		else if (isServer)
 		{
 			if (countdownCo != null) StopCoroutine( countdownCo );
+			CmdChangeText("Game!");
+
+			int highestId=0;
+			int highestScore=-1;
 			for (int i=0 ; i<rewards.Length ; i++)
+			{
 				if (rewards[i] == -1)
+				{
 					rewards[i] = gm.GetPrizeValue(GetNumPlayers() - 1);
+				}
+				if (rewards[i] > highestScore)
+				{
+					highestScore = rewards[i];
+					highestId = i;
+				}
+			}
 			string d = "Prizes: ";
 			for (int i=0 ; i<rewards.Length ; i++)
 				d += $"{rewards[i]} ";
 			Debug.Log(d);
-			CmdChangeText("Game!");
 
 			yield return new WaitForSeconds(1f);
 			CmdChangeText("");
@@ -220,16 +232,21 @@ public class MinigameManager : NetworkBehaviour
 				int[] details = nm.GetMinigamePlayerInfo(i);
 				CmdShowRewards(i, details[0], details[1], details[2], details[3], details[4]);
 				CmdShowPrizeText(i, rewards[i]);
+				if (highestId == i)
+					CmdShowManaPrizeText(i, 1);
 			}
 
-			// show reward
 			yield return new WaitForSeconds(2f);
+			// show reward
 			gm.AwardMinigamePrize(rewards);
+			gm.AwardManaPrize(highestId);
 			for (int i=0 ; i<rewardUis.Length && i<GetNumPlayers() ; i++)
 			{
 				int[] details = nm.GetMinigamePlayerInfo(i);
 				CmdShowRewards(i, details[0], details[1], details[2], details[3], details[4]);
 				CmdShowPrizeText(i, 0);
+				if (highestId == i)
+					CmdShowManaPrizeText(i, 0);
 			}
 
 			yield return new WaitForSeconds(1f);
@@ -244,12 +261,34 @@ public class MinigameManager : NetworkBehaviour
 	[Command(requiresAuthority=false)] void CmdShowPrizeText(int ind, int prize) => RpcShowPrizeText(ind, prize);
 	[ClientRpc] void RpcShowPrizeText(int ind, int prize) => rewardUis[ind].ShowPrize(prize);
 
+	[Command(requiresAuthority=false)] void CmdShowManaPrizeText(int ind, int prize) => RpcShowManaPrizeText(ind, prize);
+	[ClientRpc] void RpcShowManaPrizeText(int ind, int prize) => rewardUis[ind].ShowManaPrize(prize);
+
 	[Command(requiresAuthority=false)] void CmdShowRewards(int ind,
 		int characterInd, int order, int coins, int stars, int manas)
 	{
 		RpcShowRewards(ind, characterInd, order, coins, stars, manas);
 	}
 	[ClientRpc] void RpcShowRewards(int ind,
+		int characterInd, int order, int coins, int stars, int manas)
+	{
+		if (ind >= 0 && ind < rewardUis.Length && rewardUis[ind] != null)
+		{
+			rewardUis[ind].gameObject.SetActive(true);
+			rewardUis[ind].SetUp(characterInd, order, coins, stars, manas);
+		}
+		else
+		{
+			Debug.LogError($"reward Uis ind={ind} is missing");
+		}
+	}
+
+	[Command(requiresAuthority=false)] void CmdShowManaRewards(int ind,
+		int characterInd, int order, int coins, int stars, int manas)
+	{
+		RpcShowManaRewards(ind, characterInd, order, coins, stars, manas);
+	}
+	[ClientRpc] void RpcShowManaRewards(int ind,
 		int characterInd, int order, int coins, int stars, int manas)
 	{
 		if (ind >= 0 && ind < rewardUis.Length && rewardUis[ind] != null)

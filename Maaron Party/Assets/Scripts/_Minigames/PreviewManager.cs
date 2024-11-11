@@ -44,6 +44,11 @@ public class PreviewManager : NetworkBehaviour
 	}
 	
 
+	[Command(requiresAuthority=false)] public void CmdCheckReady()
+	{
+		if (nReady >= nm.GetNumMinigamePlayers())
+			nm.StartActualMiniGame();
+	}
 	[Command(requiresAuthority=false)] public void CmdReadyUp()
 	{
 		++nReady;

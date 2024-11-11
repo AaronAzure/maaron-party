@@ -17,9 +17,14 @@ public class RewardUi : MonoBehaviour
 	[Space] [SerializeField] private GameObject textbox;
 	[SerializeField] private TextMeshProUGUI textboxTxt;
 
+	[Space] [SerializeField] private GameObject manaTextbox;
+	[SerializeField] private TextMeshProUGUI manaTextboxTxt;
+
+
 	public void SetUp(int characterInd, int order, int coins, int stars, int manas)
 	{
 		if (rect != null) rect.anchoredPosition = new Vector2(50, -90 - (180 * order));
+		Debug.Log($"<color=cyan>rect = {rect.anchoredPosition} | order = {order}</color>");
 		if (coinTxt != null) coinTxt.text = $"{coins}";
 		if (starTxt != null) starTxt.text = $"{stars}";
 		if (manaTxt != null) manaTxt.text = $"{manas}/5";
@@ -33,5 +38,11 @@ public class RewardUi : MonoBehaviour
 	{
 		textbox.SetActive(true);
 		textboxTxt.text = $"+{prize}";
+	}
+
+	public void ShowManaPrize(int prize)
+	{
+		manaTextbox.SetActive(true);
+		manaTextboxTxt.text = $"+{prize}";
 	}
 }

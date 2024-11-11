@@ -155,6 +155,8 @@ public class GameNetworkManager : NetworkManager
 	{
 		if (minigameControls.Contains(mc))
 			minigameControls.Remove(mc);
+		if (pm != null && pm.gameObject.activeInHierarchy)
+			pm.CmdCheckReady();
 	}
 
 	//public void AddPreviewConnection(PreviewControls pc)
@@ -471,7 +473,7 @@ public class GameNetworkManager : NetworkManager
 	{
 		if (ind >= 0 && ind < minigameControls.Count && minigameControls[ind] != null)
 		{
-			int[] details = new int[5]; // characterInd, order, coins, stars, manas
+			int[] details = new int[5]; // characterInd, board order, coins, stars, manas
 			details[0] = minigameControls[ind].characterInd;
 			details[1] = minigameControls[ind].boardOrder;
 			details[2] = gm.GetCoins(ind);

@@ -963,6 +963,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1f232f323dc43124ca9ca760379d4937, type: 3}
       insertIndex: -1
       addedObject: {fileID: 467910248}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1f232f323dc43124ca9ca760379d4937, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 467910249}
   m_SourcePrefab: {fileID: 100100000, guid: 1f232f323dc43124ca9ca760379d4937, type: 3}
 --- !u!4 &467910246 stripped
 Transform:
@@ -995,6 +998,40 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &467910249
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 467910247}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ff3ba0becae47b8b9381191598957c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0
+  target: {fileID: 467910246}
+  syncPosition: 0
+  syncRotation: 1
+  syncScale: 0
+  onlySyncOnChange: 1
+  compressRotation: 1
+  interpolatePosition: 0
+  interpolateRotation: 1
+  interpolateScale: 0
+  coordinateSpace: 0
+  sendIntervalMultiplier: 1
+  timelineOffset: 0
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
+  onlySyncOnChangeCorrectionMultiplier: 2
+  rotationSensitivity: 0.1
+  positionPrecision: 0.01
+  scalePrecision: 0.01
 --- !u!1 &468790371
 GameObject:
   m_ObjectHideFlags: 0
@@ -3412,6 +3449,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1f232f323dc43124ca9ca760379d4937, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1236667507}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1f232f323dc43124ca9ca760379d4937, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1236667508}
   m_SourcePrefab: {fileID: 100100000, guid: 1f232f323dc43124ca9ca760379d4937, type: 3}
 --- !u!4 &1236667505 stripped
 Transform:
@@ -3444,6 +3484,40 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1236667508
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1236667506}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ff3ba0becae47b8b9381191598957c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0
+  target: {fileID: 1236667505}
+  syncPosition: 0
+  syncRotation: 1
+  syncScale: 0
+  onlySyncOnChange: 1
+  compressRotation: 1
+  interpolatePosition: 0
+  interpolateRotation: 1
+  interpolateScale: 0
+  coordinateSpace: 0
+  sendIntervalMultiplier: 1
+  timelineOffset: 0
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
+  onlySyncOnChangeCorrectionMultiplier: 2
+  rotationSensitivity: 0.1
+  positionPrecision: 0.01
+  scalePrecision: 0.01
 --- !u!1 &1244795515
 GameObject:
   m_ObjectHideFlags: 0
@@ -5622,6 +5696,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1f232f323dc43124ca9ca760379d4937, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2050653686}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1f232f323dc43124ca9ca760379d4937, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2050653687}
   m_SourcePrefab: {fileID: 100100000, guid: 1f232f323dc43124ca9ca760379d4937, type: 3}
 --- !u!4 &2050653684 stripped
 Transform:
@@ -5654,6 +5731,40 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &2050653687
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2050653685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ff3ba0becae47b8b9381191598957c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0
+  target: {fileID: 2050653684}
+  syncPosition: 0
+  syncRotation: 1
+  syncScale: 0
+  onlySyncOnChange: 1
+  compressRotation: 1
+  interpolatePosition: 0
+  interpolateRotation: 1
+  interpolateScale: 0
+  coordinateSpace: 0
+  sendIntervalMultiplier: 1
+  timelineOffset: 0
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
+  onlySyncOnChangeCorrectionMultiplier: 2
+  rotationSensitivity: 0.1
+  positionPrecision: 0.01
+  scalePrecision: 0.01
 --- !u!1 &2053445794
 GameObject:
   m_ObjectHideFlags: 0
@@ -5889,6 +6000,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1f232f323dc43124ca9ca760379d4937, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2089181062}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1f232f323dc43124ca9ca760379d4937, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2089181063}
   m_SourcePrefab: {fileID: 100100000, guid: 1f232f323dc43124ca9ca760379d4937, type: 3}
 --- !u!4 &2089181060 stripped
 Transform:
@@ -5921,6 +6035,40 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &2089181063
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2089181061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ff3ba0becae47b8b9381191598957c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0
+  target: {fileID: 2089181060}
+  syncPosition: 0
+  syncRotation: 1
+  syncScale: 0
+  onlySyncOnChange: 1
+  compressRotation: 1
+  interpolatePosition: 0
+  interpolateRotation: 1
+  interpolateScale: 0
+  coordinateSpace: 0
+  sendIntervalMultiplier: 1
+  timelineOffset: 0
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
+  onlySyncOnChangeCorrectionMultiplier: 2
+  rotationSensitivity: 0.1
+  positionPrecision: 0.01
+  scalePrecision: 0.01
 --- !u!1 &2093784450
 GameObject:
   m_ObjectHideFlags: 0

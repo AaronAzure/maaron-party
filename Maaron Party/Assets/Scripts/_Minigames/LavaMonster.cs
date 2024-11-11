@@ -27,6 +27,12 @@ public class LavaMonster : NetworkBehaviour
 		var p = points[prevP].position;
 		destPos = new Vector3(p.x, 0, p.z);
 		canMove = true;
+		if (isServer) 
+			CmdSetup();
+	}
+	[Command(requiresAuthority=false)] void CmdSetup() => RpcSetup();
+	[ClientRpc] void RpcSetup()
+	{
 		for (int i=0 ; i<fireTrails.Length ; i++)
 			if (fireTrails[i] != null)
 				fireTrails[i].transform.parent = null;
@@ -53,7 +59,7 @@ public class LavaMonster : NetworkBehaviour
 					else
 					{
 						timer = 0;
-						SpawnFireTrail();
+						CmdSpawnFireTrail();
 					}
 					var lookPos = destPos - transform.position;
 					lookPos.y = 0;
@@ -63,9 +69,10 @@ public class LavaMonster : NetworkBehaviour
 			}
 		}
 	}
-
-	private void SpawnFireTrail()
+	[Command(requiresAuthority=false)] void CmdSpawnFireTrail() => RpcSpawnFireTrail();
+	[ClientRpc] private void RpcSpawnFireTrail()
 	{
+		//Debug.Log("<color=red>SPAWNING FIRE TRAIL!!</color>");
 		for (int i=0 ; i<fireTrails.Length ; i++)
 		{
 			if (fireTrails[i] != null && !fireTrails[i].activeSelf)

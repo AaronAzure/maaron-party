@@ -292,4 +292,9 @@ public class GameManager : NetworkBehaviour
 			}
 		}
 	}
+	public void AwardManaPrize(int id)
+	{
+		if (id >= 0 && id < manas.Count)
+			manas[id] = Mathf.Clamp(manas[id] + 1, 0, 5);
+	}
 }
