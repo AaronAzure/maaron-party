@@ -110,7 +110,14 @@ public class GameNetworkManager : NetworkManager
 	}
 	public override void OnClientDisconnect()
 	{
-		hostLostUi.SetActive(true);
+		// couldn't connect
+		if (lobbyScene.Contains(SceneManager.GetActiveScene().name))
+		{
+			buttons.SetActive(true);
+			startBtn.gameObject.SetActive(false);
+		}
+		else
+			hostLostUi.SetActive(true);
 	}
 
 	public void AddConnection(LobbyObject lo)
