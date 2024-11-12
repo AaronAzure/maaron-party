@@ -33,8 +33,10 @@ public class GameNetworkManager : NetworkManager
 	//GameObject ball;
 	[SerializeField] private GameObject buttons;
 	[SerializeField] private GameObject hostLostUi;
+	[SerializeField] private GameObject lobbyUi;
 	[SerializeField] private Button hostBtn;
 	[SerializeField] private Button clientBtn;
+	[SerializeField] private Button lobbyBtn;
 	[SerializeField] private Button startBtn;
 
 	[Scene] [SerializeField] private Animator anim;
@@ -228,6 +230,7 @@ public class GameNetworkManager : NetworkManager
 	private void OnLobbyCreated(LobbyCreated_t callback)
 	{
 		buttons.SetActive(false);
+		lobbyUi.SetActive(false);
 		// fail
 		if (callback.m_eResult != EResult.k_EResultOK)
 		{
@@ -267,6 +270,7 @@ public class GameNetworkManager : NetworkManager
 
 		networkAddress = hostAddr;
 		buttons.SetActive(false);
+		lobbyUi.SetActive(false);
 		StartClient();
 	}
 	
@@ -297,6 +301,10 @@ public class GameNetworkManager : NetworkManager
 	public void JoinLobby(CSteamID lobbyID)
 	{
 		SteamMatchmaking.JoinLobby(lobbyID);
+	}
+	public void ShowLobbies()
+	{
+		lobbyUi.SetActive(true);
 	}
 
 

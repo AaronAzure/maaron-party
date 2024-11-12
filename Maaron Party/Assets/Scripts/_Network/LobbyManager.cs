@@ -13,11 +13,13 @@ public class LobbyManager : MonoBehaviour
 
 	private void Awake() {
 		if (Instance == null) Instance = this;
+		lobbies = new List<GameObject>();
 	}
 
 	public void _GET_LOBBIES()
 	{
 		GameNetworkManager.Instance.GetLobbyList();
+		GameNetworkManager.Instance.ShowLobbies();
 	}
 
 	public void DisplayLobbies(List<CSteamID> lobbyIds, LobbyDataUpdate_t result)
