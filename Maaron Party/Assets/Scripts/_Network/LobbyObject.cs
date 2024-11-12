@@ -62,6 +62,25 @@ public class LobbyObject : NetworkBehaviour
 			//gm.JoinGameServerRpc(OwnerClientId);
 			characterInd = (int) netId % maxCharacters;
 		}
+		switch (characterInd)
+		{
+			case 0: 
+				characterTxt.text = "Red";
+				break;
+			case 1: 
+				characterTxt.text = "Green";
+				break;
+			case 2: 
+				characterTxt.text = "Yellow";
+				break;
+			case 3: 
+				characterTxt.text = "Periwinkle";
+				break;
+		}
+		for (int i=0 ; i<profileUis.Length ; i++)
+			profileUis[i].SetActive(i == characterInd);
+		pfp.color = characterInd == 0 ? new Color(0.7f,0.13f,0.13f) : characterInd == 1 ? new Color(0.4f,0.7f,0.3f) 
+				: characterInd == 2 ? new Color(0.85f,0.85f,0.5f) : new Color(0.7f,0.5f,0.8f);
 		CmdUpdateUi(characterInd);
 	}
 
