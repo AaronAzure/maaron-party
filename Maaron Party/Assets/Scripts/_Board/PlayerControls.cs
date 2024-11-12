@@ -401,7 +401,7 @@ public class PlayerControls : NetworkBehaviour
 				isCurrencyAsync = false;
 				if (!yourTurn)
 				{
-					SaveData();
+					//SaveData();
 					this.enabled = false;
 				}
 			}

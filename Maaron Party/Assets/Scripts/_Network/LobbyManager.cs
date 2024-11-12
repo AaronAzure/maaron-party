@@ -27,7 +27,7 @@ public class LobbyManager : MonoBehaviour
 	public void DisplayLobbies(List<CSteamID> lobbyIds, LobbyDataUpdate_t result)
 	{
 		if (lobbyIds != null && lobbyIds.Count > 0)
-			lobbyUi.sizeDelta = new Vector2(lobbyUi.rect.width, lobbyIds.Count * 110);
+			lobbyUi.sizeDelta = new Vector2(lobbyUi.rect.width, 10 + lobbyIds.Count * 110);
 		for (int i=0 ; i<lobbyIds.Count ; i++)
 		{
 			if (lobbyIds[i].m_SteamID == result.m_ulSteamIDLobby)

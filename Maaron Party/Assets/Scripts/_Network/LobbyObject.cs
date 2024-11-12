@@ -70,7 +70,7 @@ public class LobbyObject : NetworkBehaviour
 		RpcUpdateUi(ind);
 	}
 
-	[ClientRpc] public void RpcUpdateUi(int ind)
+	[ClientRpc(includeOwner=false)] public void RpcUpdateUi(int ind)
 	{
 		//gameObject.name = $"__ PLAYER {ind} __";
 		switch (ind)
@@ -103,11 +103,51 @@ public class LobbyObject : NetworkBehaviour
 	public void CHARACTER_IND_INC()
 	{
 		characterInd = (characterInd + 1) % maxCharacters;
+		int ind = characterInd;
+		switch (ind)
+		{
+			case 0: 
+				characterTxt.text = "Red";
+				break;
+			case 1: 
+				characterTxt.text = "Green";
+				break;
+			case 2: 
+				characterTxt.text = "Yellow";
+				break;
+			case 3: 
+				characterTxt.text = "Periwinkle";
+				break;
+		}
+		for (int i=0 ; i<profileUis.Length ; i++)
+			profileUis[i].SetActive(i == ind);
+		pfp.color = ind == 0 ? new Color(0.7f,0.13f,0.13f) : ind == 1 ? new Color(0.4f,0.7f,0.3f) 
+				: ind == 2 ? new Color(0.85f,0.85f,0.5f) : new Color(0.7f,0.5f,0.8f);
 		CmdUpdateUi(characterInd);
 	}
 	public void CHARACTER_IND_DEC()
 	{
 		characterInd = characterInd == 0 ? maxCharacters - 1 : characterInd - 1;
+		int ind = characterInd;
+		switch (ind)
+		{
+			case 0: 
+				characterTxt.text = "Red";
+				break;
+			case 1: 
+				characterTxt.text = "Green";
+				break;
+			case 2: 
+				characterTxt.text = "Yellow";
+				break;
+			case 3: 
+				characterTxt.text = "Periwinkle";
+				break;
+		}
+		for (int i=0 ; i<profileUis.Length ; i++)
+			profileUis[i].SetActive(i == ind);
+		pfp.color = ind == 0 ? new Color(0.7f,0.13f,0.13f) : ind == 1 ? new Color(0.4f,0.7f,0.3f) 
+				: ind == 2 ? new Color(0.85f,0.85f,0.5f) : new Color(0.7f,0.5f,0.8f);
 		CmdUpdateUi(characterInd);
 	}
 
