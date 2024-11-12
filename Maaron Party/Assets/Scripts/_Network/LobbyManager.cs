@@ -7,6 +7,7 @@ using Steamworks;
 public class LobbyManager : MonoBehaviour
 {
 	public static LobbyManager Instance;
+	//[SerializeField] private SteamLobby steamLobby;
 	[SerializeField] private Transform lobbyHolder;
 	[SerializeField] private RectTransform lobbyUi;
 	[SerializeField] private LobbyContainer lobbyDataPrefab;
@@ -20,8 +21,8 @@ public class LobbyManager : MonoBehaviour
 
 	public void _GET_LOBBIES()
 	{
-		GameNetworkManager.Instance.GetLobbyList();
-		GameNetworkManager.Instance.ShowLobbies();
+		SteamLobby.Instance.GetLobbyList();
+		SteamLobby.Instance.ShowLobbies();
 	}
 
 	public void DisplayLobbies(List<CSteamID> lobbyIds, LobbyDataUpdate_t result)

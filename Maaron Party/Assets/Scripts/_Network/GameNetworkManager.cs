@@ -8,36 +8,19 @@ using Steamworks;
 
 public class GameNetworkManager : NetworkManager
 {
-	//public struct CreateMMOCharacterMessage : NetworkMessage
-	//{
-	//	public Race race;
-	//	public string name;
-	//	public Color hairColor;
-	//	public Color eyeColor;
-	//}
-
-	//public enum Race
-	//{
-	//	None,
-	//	Elvish,
-	//	Dwarvish,
-	//	Human
-	//}
-
 	#region Variables
 	public static GameNetworkManager Instance;
 	public Transform spawnHolder;
-	private LobbyManager lm {get{return LobbyManager.Instance;}}
 	private GameManager gm {get{return GameManager.Instance;}}
 	private PreviewManager pm {get{return PreviewManager.Instance;}}
 	//GameObject ball;
 	[SerializeField] private GameObject buttons;
 	[SerializeField] private GameObject hostLostUi;
-	[SerializeField] private GameObject lobbyUi;
-	[SerializeField] private Button hostBtn;
-	[SerializeField] private Button clientBtn;
-	[SerializeField] private Button lobbyBtn;
-	[SerializeField] private Button startBtn;
+	//[SerializeField] private GameObject lobbyUi;
+	//[SerializeField] private Button hostBtn;
+	//[SerializeField] private Button clientBtn;
+	//[SerializeField] private Button lobbyBtn;
+	//[SerializeField] private Button startBtn;
 
 	[Scene] [SerializeField] private Animator anim;
 
@@ -86,15 +69,15 @@ public class GameNetworkManager : NetworkManager
 		base.Awake();
 		Instance = this;
 		
-		hostBtn.onClick.AddListener(() => {
-			_START_HOST();
-		});	
-		clientBtn.onClick.AddListener(() => {
-			_START_CLIENT();
-		});	
-		startBtn.onClick.AddListener(() => {
-			StartGame();
-		});	
+		//hostBtn.onClick.AddListener(() => {
+		//	_START_HOST();
+		//});	
+		//clientBtn.onClick.AddListener(() => {
+		//	_START_CLIENT();
+		//});	
+		//startBtn.onClick.AddListener(() => {
+		//	StartGame();
+		//});	
 	}
 
 	public override void OnStartServer()
@@ -182,138 +165,27 @@ public class GameNetworkManager : NetworkManager
 
 	#endregion
 
-	public void _START_HOST()
-	{
-		buttons.SetActive(false);
-		lobbyUi.SetActive(false);
-		//StartHost();
-		//startBtn.gameObject.SetActive(true);
-		SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypePublic, maxConnections);
-	}
-	public void _START_CLIENT()
-	{
-		//buttons.SetActive(false);
-		//StartClient();
+	//public void _START_HOST()
+	//{
+	//	buttons.SetActive(false);
+	//	lobbyUi.SetActive(false);
+	//	//StartHost();
+	//	//startBtn.gameObject.SetActive(true);
+	//	SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypePublic, maxConnections);
+	//}
+	//public void _START_CLIENT()
+	//{
+	//	//buttons.SetActive(false);
+	//	//StartClient();
 
-	}
-	public void StartGame()
-	{
-		StartBoardGame();
-		//nPlayers = NetworkServer.connections.Count;
-		Debug.Log($"<color=magenta>NetworkServer.connections.Count = {NetworkServer.connections.Count}</color>");
-		startBtn.gameObject.SetActive(false);
-	}
-
-
-	#region Steam
-	protected Callback<LobbyCreated_t> lobbyCreated;
-	protected Callback<GameLobbyJoinRequested_t> gameLobbyJoinRequested;
-	protected Callback<LobbyEnter_t> lobbyEnter;
-	protected Callback<LobbyMatchList_t> lobbyList;
-	protected Callback<LobbyDataUpdate_t> lobbyUpdate;
-
-	private const string HostAddrKey="HostAddress";
-	public List<CSteamID> lobbyIds = new List<CSteamID>();
-	
-	public override void Start()
-	{
-		base.Start();
-
-		if (SteamManager.Initialized)
-		{
-			lobbyCreated = Callback<LobbyCreated_t>.Create(OnLobbyCreated);
-			lobbyEnter = Callback<LobbyEnter_t>.Create(OnLobbyEntered);
-			lobbyList = Callback<LobbyMatchList_t>.Create(OnGetLobbyList);
-			lobbyUpdate = Callback<LobbyDataUpdate_t>.Create(OnLobbyUpdate);
-			gameLobbyJoinRequested = Callback<GameLobbyJoinRequested_t>.Create(OnGameJoinLobbyJoinRequested);
-		}
-	}
-
-	private void OnLobbyCreated(LobbyCreated_t callback)
-	{
-		//buttons.SetActive(false);
-		//lobbyUi.SetActive(false);
-		// fail
-		if (callback.m_eResult != EResult.k_EResultOK)
-		{
-			buttons.SetActive(true);
-			return;
-		}
-		StartHost();
-		startBtn.gameObject.SetActive(true);
-
-		SteamMatchmaking.SetLobbyData(
-			new CSteamID(callback.m_ulSteamIDLobby), 
-			HostAddrKey, 
-			SteamUser.GetSteamID().ToString()
-		);
-		SteamMatchmaking.SetLobbyData(
-			new CSteamID(callback.m_ulSteamIDLobby), 
-			"name", 
-			SteamFriends.GetPersonaName().ToString() + "'s Lobby"
-		);
-	}
-	private void OnGameJoinLobbyJoinRequested(GameLobbyJoinRequested_t callback)
-	{
-		SteamMatchmaking.JoinLobby(callback.m_steamIDLobby);
-	}
-
-	private void OnLobbyEntered(LobbyEnter_t callback)
-	{
-		// all connected clients
-
-		// only clients
-		if (NetworkServer.active) return;
-
-		string hostAddr = SteamMatchmaking.GetLobbyData(
-			new CSteamID(callback.m_ulSteamIDLobby),
-			HostAddrKey
-		);
-
-		networkAddress = hostAddr;
-		buttons.SetActive(false);
-		lobbyUi.SetActive(false);
-		StartClient();
-	}
-	
-	public void GetLobbyList()
-	{
-		if (lobbyIds.Count > 0)
-			lobbyIds.Clear();
-
-		SteamMatchmaking.AddRequestLobbyListResultCountFilter(60);
-		SteamMatchmaking.RequestLobbyList();
-	}
-	private void OnGetLobbyList(LobbyMatchList_t callback)
-	{
-		if (lm.lobbies.Count > 0)
-			lm.DestroyLobbies();
-
-		for (int i=0 ; i<callback.m_nLobbiesMatching ; i++)
-		{
-			CSteamID lobbyId = SteamMatchmaking.GetLobbyByIndex(i);
-			lobbyIds.Add(lobbyId);
-			SteamMatchmaking.RequestLobbyData(lobbyId);
-		}
-	}
-	private void OnLobbyUpdate(LobbyDataUpdate_t callback)
-	{
-		lm.DisplayLobbies(lobbyIds, callback);
-	}
-	public void JoinLobby(CSteamID lobbyID)
-	{
-		buttons.SetActive(false);
-		lobbyUi.SetActive(false);
-		SteamMatchmaking.JoinLobby(lobbyID);
-	}
-	public void ShowLobbies()
-	{
-		lobbyUi.SetActive(true);
-	}
-
-
-	#endregion
-
+	//}
+	//public void StartGame()
+	//{
+	//	StartBoardGame();
+	//	//nPlayers = NetworkServer.connections.Count;
+	//	Debug.Log($"<color=magenta>NetworkServer.connections.Count = {NetworkServer.connections.Count}</color>");
+	//	startBtn.gameObject.SetActive(false);
+	//}
 
 
 	#region ServerChangeScene

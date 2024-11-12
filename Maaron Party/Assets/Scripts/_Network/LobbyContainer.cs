@@ -21,6 +21,6 @@ public class LobbyContainer : MonoBehaviour
 
 	public void _JOIN_LOBBY()
 	{
-		GameNetworkManager.Instance.JoinLobby(lobbyId);
+		SteamLobby.Instance.JoinLobby(lobbyId);
 	}
 }
