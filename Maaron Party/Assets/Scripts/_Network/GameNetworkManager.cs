@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.SceneManagement;
+using Steamworks;
 
 public class GameNetworkManager : NetworkManager
 {
@@ -175,14 +176,16 @@ public class GameNetworkManager : NetworkManager
 
 	public void _START_HOST()
 	{
-		buttons.SetActive(false);
-		StartHost();
-		startBtn.gameObject.SetActive(true);
+		//buttons.SetActive(false);
+		//StartHost();
+		//startBtn.gameObject.SetActive(true);
+		SteamStartHost();
 	}
 	public void _START_CLIENT()
 	{
-		buttons.SetActive(false);
-		StartClient();
+		//buttons.SetActive(false);
+		//StartClient();
+
 	}
 	public void StartGame()
 	{
@@ -191,6 +194,72 @@ public class GameNetworkManager : NetworkManager
 		Debug.Log($"<color=magenta>NetworkServer.connections.Count = {NetworkServer.connections.Count}</color>");
 		startBtn.gameObject.SetActive(false);
 	}
+
+
+	#region Steam
+	protected Callback<LobbyCreated_t> lobbyCreated;
+	protected Callback<GameLobbyJoinRequested_t> gameLobbyJoinRequested;
+	protected Callback<LobbyEnter_t> lobbyEnter;
+	private const string HostAddrKey="HostAddress";
+	public override void Start()
+	{
+		base.Start();
+		lobbyCreated = Callback<LobbyCreated_t>.Create(OnLobbyCreated);
+		lobbyEnter = Callback<LobbyEnter_t>.Create(OnLobbyEntered);
+		gameLobbyJoinRequested = Callback<GameLobbyJoinRequested_t>.Create(OnGameJoinLobbyJoinRequested);
+	}
+	public void SteamStartHost()
+	{
+		SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypePublic, maxConnections);
+	}
+
+	private void OnLobbyCreated(LobbyCreated_t callback)
+	{
+		// fail
+		if (callback.m_eResult != EResult.k_EResultOK)
+		{
+			buttons.SetActive(true);
+			return;
+		}
+		buttons.SetActive(false);
+		StartHost();
+		startBtn.gameObject.SetActive(true);
+
+		SteamMatchmaking.SetLobbyData(
+			new CSteamID(callback.m_ulSteamIDLobby), 
+			HostAddrKey, 
+			SteamUser.GetSteamID().ToString()
+		);
+	}
+	private void OnGameJoinLobbyJoinRequested(GameLobbyJoinRequested_t callback)
+	{
+		// fail
+		//if (callback.m_eResult != EResult.k_EResultOK)
+		//{
+		//	buttons.SetActive(true);
+		//	return;
+		//}
+		//buttons.SetActive(false);
+		//StartHost();
+		//startBtn.gameObject.SetActive(true);
+
+		SteamMatchmaking.JoinLobby(callback.m_steamIDLobby);
+	}
+	private void OnLobbyEntered(LobbyEnter_t callback)
+	{
+		if (NetworkServer.active) return;
+
+		string hostAddr = SteamMatchmaking.GetLobbyData(
+			new CSteamID(callback.m_ulSteamIDLobby),
+			HostAddrKey
+		);
+
+		networkAddress = hostAddr;
+		buttons.SetActive(false);
+		StartClient();
+	}
+	#endregion
+
 
 
 	#region ServerChangeScene
