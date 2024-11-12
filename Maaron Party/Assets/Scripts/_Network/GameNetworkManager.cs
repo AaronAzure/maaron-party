@@ -114,7 +114,12 @@ public class GameNetworkManager : NetworkManager
 	}
 	public override void OnClientDisconnect()
 	{
-		hostLostUi.SetActive(true);
+		if (lobbyScene.Contains(SceneManager.GetActiveScene().name))
+		{
+			buttons.SetActive(true);
+		}
+		else
+			hostLostUi.SetActive(true);
 	}
 
 	public void AddConnection(LobbyObject lo)
