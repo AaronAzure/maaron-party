@@ -27,6 +27,7 @@ public class GameNetworkManager : NetworkManager
 	#region Variables
 	public static GameNetworkManager Instance;
 	public Transform spawnHolder;
+	private LobbyManager lm {get{return LobbyManager.Instance;}}
 	private GameManager gm {get{return GameManager.Instance;}}
 	private PreviewManager pm {get{return PreviewManager.Instance;}}
 	//GameObject ball;
@@ -200,7 +201,12 @@ public class GameNetworkManager : NetworkManager
 	protected Callback<LobbyCreated_t> lobbyCreated;
 	protected Callback<GameLobbyJoinRequested_t> gameLobbyJoinRequested;
 	protected Callback<LobbyEnter_t> lobbyEnter;
+	protected Callback<LobbyMatchList_t> lobbyList;
+	protected Callback<LobbyDataUpdate_t> lobbyUpdate;
+
 	private const string HostAddrKey="HostAddress";
+	public List<CSteamID> lobbyIds = new List<CSteamID>();
+	
 	public override void Start()
 	{
 		base.Start();
@@ -209,6 +215,8 @@ public class GameNetworkManager : NetworkManager
 		{
 			lobbyCreated = Callback<LobbyCreated_t>.Create(OnLobbyCreated);
 			lobbyEnter = Callback<LobbyEnter_t>.Create(OnLobbyEntered);
+			lobbyList = Callback<LobbyMatchList_t>.Create(OnGetLobbyList);
+			lobbyUpdate = Callback<LobbyDataUpdate_t>.Create(OnLobbyUpdate);
 			gameLobbyJoinRequested = Callback<GameLobbyJoinRequested_t>.Create(OnGameJoinLobbyJoinRequested);
 		}
 	}
@@ -219,13 +227,13 @@ public class GameNetworkManager : NetworkManager
 
 	private void OnLobbyCreated(LobbyCreated_t callback)
 	{
+		buttons.SetActive(false);
 		// fail
 		if (callback.m_eResult != EResult.k_EResultOK)
 		{
 			buttons.SetActive(true);
 			return;
 		}
-		buttons.SetActive(false);
 		StartHost();
 		startBtn.gameObject.SetActive(true);
 
@@ -234,23 +242,22 @@ public class GameNetworkManager : NetworkManager
 			HostAddrKey, 
 			SteamUser.GetSteamID().ToString()
 		);
+		SteamMatchmaking.SetLobbyData(
+			new CSteamID(callback.m_ulSteamIDLobby), 
+			"name", 
+			SteamFriends.GetPersonaName().ToString() + "'s Lobby"
+		);
 	}
 	private void OnGameJoinLobbyJoinRequested(GameLobbyJoinRequested_t callback)
 	{
-		// fail
-		//if (callback.m_eResult != EResult.k_EResultOK)
-		//{
-		//	buttons.SetActive(true);
-		//	return;
-		//}
-		//buttons.SetActive(false);
-		//StartHost();
-		//startBtn.gameObject.SetActive(true);
-
 		SteamMatchmaking.JoinLobby(callback.m_steamIDLobby);
 	}
+
 	private void OnLobbyEntered(LobbyEnter_t callback)
 	{
+		// all connected clients
+
+		// only clients
 		if (NetworkServer.active) return;
 
 		string hostAddr = SteamMatchmaking.GetLobbyData(
@@ -262,6 +269,37 @@ public class GameNetworkManager : NetworkManager
 		buttons.SetActive(false);
 		StartClient();
 	}
+	
+	public void GetLobbyList()
+	{
+		if (lobbyIds.Count > 0)
+			lobbyIds.Clear();
+
+		SteamMatchmaking.AddRequestLobbyListResultCountFilter(60);
+		SteamMatchmaking.RequestLobbyList();
+	}
+	private void OnGetLobbyList(LobbyMatchList_t callback)
+	{
+		if (lm.lobbies.Count > 0)
+			lm.DestroyLobbies();
+
+		for (int i=0 ; i<callback.m_nLobbiesMatching ; i++)
+		{
+			CSteamID lobbyId = SteamMatchmaking.GetLobbyByIndex(i);
+			lobbyIds.Add(lobbyId);
+			SteamMatchmaking.RequestLobbyData(lobbyId);
+		}
+	}
+	private void OnLobbyUpdate(LobbyDataUpdate_t callback)
+	{
+		lm.DisplayLobbies(lobbyIds, callback);
+	}
+	public void JoinLobby(CSteamID lobbyID)
+	{
+		SteamMatchmaking.JoinLobby(lobbyID);
+	}
+
+
 	#endregion
 
 
