@@ -2,12 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LavaMonsterManager : MonoBehaviour
+public class LavaMonsterManager : MinigameController
 {
 	[SerializeField] private LavaMonster[] monsters;
 	[SerializeField] private float delay=10;
 	private int ind;
-	private float timer;
+
+	private void OnEnable() 
+	{
+		Debug.Log("GAME STARTING");
+		foreach (LavaMonster monster in monsters)
+			monster.enabled = true;
+	}
 
 	// Update is called once per frame
 	void FixedUpdate()

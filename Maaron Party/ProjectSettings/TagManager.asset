@@ -5,18 +5,22 @@ TagManager:
   serializedVersion: 2
   tags:
   - Death
+  - Enemy
+  - Node
+  - Range
+  - Range2
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Prop
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Board
+  - VFX
+  - NoShadow
+  - PP
+  - Player
   - 
   - 
   - 
