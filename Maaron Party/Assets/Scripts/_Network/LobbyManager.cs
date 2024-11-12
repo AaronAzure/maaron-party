@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Steamworks;
 
 public class LobbyManager : MonoBehaviour
 {
 	public static LobbyManager Instance;
 	[SerializeField] private Transform lobbyHolder;
+	[SerializeField] private RectTransform lobbyUi;
 	[SerializeField] private LobbyContainer lobbyDataPrefab;
 	public List<GameObject> lobbies {get; private set;}
 
@@ -24,6 +26,8 @@ public class LobbyManager : MonoBehaviour
 
 	public void DisplayLobbies(List<CSteamID> lobbyIds, LobbyDataUpdate_t result)
 	{
+		if (lobbyIds != null && lobbyIds.Count > 0)
+			lobbyUi.sizeDelta = new Vector2(lobbyUi.rect.width, lobbyIds.Count * 110);
 		for (int i=0 ; i<lobbyIds.Count ; i++)
 		{
 			if (lobbyIds[i].m_SteamID == result.m_ulSteamIDLobby)

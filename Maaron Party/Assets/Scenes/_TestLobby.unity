@@ -1617,9 +1617,9 @@ MonoBehaviour:
     m_Top: 10
     m_Bottom: 10
   m_ChildAlignment: 0
-  m_Spacing: 0
+  m_Spacing: 10
   m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 1
+  m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
@@ -3140,6 +3140,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lobbyHolder: {fileID: 418953870}
+  lobbyUi: {fileID: 418953870}
   lobbyDataPrefab: {fileID: 5046130433037459676, guid: 5a5eb7e8ee2dc47459df25291f1d5402, type: 3}
 --- !u!1 &1830729050
 GameObject:
