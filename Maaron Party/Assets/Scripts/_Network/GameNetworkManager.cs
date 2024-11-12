@@ -204,9 +204,13 @@ public class GameNetworkManager : NetworkManager
 	public override void Start()
 	{
 		base.Start();
-		lobbyCreated = Callback<LobbyCreated_t>.Create(OnLobbyCreated);
-		lobbyEnter = Callback<LobbyEnter_t>.Create(OnLobbyEntered);
-		gameLobbyJoinRequested = Callback<GameLobbyJoinRequested_t>.Create(OnGameJoinLobbyJoinRequested);
+
+		if (SteamManager.Initialized)
+		{
+			lobbyCreated = Callback<LobbyCreated_t>.Create(OnLobbyCreated);
+			lobbyEnter = Callback<LobbyEnter_t>.Create(OnLobbyEntered);
+			gameLobbyJoinRequested = Callback<GameLobbyJoinRequested_t>.Create(OnGameJoinLobbyJoinRequested);
+		}
 	}
 	public void SteamStartHost()
 	{
