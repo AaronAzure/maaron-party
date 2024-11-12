@@ -22,8 +22,6 @@ public class MinigameManager : NetworkBehaviour
 	[Space] [SerializeField] private bool spawnInLine;
 	[SerializeField] private Transform spawnPosA;
 	[SerializeField] private Transform spawnPosB;
-	bool isWorking;
-	bool iDontSuck;
 
 	
 	[Space] [Header("Specific Rules")]
@@ -253,20 +251,6 @@ public class MinigameManager : NetworkBehaviour
 
 			yield return new WaitForSeconds(1f);
 			nm.StartBoardGame();
-		}
-	}
-
-
-	private void ImportantFunction()
-	{
-		if (isWorking)
-		{
-			// Do Stuff!
-		}
-		else
-		{
-			// I Suck
-			Debug.LogError("SH*T!");
 		}
 	}
 

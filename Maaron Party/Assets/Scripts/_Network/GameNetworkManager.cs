@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.SceneManagement;
-using System;
 
 public class GameNetworkManager : NetworkManager
 {
@@ -72,9 +71,6 @@ public class GameNetworkManager : NetworkManager
 	public List<int> playerOrder;
 	//bool isLoadingScene
 
-	public static event Action OnClientConnected;
-	public static event Action OnClientDisconnected;
-
 
 	#endregion
 
@@ -114,27 +110,8 @@ public class GameNetworkManager : NetworkManager
 	}
 	public override void OnClientDisconnect()
 	{
-		// couldn't connect
-		if (lobbyScene.Contains(SceneManager.GetActiveScene().name))
-		{
-			buttons.SetActive(true);
-			startBtn.gameObject.SetActive(false);
-		}
-		else
-			hostLostUi.SetActive(true);
+		hostLostUi.SetActive(true);
 	}
-
-	//public override void OnServerError(NetworkConnectionToClient conn, TransportError error, string reason) 
-	//{
-	//	base.OnServerError(conn, error, reason);
-	//	Debug.Log("<color=red>OnServerError()</color>");
-	//}
-	//public override void OnServerTransportException(NetworkConnectionToClient conn, Exception exception)
-	//{
-	//	base.OnServerTransportException(conn, exception);
-	//	Debug.Log("<color=red>OnServerTransportException()</color>");
-	//}
-
 
 	public void AddConnection(LobbyObject lo)
 	{
