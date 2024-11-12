@@ -3,6 +3,7 @@
 # Get latest from https://github.com/github/gitignore/blob/main/Unity.gitignore
 #
 **/[Ll]ibrary/
+Maaron Party_clone_[0123]/
 ~/Maaron Party/[Ll]ibrary/
 Maaron Party/[Ll]ibrary/*
 Maaron Party/[Ll]ibrary/
@@ -12,7 +13,6 @@ Maaron Party/[Bb]uild/
 Maaron Party/[Bb]uilds/
 Maaron Party/[Ll]ogs/
 Maaron Party/[Uu]ser[Ss]ettings/
-Maaron Party_clone_[012]
 
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
@@ -52,9 +52,9 @@ ExportedObj/
 *.VC.db
 
 # Unity3D generated meta files
-*.pidb.meta
-*.pdb.meta
-*.mdb.meta
+#*.pidb.meta
+#*.pdb.meta
+#*.mdb.meta
 
 # Unity3D generated file on crash reports
 sysinfo.txt
@@ -77,3 +77,11 @@ Maaron Party/[Aa]ssets/[Ss]treamingAssets/aa/*
 Maaron Party/Library/ArtifactDB
 Maaron Party/Library/Bee/1900b0aE-inputdata.json
 *.dag
+Maaron Party/Library/Bee/1900b0aE-inputdata.json
+Maaron Party/Library/ArtifactDB
+Maaron Party/.DS_Store
+blender/board.blend
+blender/board.blend1
+blender/chibi.fbx
+blender/models.blend
+blender/models.blend1
