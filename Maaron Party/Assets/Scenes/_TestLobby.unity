@@ -192,7 +192,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nm: {fileID: 193865296}
   buttons: {fileID: 1300736597}
-  lobbyUi: {fileID: 418953869}
+  lobbyUi: {fileID: 851340240}
   hostBtn: {fileID: 552371406}
   clientBtn: {fileID: 2092168800}
   lobbyBtn: {fileID: 1830729052}
