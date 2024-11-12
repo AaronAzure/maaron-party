@@ -124,16 +124,16 @@ public class GameNetworkManager : NetworkManager
 			hostLostUi.SetActive(true);
 	}
 
-	public override void OnServerError(NetworkConnectionToClient conn, TransportError error, string reason) 
-	{
-		base.OnServerError(conn, error, reason);
-		Debug.Log("<color=red>OnServerError()</color>");
-	}
-	public override void OnServerTransportException(NetworkConnectionToClient conn, Exception exception)
-	{
-		base.OnServerTransportException(conn, exception);
-		Debug.Log("<color=red>OnServerTransportException()</color>");
-	}
+	//public override void OnServerError(NetworkConnectionToClient conn, TransportError error, string reason) 
+	//{
+	//	base.OnServerError(conn, error, reason);
+	//	Debug.Log("<color=red>OnServerError()</color>");
+	//}
+	//public override void OnServerTransportException(NetworkConnectionToClient conn, Exception exception)
+	//{
+	//	base.OnServerTransportException(conn, exception);
+	//	Debug.Log("<color=red>OnServerTransportException()</color>");
+	//}
 
 
 	public void AddConnection(LobbyObject lo)
