@@ -302,6 +302,8 @@ public class GameNetworkManager : NetworkManager
 	}
 	public void JoinLobby(CSteamID lobbyID)
 	{
+		buttons.SetActive(false);
+		lobbyUi.SetActive(false);
 		SteamMatchmaking.JoinLobby(lobbyID);
 	}
 	public void ShowLobbies()
