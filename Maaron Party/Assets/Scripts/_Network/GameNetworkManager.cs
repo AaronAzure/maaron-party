@@ -179,10 +179,11 @@ public class GameNetworkManager : NetworkManager
 
 	public void _START_HOST()
 	{
-		//buttons.SetActive(false);
+		buttons.SetActive(false);
+		lobbyUi.SetActive(false);
 		//StartHost();
 		//startBtn.gameObject.SetActive(true);
-		SteamStartHost();
+		SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypePublic, maxConnections);
 	}
 	public void _START_CLIENT()
 	{
@@ -222,15 +223,11 @@ public class GameNetworkManager : NetworkManager
 			gameLobbyJoinRequested = Callback<GameLobbyJoinRequested_t>.Create(OnGameJoinLobbyJoinRequested);
 		}
 	}
-	public void SteamStartHost()
-	{
-		SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypePublic, maxConnections);
-	}
 
 	private void OnLobbyCreated(LobbyCreated_t callback)
 	{
-		buttons.SetActive(false);
-		lobbyUi.SetActive(false);
+		//buttons.SetActive(false);
+		//lobbyUi.SetActive(false);
 		// fail
 		if (callback.m_eResult != EResult.k_EResultOK)
 		{
