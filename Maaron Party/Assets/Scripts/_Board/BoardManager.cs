@@ -96,26 +96,17 @@ public class BoardManager : NetworkBehaviour
 	}
 
 
-	private void SetUpPlayer()
-	{
-		_player = PlayerControls.Instance;
-		if (gm.nTurn == 1)
-			_player.SetStartNode(startNode);
-		if (isServer)
-			StartCoroutine( StartGameCo() );
-	}
 	[Command(requiresAuthority=false)] public void CmdReadyUp()
 	{
 		++nBmReady;
 		//Debug.Log($"<color=white>{nBmReady} >= {nm.numPlayers}</color>");
 		if (nBmReady >= nm.numPlayers)
 		{
-			SetUpPlayer();
 			RpcSetUpPlayer();
 			nm.UnparentBoardControls();
 		}
 	} 
-	[ClientRpc(includeOwner=false)] private void RpcSetUpPlayer()
+	[ClientRpc] private void RpcSetUpPlayer()
 	{
 		_player = PlayerControls.Instance;
 		if (gm.nTurn == 1)
