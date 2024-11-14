@@ -35,11 +35,11 @@ public class PlacementButton : NetworkBehaviour
 	
 	public void _CHOOSE_CARD()
 	{
-		bm.DoneChoosingPlacement(placement);
+		bm.CmdRevealPlacementCard(ind, pc.id, pc.characterInd, placement, connectionToClient);
 	}
 	public void ChooseCard()
 	{
-		bm.CmdRevealPlacementCard(ind, pc.id, pc.characterInd, placement, connectionToClient);
+		bm.DoneChoosingPlacement(placement);
 		pc.CmdSetOrder(placement);
 		glow.enabled = btn.enabled = false;
 		img.sprite = cardFront;
