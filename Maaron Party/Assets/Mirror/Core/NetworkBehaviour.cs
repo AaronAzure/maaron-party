@@ -1258,7 +1258,7 @@ namespace Mirror
             catch (Exception e)
             {
                 // show a detailed error and let the user know what went wrong
-                Debug.LogError($"OnSerialize failed for: object={name} component={GetType()} sceneId={netIdentity.sceneId:X}\n\n{e}");
+                //Debug.LogError($"OnSerialize failed for: object={name} component={GetType()} sceneId={netIdentity.sceneId:X}\n\n{e}");
             }
             int endPosition = writer.Position;
 
