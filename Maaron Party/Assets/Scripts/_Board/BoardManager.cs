@@ -85,6 +85,7 @@ public class BoardManager : NetworkBehaviour
 
 		if (!gm.gameStarted)
 		{
+			ToggleMainUi(false);
 			CmdToggleMainUi(false);
 			if (isServer)
 			{
@@ -92,30 +93,33 @@ public class BoardManager : NetworkBehaviour
 				gm.CmdSetupDoorTolls(doors == null ? 0 : doors.Length);
 			}
 		}
-		//string s = $"<color=#FF8D07>";
-		//s += $"NetworkServer.connections.Count = {NetworkServer.connections.Count} | ";
-		//s += $"GameNetworkManager.Instance.numPlayers = {GameNetworkManager.Instance.numPlayers} | ";
-		//s += "</color>";
-		//Debug.Log(s);
 	}
 
+
+	private void SetUpPlayer()
+	{
+		_player = PlayerControls.Instance;
+		if (gm.nTurn == 1)
+			_player.SetStartNode(startNode);
+		if (isServer)
+			StartCoroutine( StartGameCo() );
+	}
 	[Command(requiresAuthority=false)] public void CmdReadyUp()
 	{
 		++nBmReady;
 		//Debug.Log($"<color=white>{nBmReady} >= {nm.numPlayers}</color>");
 		if (nBmReady >= nm.numPlayers)
 		{
+			SetUpPlayer();
 			RpcSetUpPlayer();
 			nm.UnparentBoardControls();
 		}
 	} 
-	[ClientRpc] private void RpcSetUpPlayer()
+	[ClientRpc(includeOwner=false)] private void RpcSetUpPlayer()
 	{
-		Debug.Log($"<color=white>Setting Up</color>");
 		_player = PlayerControls.Instance;
 		if (gm.nTurn == 1)
 			_player.SetStartNode(startNode);
-		//_player.RemoteStart(spawnPos);
 		if (isServer)
 			StartCoroutine( StartGameCo() );
 	}
@@ -146,6 +150,7 @@ public class BoardManager : NetworkBehaviour
 			else if (nm.skipIntro)
 			{
 				yield return ChooseStarCo(0);
+				ToggleMainUi(true);
 				CmdToggleMainUi(true);
 			}
 			else
@@ -157,6 +162,7 @@ public class BoardManager : NetworkBehaviour
 				CmdMaaronIntro();
 
 				yield return new WaitForSeconds(2);
+				ToggleDialogue(true, introSents);
 				CmdToggleDialogue(true, introSents);
 				CmdToggleNextButton(true);
 
@@ -178,6 +184,7 @@ public class BoardManager : NetworkBehaviour
 			CmdMaaronIntro();
 
 			yield return new WaitForSeconds(2);
+			ToggleDialogue(true, gameOverSents);
 			CmdToggleDialogue(true, gameOverSents);
 			CmdToggleNextButton(true);
 
@@ -197,6 +204,7 @@ public class BoardManager : NetworkBehaviour
 			CmdMaaronIntro();
 
 			yield return new WaitForSeconds(2);
+			ToggleDialogue(true, lastSents);
 			CmdToggleDialogue(true, lastSents);
 			CmdToggleNextButton(true);
 
@@ -205,6 +213,7 @@ public class BoardManager : NetworkBehaviour
 		// turn 2+
 		else
 		{
+			ToggleMainUi(true);
 			CmdToggleMainUi(true);
 			StartCoroutine( SetupStarNode(gm.prevStarInd) );
 		}
@@ -228,12 +237,14 @@ public class BoardManager : NetworkBehaviour
 	#region Dialogue
 	
 	// ui = player data, turn
+	void ToggleMainUi(bool active) => mainUi.gameObject.SetActive(active);
 	[Command(requiresAuthority=false)] public void CmdToggleMainUi(bool active) => RpcToggleMainUi(active);
-	[ClientRpc] void RpcToggleMainUi(bool active) => mainUi.gameObject.SetActive(active);
+	[ClientRpc(includeOwner=false)] void RpcToggleMainUi(bool active) => mainUi.gameObject.SetActive(active);
 	
 	// Dialogue
+	public void ToggleDialogue(bool active, string[] sents) => dialogue.SetSentence(active, "Maaron", sents);
 	[Command(requiresAuthority=false)] public void CmdToggleDialogue(bool active, string[] sents) => RpcToggleDialogue(active, sents);
-	[ClientRpc] void RpcToggleDialogue(bool active, string[] sents) => dialogue.SetSentence(active, "Maaron", sents);
+	[ClientRpc(includeOwner=false)] void RpcToggleDialogue(bool active, string[] sents) => dialogue.SetSentence(active, "Maaron", sents);
 
 	[Command(requiresAuthority=false)] public void CmdToggleNextButton(bool targeted) 
 	{
@@ -245,8 +256,9 @@ public class BoardManager : NetworkBehaviour
 	[TargetRpc] void TargetToggleNextButton(NetworkConnectionToClient target) => dialogue.ToggleButton(true);
 	[ClientRpc] void RpcDisableNextButton() => dialogue.ToggleButton(false);
 	
+	public void NextDialogue() => dialogue.NextSentence();
 	[Command(requiresAuthority=false)] public void CmdNextDialogue() => RpcNextDialogue();
-	[ClientRpc] void RpcNextDialogue() => dialogue.NextSentence();
+	[ClientRpc(includeOwner=false)] void RpcNextDialogue() => dialogue.NextSentence();
 
 	Coroutine teleportCo;
 	//~ --------------------------------------------------------
@@ -266,7 +278,8 @@ public class BoardManager : NetworkBehaviour
 			StartCoroutine( WinnerCo() );
 		}
 	}
-	[ClientRpc] void RpcEndDialogue() => dialogue.CloseDialogue();
+	public void EndDialogue() => dialogue.CloseDialogue();
+	[ClientRpc(includeOwner=false)] void RpcEndDialogue() => dialogue.CloseDialogue();
 
 	#endregion
 
@@ -304,10 +317,8 @@ public class BoardManager : NetworkBehaviour
 			if (placementBtns[i] != null)
 				placementBtns[i].gameObject.SetActive(active);
 	}
-	[ClientRpc] void RpcTogglePlacementUi(bool active)
-	{
-		placementUi.SetActive(active);
-	}
+	[ClientRpc] void RpcTogglePlacementUi(bool active) => placementUi.SetActive(active);
+
 
 	
 	List<int> tempPlayerOrder;
@@ -317,13 +328,20 @@ public class BoardManager : NetworkBehaviour
 		gm.CmdSavePlacements(placement, _player.id);
 		_player.CmdSetDataUi(placement);
 	}
-	[Command(requiresAuthority=false)] public void CmdRevealPlacementCard(int ind, int playerId, int characterInd, int placement) 
+	[Command(requiresAuthority=false)] public void CmdRevealPlacementCard(
+		int ind, int playerId, int characterInd, int placement, NetworkConnectionToClient conn
+	) 
 	{
+		// already chosen
+		if (!placementBtns[ind].enabled) return;
+
 		if (ind >= 0 && ind < placementBtns.Length && placementBtns[ind] != null &&
 			ind < placementChosen.Length && !placementChosen[ind])
 		{
+			placementBtns[ind].enabled = false;
 			placementChosen[ind] = true;
 			tempPlayerOrder[placement] = playerId;
+			TargetRevealPlacementCard(conn, ind);
 			RpcRevealPlacementCard(ind, characterInd);
 		}
 		bool allReady = true;
@@ -333,10 +351,18 @@ public class BoardManager : NetworkBehaviour
 		if (allReady && endPlacementCo == null)
 			endPlacementCo = StartCoroutine( EndPlacementCo() );
 	}
+	[TargetRpc] void TargetRevealPlacementCard(NetworkConnectionToClient conn, int ind)
+	{
+		if (ind >= 0 && ind < placementBtns.Length && placementBtns[ind] != null)
+		{
+			placementBtns[ind].ChooseCard();
+		}
+	}
 	[ClientRpc] void RpcRevealPlacementCard(int ind, int characterInd)
 	{
 		if (ind >= 0 && ind < placementBtns.Length && placementBtns[ind] != null)
 		{
+			placementBtns[ind].enabled = false;
 			placementBtns[ind].RevealCard(characterInd);
 		}
 	}
@@ -450,6 +476,7 @@ public class BoardManager : NetworkBehaviour
 		yield return new WaitForSeconds(1);
 		CmdToggleStartCam(false);
 		nm.NextBoardPlayerTurn();
+		ToggleMainUi(true);
 		CmdToggleMainUi(true);
 
 		yield return new WaitForSeconds(1);
@@ -490,6 +517,7 @@ public class BoardManager : NetworkBehaviour
 		//yield return new WaitForSeconds(1);
 		isIntro = false;
 		nm.NextBoardPlayerTurn();
+		ToggleMainUi(true);
 		CmdToggleMainUi(true);
 		teleportCo = null;
 	}

@@ -47,6 +47,7 @@ public class UiDialogue : MonoBehaviour
 	}
 	public void _NEXT_SENTENCE()
 	{
+		BoardManager.Instance.NextDialogue();
 		BoardManager.Instance.CmdNextDialogue();
 	}
 	public void NextSentence()
@@ -58,6 +59,7 @@ public class UiDialogue : MonoBehaviour
 		else
 		{
 			nextBtn.gameObject.SetActive(false);
+			BoardManager.Instance.EndDialogue();
 			BoardManager.Instance.CmdEndDialogue();
 		}
 	}
