@@ -1403,7 +1403,7 @@ MonoBehaviour:
   offlineScene: 
   onlineScene: 
   transport: {fileID: 193865300}
-  networkAddress: localhost
+  networkAddress: 
   maxConnections: 4
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60
@@ -1496,7 +1496,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Port: 7777
-  LoggerLevel: 2
+  LoggerLevel: 0
   TimeoutMS: 1000
   useRelay: 1
 --- !u!1 &238838303

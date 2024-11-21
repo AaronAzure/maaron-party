@@ -68,25 +68,27 @@ public class LobbyRelay : MonoBehaviour
 			var data = new RelayServerData(a, "dtls");
 			var settings = new NetworkSettings();
     		settings.WithRelayParameters(ref data);
+			nm.GetComponent<UtpTransport>();
 
-			var hostDriver = NetworkDriver.Create(settings);
 
-			// Bind to the Relay server.
-			if (hostDriver.Bind(NetworkEndpoint.AnyIpv4) != 0)
-			{
-				Debug.LogError("Host client failed to bind");
-			}
-			else
-			{
-				if (hostDriver.Listen() != 0)
-				{
-					Debug.LogError("Host client failed to listen");
-				}
-				else
-				{
-					Debug.Log("Host client bound to Relay server");
-				}
-			}
+			//var hostDriver = NetworkDriver.Create(settings);
+
+			//// Bind to the Relay server.
+			//if (hostDriver.Bind(NetworkEndpoint.AnyIpv4) != 0)
+			//{
+			//	Debug.LogError("Host client failed to bind");
+			//}
+			//else
+			//{
+			//	if (hostDriver.Listen() != 0)
+			//	{
+			//		Debug.LogError("Host client failed to listen");
+			//	}
+			//	else
+			//	{
+			//		Debug.Log("Host client bound to Relay server");
+			//	}
+			//}
 
 
 			hostingUi?.SetActive(false);
