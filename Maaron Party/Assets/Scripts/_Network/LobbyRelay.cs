@@ -11,6 +11,7 @@ using Unity.Networking.Transport.Relay;
 using Unity.Networking.Transport;
 using UnityEngine.UI;
 using TMPro;
+using Unity.Netcode.Transports.UTP;
 
 public class LobbyRelay : MonoBehaviour
 {
@@ -65,30 +66,11 @@ public class LobbyRelay : MonoBehaviour
 
 			// created lobby, set lobby settings
 			string joinCode = await relay.GetJoinCodeAsync(a.AllocationId);
+
 			var data = new RelayServerData(a, "dtls");
-			var settings = new NetworkSettings();
-    		settings.WithRelayParameters(ref data);
-			nm.GetComponent<UtpTransport>();
-
-
-			//var hostDriver = NetworkDriver.Create(settings);
-
-			//// Bind to the Relay server.
-			//if (hostDriver.Bind(NetworkEndpoint.AnyIpv4) != 0)
-			//{
-			//	Debug.LogError("Host client failed to bind");
-			//}
-			//else
-			//{
-			//	if (hostDriver.Listen() != 0)
-			//	{
-			//		Debug.LogError("Host client failed to listen");
-			//	}
-			//	else
-			//	{
-			//		Debug.Log("Host client bound to Relay server");
-			//	}
-			//}
+			nm.GetComponent<UnityTransport>().SetRelayServerData(data);
+			//var settings = new NetworkSettings();
+    		//settings.WithRelayParameters(ref data);
 
 
 			hostingUi?.SetActive(false);
@@ -96,8 +78,9 @@ public class LobbyRelay : MonoBehaviour
 			lobbyCode.text = $"Lobby Code: {joinCode}";
 
 			// start host
+			nm.StartHost(); // without relay
 			//nm.StartStandardHost(); // without relay
-			nm.StartRelayHost(nm.maxConnections); // with relay
+			//nm.StartRelayHost(nm.maxConnections); // with relay
 
 		} catch (RelayServiceException e) {
 			buttonUi?.SetActive(true);
@@ -124,12 +107,15 @@ public class LobbyRelay : MonoBehaviour
 			// joined lobby, set lobby settings
 			joiningUi?.SetActive(false);
 			var data = new RelayServerData(a, "dtls");
-			var settings = new NetworkSettings();
-    		settings.WithRelayParameters(ref data);
+			nm.GetComponent<UnityTransport>().SetRelayServerData(data);
+			//var data = new RelayServerData(a, "dtls");
+			//var settings = new NetworkSettings();
+    		//settings.WithRelayParameters(ref data);
 			
 			// start host
+			nm.StartClient(); // with relay
 			//nm.JoinStandardServer(); // without relay
-			nm.JoinRelayServer(); // with relay
+			//nm.JoinRelayServer(); // with relay
 
 		} catch (RelayServiceException e) {
 			buttonUi?.SetActive(true);

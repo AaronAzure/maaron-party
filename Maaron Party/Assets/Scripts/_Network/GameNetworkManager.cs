@@ -6,7 +6,7 @@ using Mirror;
 using UnityEngine.SceneManagement;
 using Utp;
 
-public class GameNetworkManager : RelayNetworkManager
+public class GameNetworkManager : NetworkManager
 {
 	#region Variables
 	public static GameNetworkManager Instance;
