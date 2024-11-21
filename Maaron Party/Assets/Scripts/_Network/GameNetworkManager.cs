@@ -4,9 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.SceneManagement;
-using Steamworks;
+using Utp;
 
-public class GameNetworkManager : NetworkManager
+public class GameNetworkManager : RelayNetworkManager
 {
 	#region Variables
 	public static GameNetworkManager Instance;
