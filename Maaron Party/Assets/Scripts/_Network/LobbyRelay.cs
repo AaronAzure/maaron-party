@@ -69,6 +69,26 @@ public class LobbyRelay : MonoBehaviour
 			var settings = new NetworkSettings();
     		settings.WithRelayParameters(ref data);
 
+			var hostDriver = NetworkDriver.Create(settings);
+
+			// Bind to the Relay server.
+			if (hostDriver.Bind(NetworkEndpoint.AnyIpv4) != 0)
+			{
+				Debug.LogError("Host client failed to bind");
+			}
+			else
+			{
+				if (hostDriver.Listen() != 0)
+				{
+					Debug.LogError("Host client failed to listen");
+				}
+				else
+				{
+					Debug.Log("Host client bound to Relay server");
+				}
+			}
+
+
 			hostingUi?.SetActive(false);
 			lobbyUi?.SetActive(true);
 			lobbyCode.text = $"Lobby Code: {joinCode}";
@@ -86,6 +106,12 @@ public class LobbyRelay : MonoBehaviour
 
 	async void JoinRelay()
 	{
+		if (joinCodeInput.text == "" || joinCodeInput.text.Length < 6)
+    	{
+        	Debug.LogError("Please input a join code.");
+        	return;
+    	}
+
 		Debug.Log($"<color=magenta>Joining with {joinCodeInput.text}</color>");
 		try {
 			// try to join lobby
