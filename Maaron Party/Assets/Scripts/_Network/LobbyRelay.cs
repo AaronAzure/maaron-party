@@ -51,7 +51,7 @@ public class LobbyRelay : MonoBehaviour
 		if (hostBtn != null)
 			hostBtn.onClick.AddListener(() => CreateRelay() );
 		if (joinBtn != null)
-			joinBtn.onClick.AddListener(() => JoinRelay(joinCodeInput.text) );
+			joinBtn.onClick.AddListener(() => JoinRelay() );
 	}
 
 	
@@ -84,17 +84,17 @@ public class LobbyRelay : MonoBehaviour
 		}
 	}
 
-	async void JoinRelay(string joinCode)
+	async void JoinRelay()
 	{
-		Debug.Log($"<color=magenta>Joining with {joinCode}</color>");
+		Debug.Log($"<color=magenta>Joining with {joinCodeInput.text}</color>");
 		try {
 			// try to join lobby
 			buttonUi?.SetActive(false);
 			joiningUi?.SetActive(true);
-			JoinAllocation a = await relay.JoinAllocationAsync(joinCode);
-			joiningUi?.SetActive(false);
+			JoinAllocation a = await relay.JoinAllocationAsync(joinCodeInput.text);
 
 			// joined lobby, set lobby settings
+			joiningUi?.SetActive(false);
 			var data = new RelayServerData(a, "dtls");
 			var settings = new NetworkSettings();
     		settings.WithRelayParameters(ref data);
