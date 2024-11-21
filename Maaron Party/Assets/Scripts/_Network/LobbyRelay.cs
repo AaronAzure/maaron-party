@@ -74,8 +74,8 @@ public class LobbyRelay : MonoBehaviour
 			lobbyCode.text = $"Lobby Code: {joinCode}";
 
 			// start host
-			nm.StartStandardHost(); // without relay
-			//nm.StartRelayHost(nm.maxConnections); // without relay
+			//nm.StartStandardHost(); // without relay
+			nm.StartRelayHost(nm.maxConnections); // with relay
 
 		} catch (RelayServiceException e) {
 			buttonUi?.SetActive(true);
@@ -100,8 +100,8 @@ public class LobbyRelay : MonoBehaviour
     		settings.WithRelayParameters(ref data);
 			
 			// start host
-			nm.JoinStandardServer(); // without relay
-			//nm.JoinRelayServer(); // with relay
+			//nm.JoinStandardServer(); // without relay
+			nm.JoinRelayServer(); // with relay
 
 		} catch (RelayServiceException e) {
 			buttonUi?.SetActive(true);
