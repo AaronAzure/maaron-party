@@ -1,10 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 using UnityEngine.UI;
-using Mirror;
 using UnityEngine.SceneManagement;
-using Utp;
 
 public class GameNetworkManager : NetworkManager
 {
@@ -16,13 +15,8 @@ public class GameNetworkManager : NetworkManager
 	//GameObject ball;
 	[SerializeField] private GameObject buttons;
 	[SerializeField] private GameObject hostLostUi;
-	//[SerializeField] private GameObject lobbyUi;
-	//[SerializeField] private Button hostBtn;
-	//[SerializeField] private Button clientBtn;
-	//[SerializeField] private Button lobbyBtn;
-	//[SerializeField] private Button startBtn;
 
-	[Scene] [SerializeField] private Animator anim;
+	[SerializeField] private Animator anim;
 
 	
 	[Space] [Header("Network")]
@@ -36,12 +30,12 @@ public class GameNetworkManager : NetworkManager
 
 	[Space] [Header("Scenes")]
 	[SerializeField] private int minPlayers=2;
-	[Scene] [SerializeField] private string lobbyScene;
-	[Scene] [SerializeField] private string boardScene;
-	[Scene] [SerializeField] private string practiceScene;
+	[SerializeField] private string lobbyScene;
+	[SerializeField] private string boardScene;
+	[SerializeField] private string practiceScene;
 	int nMinigame;
 	private string minigameName;
-	[Scene] [SerializeField] private string[] minigameScenes;
+	[SerializeField] private string[] minigameScenes;
 
 	[Space] [SerializeField] private GameObject previewObj;
 
