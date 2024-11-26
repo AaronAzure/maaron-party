@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Steamworks;
-using Mirror;
 
 
 public class SteamLobby : MonoBehaviour
@@ -64,7 +63,7 @@ public class SteamLobby : MonoBehaviour
 		lobbyUi.SetActive(false);
 		//StartHost();
 		//startBtn.gameObject.SetActive(true);
-		SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypePublic, nm.maxConnections);
+		SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypePublic, 4);
 	}
 	public void _START_CLIENT()
 	{
@@ -76,7 +75,7 @@ public class SteamLobby : MonoBehaviour
 	{
 		nm.StartBoardGame();
 		//nPlayers = NetworkServer.connections.Count;
-		Debug.Log($"<color=magenta>NetworkServer.connections.Count = {NetworkServer.connections.Count}</color>");
+		//Debug.Log($"<color=magenta>NetworkServer.connections.Count = {NetworkServer.connections.Count}</color>");
 		startBtn.gameObject.SetActive(false);
 	}
 
@@ -114,14 +113,14 @@ public class SteamLobby : MonoBehaviour
 		// all connected clients
 
 		// only clients
-		if (NetworkServer.active) return;
+		//if (NetworkServer.active) return;
 
 		string hostAddr = SteamMatchmaking.GetLobbyData(
 			new CSteamID(callback.m_ulSteamIDLobby),
 			HostAddrKey
 		);
 
-		nm.networkAddress = hostAddr;
+		//nm.networkAddress = hostAddr;
 		buttons.SetActive(false);
 		lobbyUi.SetActive(false);
 		nm.StartClient();

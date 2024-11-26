@@ -1,7 +1,7 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
-using Mirror;
+using Unity.Netcode;
 
 public class MinigameManager : NetworkBehaviour
 {
@@ -11,7 +11,7 @@ public class MinigameManager : NetworkBehaviour
 	private GameManager gm {get {return GameManager.Instance;}}
 	private MinigameControls _player {get {return MinigameControls.Instance;}}
 	//[SerializeField] private NetworkObject playerToSpawn;
-	[SyncVar] public int nBmReady; 
+	public int nBmReady; 
 	[SerializeField] private TextMeshProUGUI timerTxt;
 	[SerializeField] private TextMeshProUGUI countDownTxt;
 	private int countDownTimer=-1;
@@ -50,7 +50,7 @@ public class MinigameManager : NetworkBehaviour
 
 	private void Start() 
 	{
-		if (isServer)
+		if (IsServer)
 		{
 			rewards = new int[GetNumPlayers()];
 			for (int i=0 ; i<rewards.Length ; i++)
@@ -60,21 +60,21 @@ public class MinigameManager : NetworkBehaviour
 			ctr.enabled = false;
 
 		timerTxt.text = $"{timer}";
-		CmdReadyUp();
+		ReadyUpServerRpc();
 	}
 
-	[Command(requiresAuthority=false)] public void CmdReadyUp()
+	[ServerRpc] public void ReadyUpServerRpc()
 	{
 		++nBmReady;
-		if (nBmReady >= nm.numPlayers)
+		if (nBmReady >= NetworkManager.Singleton.ConnectedClients.Count)
 		{
 			if (pm != null && pm.gameObject.activeInHierarchy)
-				pm.CmdSetup();
-			RpcSetUpPlayer();
+				pm.SetupServerRpc();
+			SetUpPlayerClientRpc();
 			StartCoroutine(CountDownCo());
 		}
 	} 
-	[ClientRpc] private void RpcSetUpPlayer()
+	[ClientRpc] private void SetUpPlayerClientRpc()
 	{
 		_player.canMove = playersCanMove;
 		_player.canJump = playersCanJump;
@@ -94,7 +94,7 @@ public class MinigameManager : NetworkBehaviour
 		}
 		countdownCo = StartCoroutine( GameTimerCo() );
 		if (pm != null && pm.gameObject.activeInHierarchy)
-			pm.CmdTriggerTransition(false);
+			pm.TriggerTransitionServerRpc(false);
 	}
 
 	public Vector3 GetPlayerSpawn(int id)
@@ -160,13 +160,13 @@ public class MinigameManager : NetworkBehaviour
 			if (timer > 0)
 				countdownCo = StartCoroutine( GameTimerCo() );
 			// game over
-			else if (isServer)
+			else if (IsServer)
 				GameOver();
 		}
 	} 
 
 	bool gameFin;
-	[Command(requiresAuthority=false)] public void CmdPlayerEliminated(int id)
+	[ServerRpc] public void PlayerEliminatedServerRpc(int id)
 	{
 		if (id < rewards.Length)
 			rewards[id] = gm.GetPrizeValue(nOut++);
@@ -194,17 +194,17 @@ public class MinigameManager : NetworkBehaviour
 		if (pm != null && pm.gameObject.activeInHierarchy)
 		{
 			yield return new WaitForSeconds(0.5f);
-			pm.CmdTriggerTransition(true);
+			pm.TriggerTransitionServerRpc(true);
 
 			yield return new WaitForSeconds(0.5f);
 			//gm.CmdReloadPreviewMinigame();
 			nm.ReloadPreviewMinigame();
 		}
 		// real
-		else if (isServer)
+		else if (IsServer)
 		{
 			if (countdownCo != null) StopCoroutine( countdownCo );
-			CmdChangeText("Game!");
+			ChangeTextServerRpc("Game!");
 
 			int highestId=0;
 			int highestScore=-1;
@@ -226,14 +226,14 @@ public class MinigameManager : NetworkBehaviour
 			Debug.Log(d);
 
 			yield return new WaitForSeconds(1f);
-			CmdChangeText("");
+			ChangeTextServerRpc("");
 			for (int i=0 ; i<rewardUis.Length && i<GetNumPlayers() ; i++)
 			{
 				int[] details = nm.GetMinigamePlayerInfo(i);
-				CmdShowRewards(i, details[0], details[1], details[2], details[3], details[4]);
-				CmdShowPrizeText(i, rewards[i]);
+				ShowRewardsServerRpc(i, details[0], details[1], details[2], details[3], details[4]);
+				ShowPrizeTextServerRpc(i, rewards[i]);
 				if (highestId == i)
-					CmdShowManaPrizeText(i, 1);
+					ShowManaPrizeTextServerRpc(i, 1);
 			}
 
 			yield return new WaitForSeconds(2f);
@@ -243,10 +243,10 @@ public class MinigameManager : NetworkBehaviour
 			for (int i=0 ; i<rewardUis.Length && i<GetNumPlayers() ; i++)
 			{
 				int[] details = nm.GetMinigamePlayerInfo(i);
-				CmdShowRewards(i, details[0], details[1], details[2], details[3], details[4]);
-				CmdShowPrizeText(i, 0);
+				ShowRewardsServerRpc(i, details[0], details[1], details[2], details[3], details[4]);
+				ShowPrizeTextServerRpc(i, 0);
 				if (highestId == i)
-					CmdShowManaPrizeText(i, 0);
+					ShowManaPrizeTextServerRpc(i, 0);
 			}
 
 			yield return new WaitForSeconds(1f);
@@ -255,21 +255,21 @@ public class MinigameManager : NetworkBehaviour
 	}
 
 
-	[Command(requiresAuthority=false)] void CmdChangeText(string newTxt) => RpcChangeText(newTxt);
-	[ClientRpc] void RpcChangeText(string newTxt) => countDownTxt.text = newTxt;
+	[ServerRpc] void ChangeTextServerRpc(string newTxt) => ChangeTextClientRpc(newTxt);
+	[ClientRpc] void ChangeTextClientRpc(string newTxt) => countDownTxt.text = newTxt;
 
-	[Command(requiresAuthority=false)] void CmdShowPrizeText(int ind, int prize) => RpcShowPrizeText(ind, prize);
-	[ClientRpc] void RpcShowPrizeText(int ind, int prize) => rewardUis[ind].ShowPrize(prize);
+	[ServerRpc] void ShowPrizeTextServerRpc(int ind, int prize) => ShowPrizeTextClientRpc(ind, prize);
+	[ClientRpc] void ShowPrizeTextClientRpc(int ind, int prize) => rewardUis[ind].ShowPrize(prize);
 
-	[Command(requiresAuthority=false)] void CmdShowManaPrizeText(int ind, int prize) => RpcShowManaPrizeText(ind, prize);
-	[ClientRpc] void RpcShowManaPrizeText(int ind, int prize) => rewardUis[ind].ShowManaPrize(prize);
+	[ServerRpc] void ShowManaPrizeTextServerRpc(int ind, int prize) => ShowManaPrizeTextClientRpc(ind, prize);
+	[ClientRpc] void ShowManaPrizeTextClientRpc(int ind, int prize) => rewardUis[ind].ShowManaPrize(prize);
 
-	[Command(requiresAuthority=false)] void CmdShowRewards(int ind,
+	[ServerRpc] void ShowRewardsServerRpc(int ind,
 		int characterInd, int order, int coins, int stars, int manas)
 	{
-		RpcShowRewards(ind, characterInd, order, coins, stars, manas);
+		ShowRewardsClientRpc(ind, characterInd, order, coins, stars, manas);
 	}
-	[ClientRpc] void RpcShowRewards(int ind,
+	[ClientRpc] void ShowRewardsClientRpc(int ind,
 		int characterInd, int order, int coins, int stars, int manas)
 	{
 		if (ind >= 0 && ind < rewardUis.Length && rewardUis[ind] != null)
@@ -283,12 +283,12 @@ public class MinigameManager : NetworkBehaviour
 		}
 	}
 
-	[Command(requiresAuthority=false)] void CmdShowManaRewards(int ind,
+	[ServerRpc] void ShowManaRewardsServerRpc(int ind,
 		int characterInd, int order, int coins, int stars, int manas)
 	{
-		RpcShowManaRewards(ind, characterInd, order, coins, stars, manas);
+		ShowManaRewardsClientRpc(ind, characterInd, order, coins, stars, manas);
 	}
-	[ClientRpc] void RpcShowManaRewards(int ind,
+	[ClientRpc] void ShowManaRewardsClientRpc(int ind,
 		int characterInd, int order, int coins, int stars, int manas)
 	{
 		if (ind >= 0 && ind < rewardUis.Length && rewardUis[ind] != null)

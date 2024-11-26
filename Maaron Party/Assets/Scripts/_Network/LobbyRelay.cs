@@ -1,17 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
-using Mirror;
+using Unity.Netcode;
 using UnityEngine;
 using Unity.Services.Core;
 using Unity.Services.Authentication;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
-using Utp;
 using Unity.Networking.Transport.Relay;
 using Unity.Networking.Transport;
 using UnityEngine.UI;
 using TMPro;
-using Unity.Netcode.Transports.UTP;
 
 public class LobbyRelay : MonoBehaviour
 {
@@ -33,6 +31,7 @@ public class LobbyRelay : MonoBehaviour
 	[SerializeField] private Button joinBtn;
 	[SerializeField] private TextMeshProUGUI lobbyCode;
 	[SerializeField] private TMP_InputField joinCodeInput;
+	private NetworkDriver hostDriver;
 
 
 	
@@ -62,15 +61,34 @@ public class LobbyRelay : MonoBehaviour
 			// try to create lobby
 			buttonUi?.SetActive(false);
 			hostingUi?.SetActive(true);
-			Allocation a = await relay.CreateAllocationAsync(nm.maxConnections);
+			Allocation a = await relay.CreateAllocationAsync(nm.ConnectedClients.Count);
 
 			// created lobby, set lobby settings
 			string joinCode = await relay.GetJoinCodeAsync(a.AllocationId);
-
 			var data = new RelayServerData(a, "dtls");
-			nm.GetComponent<UnityTransport>().SetRelayServerData(data);
-			//var settings = new NetworkSettings();
-    		//settings.WithRelayParameters(ref data);
+			var settings = new NetworkSettings();
+    		settings.WithRelayParameters(ref data);
+			//todo nm.GetComponent<UtpTransport>();
+
+
+			hostDriver = NetworkDriver.Create(settings);
+
+			// Bind to the Relay server.
+			if (hostDriver.Bind(NetworkEndpoint.AnyIpv4) != 0)
+			{
+				Debug.LogError("Host client failed to bind");
+			}
+			else
+			{
+				if (hostDriver.Listen() != 0)
+				{
+					Debug.LogError("Host client failed to listen");
+				}
+				else
+				{
+					Debug.Log("Host client bound to Relay server");
+				}
+			}
 
 
 			hostingUi?.SetActive(false);
@@ -78,9 +96,8 @@ public class LobbyRelay : MonoBehaviour
 			lobbyCode.text = $"Lobby Code: {joinCode}";
 
 			// start host
-			nm.StartHost(); // without relay
 			//nm.StartStandardHost(); // without relay
-			//nm.StartRelayHost(nm.maxConnections); // with relay
+			//todo nm.StartRelayHost(nm.maxConnections); // with relay
 
 		} catch (RelayServiceException e) {
 			buttonUi?.SetActive(true);
@@ -88,6 +105,18 @@ public class LobbyRelay : MonoBehaviour
 			Debug.LogError(e);
 		}
 	}
+
+	public void OnBindHost(Allocation a)
+	{
+    	Debug.Log("Host - Binding to the Relay server using UTP.");
+
+    	// Extract the Relay server data from the Allocation response.
+    	var relayServerData = new RelayServerData(a, "udp");
+
+    	// Create NetworkSettings using the Relay server data.
+    	var settings = new NetworkSettings();
+    	settings.WithRelayParameters(ref relayServerData);
+}
 
 	async void JoinRelay()
 	{
@@ -107,15 +136,12 @@ public class LobbyRelay : MonoBehaviour
 			// joined lobby, set lobby settings
 			joiningUi?.SetActive(false);
 			var data = new RelayServerData(a, "dtls");
-			nm.GetComponent<UnityTransport>().SetRelayServerData(data);
-			//var data = new RelayServerData(a, "dtls");
-			//var settings = new NetworkSettings();
-    		//settings.WithRelayParameters(ref data);
+			var settings = new NetworkSettings();
+    		settings.WithRelayParameters(ref data);
 			
 			// start host
-			nm.StartClient(); // with relay
 			//nm.JoinStandardServer(); // without relay
-			//nm.JoinRelayServer(); // with relay
+			//todo nm.JoinRelayServer(); // with relay
 
 		} catch (RelayServiceException e) {
 			buttonUi?.SetActive(true);

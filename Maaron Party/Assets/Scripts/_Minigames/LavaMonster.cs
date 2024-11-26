@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Mirror;
+using Unity.Netcode;
 
 public class LavaMonster : NetworkBehaviour
 {
@@ -27,11 +27,11 @@ public class LavaMonster : NetworkBehaviour
 		var p = points[prevP].position;
 		destPos = new Vector3(p.x, 0, p.z);
 		canMove = true;
-		if (isServer) 
-			CmdSetup();
+		if (IsServer) 
+			SetupServerRpc();
 	}
-	[Command(requiresAuthority=false)] void CmdSetup() => RpcSetup();
-	[ClientRpc] void RpcSetup()
+	[ServerRpc] void SetupServerRpc() => SetupClientRpc();
+	[ClientRpc] void SetupClientRpc()
 	{
 		for (int i=0 ; i<fireTrails.Length ; i++)
 			if (fireTrails[i] != null)
@@ -59,7 +59,7 @@ public class LavaMonster : NetworkBehaviour
 					else
 					{
 						timer = 0;
-						CmdSpawnFireTrail();
+						SpawnFireTrailServerRpc();
 					}
 					var lookPos = destPos - transform.position;
 					lookPos.y = 0;
@@ -69,8 +69,8 @@ public class LavaMonster : NetworkBehaviour
 			}
 		}
 	}
-	[Command(requiresAuthority=false)] void CmdSpawnFireTrail() => RpcSpawnFireTrail();
-	[ClientRpc] private void RpcSpawnFireTrail()
+	[ServerRpc] void SpawnFireTrailServerRpc() => SpawnFireTrailClientRpc();
+	[ClientRpc] private void SpawnFireTrailClientRpc()
 	{
 		//Debug.Log("<color=red>SPAWNING FIRE TRAIL!!</color>");
 		for (int i=0 ; i<fireTrails.Length ; i++)

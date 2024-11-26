@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Mirror;
 using UnityEngine.SceneManagement;
+using Unity.Netcode;
+using System.Linq;
 
 public class GameManager : NetworkBehaviour
 {
@@ -23,24 +24,26 @@ public class GameManager : NetworkBehaviour
 
 	[Space] [Header("In game references")]
 	[SerializeField] private List<ushort> currNodes;
-	public readonly SyncDictionary<int, int[]> traps = new SyncDictionary<int, int[]>();
-	[SyncVar] [SerializeField] private List<int> placements;
-	[SyncVar] [SerializeField] private List<int> coins;
-	[SyncVar] [SerializeField] private List<int> stars;
-	[SyncVar] [SerializeField] private List<int> manas;
-	[SyncVar] [SerializeField] private List<int> doorTolls;
-	[SyncVar] [SerializeField] private List<List<int>> items;
+	//public readonly SyncDictionary<int, int[]> traps = new SyncDictionary<int, int[]>();
+	public Dictionary<int, int[]> traps = new Dictionary<int, int[]>();
+	[SerializeField] private NetworkList<int> placements = new NetworkList<int>(null, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+	[SerializeField] private NetworkList<int> coins = new NetworkList<int>(null, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+	[SerializeField] private NetworkList<int> stars = new NetworkList<int>(null, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+	[SerializeField] private NetworkList<int> manas = new NetworkList<int>(null, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+	[SerializeField] private NetworkList<int> doorTolls = new NetworkList<int>(null, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+	[SerializeField] private NetworkVariable<List<List<int>>> items =
+		new NetworkVariable<List<List<int>>>(new List<List<int>>(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 	
-	[Space] [SyncVar] public int nTurn=1; 
-	[SyncVar] public int maxTurns=20; 
+	[Space] public NetworkVariable<int> nTurn = new NetworkVariable<int>(1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner); 
+	public NetworkVariable<int> maxTurns = new NetworkVariable<int>(20, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner); 
 	
-	[Space] [SyncVar] public bool isPractice; 
+	[Space] public NetworkVariable<bool> isPractice = new NetworkVariable<bool>(false); 
 	[SerializeField] private GameObject pmObj;
 
 	[Space] public bool gameStarted; 
 	public int prevStarInd=-1; 
-	[SyncVar] public int turretReady; 
-	[SyncVar] public int turretRot; 
+	public NetworkVariable<int> turretReady = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner); 
+	public NetworkVariable<int> turretRot = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner); 
 	[SerializeField] Animator anim;
 
 	#endregion
@@ -59,12 +62,11 @@ public class GameManager : NetworkBehaviour
 	public void Start() 
 	{
 		currNodes = new();
-		placements = new();
-		coins = new();
-		stars = new();
-		manas = new();
-		items = new();
-		nTurn = 1;
+		//placements = new();
+		//coins = new();
+		//stars = new();
+		//manas = new();
+		//items = new();
 		if (BoardManager.Instance == null)
 			TriggerTransition(false);
 	}
@@ -105,7 +107,7 @@ public class GameManager : NetworkBehaviour
 			traps[nodeId] = new int[3]{playerId, characterInd, trapId};
 	}
 
-	[Command(requiresAuthority=false)] public void CmdSaveCoins(int newCoin, int playerId)
+	[ServerRpc] public void SaveCoinsServerRpc(int newCoin, int playerId)
 	{
 		if (coins == null)
 			coins = new();
@@ -117,20 +119,20 @@ public class GameManager : NetworkBehaviour
 	{
 		return coins[playerId];
 	}
-	[Command(requiresAuthority=false)] public void CmdSaveItems(List<int> newItems, int playerId)
+	[ServerRpc] public void SaveItemsServerRpc(int[] newItems, int playerId)
 	{
-		if (items == null)
-			items = new();
-		while (items.Count <= playerId)
-			items.Add(new());
-		items[playerId] = newItems;
+		//if (items == null)
+		//	items = new();
+		while (items.Value.Count <= playerId)
+			items.Value.Add(new());
+		items.Value[playerId] = new List<int>(newItems);
 	}
 	public List<int> GetItems(int playerId)
 	{
-		return items[playerId];
+		return items.Value[playerId];
 	}
 
-	[Command(requiresAuthority=false)] public void CmdSaveStars(int newStar, int playerId)
+	[ServerRpc] public void SaveStarsServerRpc(int newStar, int playerId)
 	{
 		if (stars == null)
 			stars = new();
@@ -142,7 +144,7 @@ public class GameManager : NetworkBehaviour
 	{
 		return stars[playerId];
 	}
-	[Command(requiresAuthority=false)] public void CmdSaveMana(int newMana, int playerId)
+	[ServerRpc] public void SaveManaServerRpc(int newMana, int playerId)
 	{
 		if (manas == null)
 			manas = new();
@@ -155,7 +157,7 @@ public class GameManager : NetworkBehaviour
 		return manas[playerId];
 	}
 
-	[Command(requiresAuthority=false)] public void CmdSavePlacements(int newPlacement, int playerId)
+	[ServerRpc] public void SavePlacementsServerRpc(int newPlacement, int playerId)
 	{
 		if (placements == null)
 			placements = new();
@@ -174,31 +176,31 @@ public class GameManager : NetworkBehaviour
 
 	#region Board
 
-	[Command(requiresAuthority=false)] public void CmdHitPlayersAtNode(int nodeId, int penalty) => RpcHitPlayersAtNode(nodeId, penalty);
-	[ClientRpc] private void RpcHitPlayersAtNode(int nodeId, int penalty) => NodeManager.Instance.GetNode(nodeId).HitPlayers(penalty);
+	[ServerRpc] public void HitPlayersAtNodeServerRpc(int nodeId, int penalty) => HitPlayersAtNodeClientRpc(nodeId, penalty);
+	[ClientRpc] private void HitPlayersAtNodeClientRpc(int nodeId, int penalty) => NodeManager.Instance.GetNode(nodeId).HitPlayers(penalty);
 
-	[Command(requiresAuthority=false)] public void CmdHitPlayersStarsAtNode(int nodeId) => RpcHitPlayersStarsAtNode(nodeId);
-	[ClientRpc] private void RpcHitPlayersStarsAtNode(int nodeId) => NodeManager.Instance.GetNode(nodeId).HitPlayersStars();
+	[ServerRpc] public void HitPlayersStarsAtNodeServerRpc(int nodeId) => HitPlayersStarsAtNodeClientRpc(nodeId);
+	[ClientRpc] private void HitPlayersStarsAtNodeClientRpc(int nodeId) => NodeManager.Instance.GetNode(nodeId).HitPlayersStars();
 
-	[Command(requiresAuthority=false)] public void CmdSetupDoorTolls(int nDoors)
+	[ServerRpc] public void SetupDoorTollsServerRpc(int nDoors)
 	{
 		doorTolls = new();
 		for (int i=0 ; i<nDoors ; i++)
 		{
 			doorTolls.Add(0);
 			if (BoardManager.Instance != null)
-				BoardManager.Instance.CmdSetNewToll(i, 1);
+				BoardManager.Instance.SetNewTollServerRpc(i, 1);
 		}
 	}
-	[Command(requiresAuthority=false)] public void CmdSetDoorToll(int ind, int newToll)
+	[ServerRpc] public void SetDoorTollServerRpc(int ind, int newToll)
 	{
 		if (doorTolls == null || ind < 0 || ind >= doorTolls.Count)
 			return;
-		RpcSetDoorToll(ind, newToll);
+		SetDoorTollClientRpc(ind, newToll);
 		if (BoardManager.Instance != null)
-			BoardManager.Instance.CmdSetNewToll(ind, newToll);
+			BoardManager.Instance.SetNewTollServerRpc(ind, newToll);
 	}
-	[ClientRpc] public void RpcSetDoorToll(int ind, int newToll)
+	[ClientRpc] public void SetDoorTollClientRpc(int ind, int newToll)
 	{
 		if (doorTolls == null || ind < 0 || ind >= doorTolls.Count)
 			return;
@@ -217,7 +219,7 @@ public class GameManager : NetworkBehaviour
 	{
 		anim.SetTrigger(fadeIn ? "in" : "out");
 	}
-	[Command(requiresAuthority=false)] public void CmdTriggerTransition(bool fadeIn)
+	[ServerRpc] public void TriggerTransitionServerRpc(bool fadeIn)
 	{
 		anim.SetTrigger(fadeIn ? "in" : "out");
 	}
@@ -232,43 +234,43 @@ public class GameManager : NetworkBehaviour
 	}
 
 
-	[SyncVar] public string minigameName;
+	public NetworkVariable<string> minigameName = new();
 
 	#region minigame
-	public void SetProfilePic(int[] inds) => RpcSetProfilePic(inds);
-	[ClientRpc] public void RpcSetProfilePic(int[] inds) => pm.SetProfilePic(inds);
-	public void IncreaseTurnNum() => nTurn++;
+	public void SetProfilePic(int[] inds) => SetProfilePicClientRpc(inds);
+	[ClientRpc] public void SetProfilePicClientRpc(int[] inds) => pm.SetProfilePic(inds);
+	public void IncreaseTurnNum() => nTurn.Value++;
 	
 
-	[Command(requiresAuthority=false)] public void CmdTogglePreviewManager(bool active) => RpcTogglePreviewManager(active);
-	[ClientRpc] void RpcTogglePreviewManager(bool active) => pmObj.SetActive(active);
+	[ServerRpc] public void TogglePreviewManagerServerRpc(bool active) => TogglePreviewManagerClientRpc(active);
+	[ClientRpc] void TogglePreviewManagerClientRpc(bool active) => pmObj.SetActive(active);
 
 
 	public void StartMinigame(string minigameName) // host side
 	{
-		RpcStartMinigame(minigameName);
+		StartMinigameClientRpc(minigameName);
 	}
-	[ClientRpc] private void RpcStartMinigame(string minigameName) 
+	[ClientRpc] private void StartMinigameClientRpc(string minigameName) 
 	{
 		StartCoroutine(StartMiniGameCo(minigameName));
 	} 
 	IEnumerator StartMiniGameCo(string minigameName)
 	{
-		this.minigameName = minigameName;
+		this.minigameName.Value = minigameName;
 
 		AsyncOperation async = SceneManager.LoadSceneAsync(minigameName, LoadSceneMode.Additive);
 
 		while (!async.isDone)
 			yield return null;
-		if (isServer)
-			CmdTriggerTransition(false);
+		if (IsServer)
+			TriggerTransitionServerRpc(false);
 	}
 
 	#endregion
 
 	public int GetPrizeValue(int place)
 	{
-		int nPlayers = NetworkServer.connections.Count;
+		int nPlayers = NetworkManager.Singleton.ConnectedClients.Count;
 		switch (place)
 		{
 			// 3, 0, 0

@@ -33,7 +33,7 @@ public class TreasureChest : MonoBehaviour
 			highlightObj.SetActive(true);
 			if (Input.GetMouseButtonDown(0))
 			{
-				bm.CmdSelectChest(ind);
+				bm.SelectChestServerRpc(ind);
 				foreach (TreasureChest chest in otherChests)
 					chest.ToggleChooseable(false);
 			}

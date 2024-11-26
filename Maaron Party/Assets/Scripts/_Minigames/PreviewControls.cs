@@ -1,5 +1,5 @@
 using UnityEngine;
-using Mirror;
+using Unity.Netcode;
 using UnityEngine.UI;
 
 public class PreviewControls : NetworkBehaviour
@@ -28,18 +28,18 @@ public class PreviewControls : NetworkBehaviour
 
 	public void _READY_UP()
 	{
-		CmdReady();
+		ReadyServerRpc();
 	}
-	[Command(requiresAuthority=false)] void CmdReady() 
+	[ServerRpc] void ReadyServerRpc() 
 	{
-		PreviewManager.Instance.CmdReadyUp();
-		RpcReady();
+		PreviewManager.Instance.ReadyUpServerRpc();
+		ReadyClientRpc();
 	}
-	[ClientRpc] void RpcReady()
+	[ClientRpc] void ReadyClientRpc()
 	{
 		btn.interactable = false;
 		readyObj.SetActive(true);
 	}
-	[Command(requiresAuthority=false)] public void CmdUnparent() => RpcUnparent();
-	[ClientRpc] void RpcUnparent() => transform.parent = MinigameManager.Instance.transform;
+	[ServerRpc] public void UnparentServerRpc() => UnparentClientRpc();
+	[ClientRpc] void UnparentClientRpc() => transform.parent = MinigameManager.Instance.transform;
 }

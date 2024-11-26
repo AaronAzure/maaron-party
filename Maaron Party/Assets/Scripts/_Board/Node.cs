@@ -221,8 +221,8 @@ public class Node : MonoBehaviour
 	{
 		if (players != null && players.Contains(p) && !p.isShield)
 		{
-			p.CmdPlayerToggle(false);
-			p.CmdRagdollToggle(true);
+			p.PlayerToggleServerRpc(false);
+			p.RagdollToggleServerRpc(true);
 			p.NodeEffect(penalty);
 		}
 	}
@@ -230,8 +230,8 @@ public class Node : MonoBehaviour
 	{
 		if (players != null && players.Contains(p) && !p.isShield)
 		{
-			p.CmdPlayerToggle(false);
-			p.CmdRagdollToggle(true);
+			p.PlayerToggleServerRpc(false);
+			p.RagdollToggleServerRpc(true);
 			p.NodeEffect(-1, true);
 		}
 	}
@@ -245,11 +245,11 @@ public class Node : MonoBehaviour
 		if (IsTrapped())
 		{
 			// own trap
-			if (p.id == thornId)
+			if (p.id.Value == thornId)
 				p.NodeEffect(5);
 			else
 				TriggerTrap(thornId);
-			return p.id == thornId ? 0.5f : 5f;
+			return p.id.Value == thornId ? 0.5f : 5f;
 		}
 		switch (nodeSpace)
 		{
@@ -260,11 +260,11 @@ public class Node : MonoBehaviour
 				p.NodeEffect(-3);
 				return 0.5f;
 			case NodeSpace.green_rotate: 
-				BoardManager.Instance.CmdTurretRotateCo();
+				BoardManager.Instance.TurretRotateCoServerRpc();
 				return 4.5f;
 			case NodeSpace.green_speed: 
-				BoardManager.Instance.CmdTurretTurnCo();
-				return GameManager.Instance.turretReady == 4 ? 10.5f : 3.5f;
+				BoardManager.Instance.TurretTurnCoServerRpc();
+				return GameManager.Instance.turretReady.Value == 4 ? 10.5f : 3.5f;
 		}
 		return 0.5f;
 	}
@@ -314,24 +314,24 @@ public class Node : MonoBehaviour
 		thornExplosionObj.SetActive(true);
 		if (!p.isShield)
 		{
-			p.CmdPlayerToggle(false);
-			p.CmdRagdollToggle(true);
+			p.PlayerToggleServerRpc(false);
+			p.RagdollToggleServerRpc(true);
 			if (trapId == 3) // 1 star
 			{
 				int stolenStars = p.GetStars() > 0 ? 1 : 0;
-				BoardManager.Instance.CmdTrapReward(atkId, stolenStars, true);
+				BoardManager.Instance.TrapRewardServerRpc(atkId, stolenStars, true);
 				p.NodeEffect(-stolenStars, true);
 			}
 			if (trapId == 2) // 20 coins
 			{
 				int stolenCoins = p.GetCoins() < 20 ? p.GetCoins() : 20;
-				BoardManager.Instance.CmdTrapReward(atkId, stolenCoins, false);
+				BoardManager.Instance.TrapRewardServerRpc(atkId, stolenCoins, false);
 				p.NodeEffect(-stolenCoins);
 			}
 			if (trapId == 1) // 10 coins
 			{
 				int stolenCoins = p.GetCoins() < 10 ? p.GetCoins() : 10;
-				BoardManager.Instance.CmdTrapReward(atkId, stolenCoins, false);
+				BoardManager.Instance.TrapRewardServerRpc(atkId, stolenCoins, false);
 				p.NodeEffect(-stolenCoins);
 			}
 		}
@@ -482,8 +482,8 @@ public class Node : MonoBehaviour
 			//if (players != null && players.Contains(p) && !p.isShield)
 			{
 				Debug.Log($"<color=red>{p.name} HIT!!</color>");
-				p.CmdPlayerToggle(false);
-				p.CmdRagdollToggle(true);
+				p.PlayerToggleServerRpc(false);
+				p.RagdollToggleServerRpc(true);
 				p.LoseAllCoins();
 			}
 		}
@@ -502,7 +502,7 @@ public class Node : MonoBehaviour
 		{
 			// trap spell cost
 			if (p._spellInd >= 0 && p._spellInd <= 2)
-				p.SetSpellCost(p._spellInd + 1, thornId == p.id ? 0 : trapId);
+				p.SetSpellCost(p._spellInd + 1, thornId == p.id.Value ? 0 : trapId);
 			else if (p._spellInd >= 3 && p._spellInd <= 5)
 				p.SetSpellCost(p._spellInd - 1, 0);
 			//Debug.Log("<color=white>Mouse over</color>");
@@ -512,31 +512,31 @@ public class Node : MonoBehaviour
 				switch (p._spellInd)
 				{
 					case 0: 
-						if (p.GetMana() < 1 + (thornId == p.id ? 0 : trapId)) 
+						if (p.GetMana() < 1 + (thornId == p.id.Value ? 0 : trapId)) 
 						{
 							p.NoManaAlert();
 							break; // not enough mana to overwrite
 						}
-						p.UseThornSpell(this, 1 + (thornId == p.id ? 0 : trapId), 1);
-						BoardManager.Instance.CmdThornNode(nodeId, p.id, p.characterInd, 1);
+						p.UseThornSpell(this, 1 + (thornId == p.id.Value ? 0 : trapId), 1);
+						BoardManager.Instance.ThornNodeServerRpc(nodeId, p.id.Value, p.characterInd.Value, 1);
 						break;
 					case 1: 
-						if (p.GetMana() < 2 + (thornId == p.id ? 0 : trapId)) 
+						if (p.GetMana() < 2 + (thornId == p.id.Value ? 0 : trapId)) 
 						{
 							p.NoManaAlert();
 							break; // not enough mana to overwrite
 						}
-						p.UseThornSpell(this, 2 + (thornId == p.id ? 0 : trapId), 2);
-						BoardManager.Instance.CmdThornNode(nodeId, p.id, p.characterInd, 2);
+						p.UseThornSpell(this, 2 + (thornId == p.id.Value ? 0 : trapId), 2);
+						BoardManager.Instance.ThornNodeServerRpc(nodeId, p.id.Value, p.characterInd.Value, 2);
 						break;
 					case 2: 
-						if (p.GetMana() < 3 + (thornId == p.id ? 0 : trapId)) 
+						if (p.GetMana() < 3 + (thornId == p.id.Value ? 0 : trapId)) 
 						{
 							p.NoManaAlert();
 							break; // not enough mana to overwrite
 						}
-						p.UseThornSpell(this, 3 + (thornId == p.id ? 0 : trapId), 3);
-						BoardManager.Instance.CmdThornNode(nodeId, p.id, p.characterInd, 3);
+						p.UseThornSpell(this, 3 + (thornId == p.id.Value ? 0 : trapId), 3);
+						BoardManager.Instance.ThornNodeServerRpc(nodeId, p.id.Value, p.characterInd.Value, 3);
 						break;
 					case 3:
 						p.UseFireSpell(this, 2, 1);

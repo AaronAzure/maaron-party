@@ -31,8 +31,8 @@ public class ItemShopButton : MonoBehaviour
 		if (img != null)
 			img.sprite = Item.instance.GetSprite(ind);
 		if (!isReplace)
-			gameObject.SetActive(availability == Availability.turn5 ? gm.nTurn >= 5 :
-				availability == Availability.last5 ? gm.nTurn >= gm.maxTurns - 4 : 
+			gameObject.SetActive(availability == Availability.turn5 ? gm.nTurn.Value >= 5 :
+				availability == Availability.last5 ? gm.nTurn.Value >= gm.maxTurns.Value - 4 : 
 				availability == Availability.always);
 		title = Item.instance.GetTitle(ind);
 		desc = Item.instance.GetDesc(ind);

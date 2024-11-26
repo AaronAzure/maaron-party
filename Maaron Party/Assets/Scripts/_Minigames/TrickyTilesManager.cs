@@ -29,9 +29,9 @@ public class TrickyTilesManager : MinigameController
 				isTrapOpen = true;
 				timer = 0;
 				foreach (int ind in selectedTraps)
-					anims[ind].CmdTriggerTrap();
+					anims[ind].TriggerTrapServerRpc();
 				for (int i = 0; i < selectedTraps.Count; i++)
-					markers[i].CmdClearMaterial();
+					markers[i].ClearMaterialServerRpc();
 			}
 		}
 		else
@@ -63,9 +63,9 @@ public class TrickyTilesManager : MinigameController
 		for (int i = 0; i < markers.Length; i++)
 		{
 			if (i<selectedTraps.Count)
-				markers[i].CmdSetMaterial(selectedTraps[i]);
+				markers[i].SetMaterialServerRpc(selectedTraps[i]);
 			else
-				markers[i].CmdClearMaterial();
+				markers[i].ClearMaterialServerRpc();
 		}
 
 		nRound++;

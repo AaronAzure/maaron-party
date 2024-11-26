@@ -1,5 +1,6 @@
 using System.Collections;
 using TMPro;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,7 +14,7 @@ public class UiDialogue : MonoBehaviour
 
 	[Space] [SerializeField] private float textSpd=2;
 	private string sentence;
-	private string[] sentences;
+	private FixedString128Bytes[] sentences;
 	private int nSent;
 	
 	private void Awake() 
@@ -30,7 +31,7 @@ public class UiDialogue : MonoBehaviour
 	{
 		nextBtn.gameObject.SetActive(active);
 	}
-	public void SetSentence(bool active, string speaker="", string[] sent=null)
+	public void SetSentence(bool active, string speaker="", FixedString128Bytes[] sent=null)
 	{
 		speakerTxt.text = speaker;
 		sentences = sent;
@@ -48,7 +49,7 @@ public class UiDialogue : MonoBehaviour
 	public void _NEXT_SENTENCE()
 	{
 		BoardManager.Instance.NextDialogue();
-		BoardManager.Instance.CmdNextDialogue();
+		BoardManager.Instance.NextDialogueServerRpc();
 	}
 	public void NextSentence()
 	{
@@ -60,7 +61,7 @@ public class UiDialogue : MonoBehaviour
 		{
 			nextBtn.gameObject.SetActive(false);
 			BoardManager.Instance.EndDialogue();
-			BoardManager.Instance.CmdEndDialogue();
+			BoardManager.Instance.EndDialogueServerRpc();
 		}
 	}
 
@@ -71,7 +72,7 @@ public class UiDialogue : MonoBehaviour
 			yield break;
 			
 		yield return null;
-		foreach (char letter in sentences[nSent].ToCharArray())
+		foreach (char letter in sentences[nSent].ConvertToString().ToCharArray())
 		{
 			dialogueTxt.text += letter;
 			yield return null;

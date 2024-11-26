@@ -836,8 +836,8 @@ GameObject:
   - component: {fileID: 4654114192111804905}
   - component: {fileID: 917077597858858706}
   - component: {fileID: 1610830400767772796}
+  - component: {fileID: 7126957144245015942}
   - component: {fileID: 1037466775356406029}
-  - component: {fileID: 2095060165436680098}
   m_Layer: 0
   m_Name: LobbyControls UI
   m_TagString: Untagged
@@ -906,6 +906,27 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7126957144245015942
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6432613922619178981}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 0
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!114 &1037466775356406029
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -918,9 +939,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8c72f31de6b20c4aabef9f3d9c7a94a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 1
-  syncMode: 0
-  syncInterval: 0
   buttons: {fileID: 8110475812702509920}
   characterTxt: {fileID: 8347218012990582183}
   maxCharacters: 4
@@ -935,23 +953,6 @@ MonoBehaviour:
   readyBtn: {fileID: 3098492626769578247}
   characterInd: -1
   _isReady: 0
---- !u!114 &2095060165436680098
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6432613922619178981}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  _assetId: 1182818964
-  serverOnly: 0
-  visibility: 0
-  hasSpawned: 0
 --- !u!1 &8037893142471751766
 GameObject:
   m_ObjectHideFlags: 0

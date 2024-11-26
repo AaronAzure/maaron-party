@@ -841,9 +841,17 @@ PrefabInstance:
       propertyPath: sceneId
       value: 3410787223
       objectReference: {fileID: 0}
+    - target: {fileID: 2169546179523901020, guid: a4aef1495346d694ab338e0e88ce8c28, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 1835079823
+      objectReference: {fileID: 0}
     - target: {fileID: 3397591859957908136, guid: a4aef1495346d694ab338e0e88ce8c28, type: 3}
       propertyPath: sceneId
       value: 3612636604
+      objectReference: {fileID: 0}
+    - target: {fileID: 3795911718925716523, guid: a4aef1495346d694ab338e0e88ce8c28, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 1455731684
       objectReference: {fileID: 0}
     - target: {fileID: 4610139740070670416, guid: a4aef1495346d694ab338e0e88ce8c28, type: 3}
       propertyPath: sceneId
@@ -852,6 +860,10 @@ PrefabInstance:
     - target: {fileID: 5699006600605903512, guid: a4aef1495346d694ab338e0e88ce8c28, type: 3}
       propertyPath: sceneId
       value: 4086720521
+      objectReference: {fileID: 0}
+    - target: {fileID: 5993437198921823843, guid: a4aef1495346d694ab338e0e88ce8c28, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 3462453699
       objectReference: {fileID: 0}
     - target: {fileID: 7323133466988777711, guid: a4aef1495346d694ab338e0e88ce8c28, type: 3}
       propertyPath: sceneId
@@ -864,6 +876,10 @@ PrefabInstance:
     - target: {fileID: 8149806081266758905, guid: a4aef1495346d694ab338e0e88ce8c28, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9091533195868348012, guid: a4aef1495346d694ab338e0e88ce8c28, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 653025806
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1372,8 +1388,8 @@ GameObject:
   m_Component:
   - component: {fileID: 193865297}
   - component: {fileID: 193865296}
-  - component: {fileID: 193865299}
   - component: {fileID: 193865300}
+  - component: {fileID: 193865301}
   m_Layer: 0
   m_Name: '>> NETWORK MANAGER'
   m_TagString: Untagged
@@ -1393,43 +1409,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9fbe48f0a7de944681743c720b294ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dontDestroyOnLoad: 1
-  runInBackground: 1
-  headlessStartMode: 0
-  editorAutoStart: 0
-  sendRate: 60
-  autoStartServerBuild: 0
-  autoConnectClientBuild: 0
-  offlineScene: 
-  onlineScene: 
-  transport: {fileID: 0}
-  networkAddress: localhost
-  maxConnections: 4
-  disconnectInactiveConnections: 0
-  disconnectInactiveTimeout: 60
-  authenticator: {fileID: 0}
-  playerPrefab: {fileID: 6432613922619178981, guid: a8be1d7671adca64ea71e7d4a57fbdf0, type: 3}
-  autoCreatePlayer: 1
-  playerSpawnMethod: 0
-  spawnPrefabs:
-  - {fileID: 5611867278237887193, guid: 8a9d11e354baf9d48b9000cbafda63eb, type: 3}
-  - {fileID: 5611867278237887193, guid: 249e06af49db8f54bb16e7597754b811, type: 3}
-  exceptionsDisconnect: 1
-  snapshotSettings:
-    bufferTimeMultiplier: 2
-    bufferLimit: 32
-    catchupNegativeThreshold: -1
-    catchupPositiveThreshold: 1
-    catchupSpeed: 0.019999999552965164
-    slowdownSpeed: 0.03999999910593033
-    driftEmaDuration: 1
-    dynamicAdjustment: 1
-    dynamicAdjustmentTolerance: 1
-    deliveryTimeEmaDuration: 2
-  evaluationMethod: 0
-  evaluationInterval: 3
-  timeInterpolationGui: 0
-  relayJoinCode: 
+  NetworkConfig:
+    ProtocolVersion: 0
+    NetworkTransport: {fileID: 0}
+    PlayerPrefab: {fileID: 0}
+    Prefabs:
+      NetworkPrefabsLists: []
+    TickRate: 30
+    ClientConnectionBufferTimeout: 10
+    ConnectionApproval: 0
+    ConnectionData: 
+    EnableTimeResync: 0
+    TimeResyncInterval: 30
+    EnsureNetworkVariableLengthSafety: 0
+    EnableSceneManagement: 1
+    ForceSamePrefabs: 1
+    RecycleNetworkIds: 1
+    NetworkIdRecycleDelay: 120
+    RpcHashSize: 0
+    LoadSceneTimeOut: 120
+    SpawnTimeout: 10
+    EnableNetworkLogs: 1
+    OldPrefabList: []
+  RunInBackground: 1
+  LogLevel: 1
   spawnHolder: {fileID: 101067035}
   buttons: {fileID: 1300736597}
   hostLostUi: {fileID: 974886990}
@@ -1469,20 +1472,6 @@ Transform:
   - {fileID: 974886994}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &193865299
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 193865295}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6442dc8070ceb41f094e44de0bf87274, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  offsetX: 0
-  offsetY: 0
 --- !u!114 &193865300
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1512,6 +1501,43 @@ MonoBehaviour:
     PacketDelayMS: 0
     PacketJitterMS: 0
     PacketDropRate: 0
+--- !u!114 &193865301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 193865295}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 593a2fe42fa9d37498c96f9a383b6521, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NetworkConfig:
+    ProtocolVersion: 0
+    NetworkTransport: {fileID: 193865300}
+    PlayerPrefab: {fileID: 0}
+    Prefabs:
+      NetworkPrefabsLists:
+      - {fileID: 11400000, guid: 029a9ce011e7b39428f8b8886114f180, type: 2}
+    TickRate: 30
+    ClientConnectionBufferTimeout: 10
+    ConnectionApproval: 0
+    ConnectionData: 
+    EnableTimeResync: 0
+    TimeResyncInterval: 30
+    EnsureNetworkVariableLengthSafety: 0
+    EnableSceneManagement: 1
+    ForceSamePrefabs: 1
+    RecycleNetworkIds: 1
+    NetworkIdRecycleDelay: 120
+    RpcHashSize: 0
+    LoadSceneTimeOut: 120
+    SpawnTimeout: 10
+    EnableNetworkLogs: 1
+    OldPrefabList: []
+  RunInBackground: 1
+  LogLevel: 1
 --- !u!1 &238838303
 GameObject:
   m_ObjectHideFlags: 0
@@ -10011,7 +10037,16 @@ PrefabInstance:
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
       value: 3369558549
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 8191416430967923049, guid: 8e6c6d2c05137ca408b79d8a7e2b266a, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 588323382
+      objectReference: {fileID: 0}
+    - target: {fileID: 8191416430967923049, guid: 8e6c6d2c05137ca408b79d8a7e2b266a, type: 3}
+      propertyPath: InScenePlacedSourceGlobalObjectIdHash
+      value: 4820856
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 5151234886908247087, guid: 8e6c6d2c05137ca408b79d8a7e2b266a, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 2298832409760039847, guid: 8e6c6d2c05137ca408b79d8a7e2b266a, type: 3}

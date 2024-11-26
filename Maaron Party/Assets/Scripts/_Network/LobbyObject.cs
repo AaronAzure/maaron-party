@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Mirror;
+using Unity.Netcode;
 using TMPro;
 
 public class LobbyObject : NetworkBehaviour
@@ -19,8 +19,8 @@ public class LobbyObject : NetworkBehaviour
 	[SerializeField] private GameObject[] profileUis;
 	[SerializeField] private GameObject readyUi;
 	[SerializeField] private Button readyBtn;
-	[SyncVar] public int characterInd=-1;
-	[SyncVar] public bool _isReady=false;
+	public int characterInd=-1;
+	public bool _isReady=false;
 	#endregion
 
 
@@ -30,13 +30,14 @@ public class LobbyObject : NetworkBehaviour
 	{
 		nm = GameNetworkManager.Instance;
 	}
-	public override void OnStartClient()
+	public override void OnNetworkSpawn()
 	{
+		base.OnNetworkSpawn();
 		nm.AddConnection(this);
 	}
-	public override void OnStopClient()
+	public override void OnNetworkDespawn()
 	{
-		base.OnStopClient();
+		base.OnNetworkDespawn();
 		nm.RemoveConnection(this);
 	}
 
@@ -46,8 +47,9 @@ public class LobbyObject : NetworkBehaviour
 		transform.SetParent(gm.spawnHolder, true);
 		transform.localScale = Vector3.one;
 		
-		readyBtn.interactable = isLocalPlayer;
-		if (isLocalPlayer)
+		readyBtn.interactable = IsOwner;
+		//if (isLocalPlayer)
+		if (IsOwner)
 		{
 			Instance = this;
 			profileUis[0].SetActive(true);
@@ -55,12 +57,12 @@ public class LobbyObject : NetworkBehaviour
 			buttons.SetActive(true);
 			readyBtn.onClick.AddListener(() => {
 				_isReady = !_isReady;
-				CmdUpdateDisplay(_isReady);
+				UpdateDisplayServerRpc(_isReady);
 			});
 			readyBtn.gameObject.SetActive(true);
 			
-			//gm.JoinGameServerRpc(OwnerClientId);
-			characterInd = (int) netId % maxCharacters;
+			//characterInd = (int) netId % maxCharacters;
+			characterInd = (int) OwnerClientId % maxCharacters;
 		}
 		switch (characterInd)
 		{
@@ -81,15 +83,15 @@ public class LobbyObject : NetworkBehaviour
 			profileUis[i].SetActive(i == characterInd);
 		pfp.color = characterInd == 0 ? new Color(0.7f,0.13f,0.13f) : characterInd == 1 ? new Color(0.4f,0.7f,0.3f) 
 				: characterInd == 2 ? new Color(0.85f,0.85f,0.5f) : new Color(0.7f,0.5f,0.8f);
-		CmdUpdateUi(characterInd);
+		UpdateUiServerRpc(characterInd);
 	}
 
-	[Command(requiresAuthority=false)] public void CmdUpdateUi(int ind)
+	[ServerRpc] public void UpdateUiServerRpc(int ind)
 	{
-		RpcUpdateUi(ind);
+		UpdateUiClientRpc(ind);
 	}
 
-	[ClientRpc(includeOwner=false)] public void RpcUpdateUi(int ind)
+	[ClientRpc] public void UpdateUiClientRpc(int ind)
 	{
 		//gameObject.name = $"__ PLAYER {ind} __";
 		switch (ind)
@@ -113,7 +115,7 @@ public class LobbyObject : NetworkBehaviour
 				: ind == 2 ? new Color(0.85f,0.85f,0.5f) : new Color(0.7f,0.5f,0.8f);
 	}
 
-	[Command(requiresAuthority=false)] public void CmdSendPlayerModel()
+	[ServerRpc] public void SendPlayerModelServerRpc()
 	{
 		//Debug.Log($"<color=blue>SendPlayerModelServerRpc</color>");
 		//gm.SetPlayerModelServerRpc(characterInd.Value);
@@ -142,7 +144,7 @@ public class LobbyObject : NetworkBehaviour
 			profileUis[i].SetActive(i == ind);
 		pfp.color = ind == 0 ? new Color(0.7f,0.13f,0.13f) : ind == 1 ? new Color(0.4f,0.7f,0.3f) 
 				: ind == 2 ? new Color(0.85f,0.85f,0.5f) : new Color(0.7f,0.5f,0.8f);
-		CmdUpdateUi(characterInd);
+		UpdateUiServerRpc(characterInd);
 	}
 	public void CHARACTER_IND_DEC()
 	{
@@ -167,15 +169,15 @@ public class LobbyObject : NetworkBehaviour
 			profileUis[i].SetActive(i == ind);
 		pfp.color = ind == 0 ? new Color(0.7f,0.13f,0.13f) : ind == 1 ? new Color(0.4f,0.7f,0.3f) 
 				: ind == 2 ? new Color(0.85f,0.85f,0.5f) : new Color(0.7f,0.5f,0.8f);
-		CmdUpdateUi(characterInd);
+		UpdateUiServerRpc(characterInd);
 	}
 
-	[Command(requiresAuthority = false)] public void CmdUpdateDisplay(bool next)
+	[ServerRpc] public void UpdateDisplayServerRpc(bool next)
 	{
 		readyUi.SetActive(next);
-		RpcUpdateDisplay(next);
+		UpdateDisplayClientRpc(next);
 	}
-	[ClientRpc] private void RpcUpdateDisplay(bool next)
+	[ClientRpc] private void UpdateDisplayClientRpc(bool next)
 	{
 		readyUi.SetActive(next);
 	}

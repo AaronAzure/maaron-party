@@ -1,4 +1,4 @@
-using Mirror;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,7 +8,7 @@ public class PreviewManager : NetworkBehaviour
 	[SerializeField] private Animator anim;
 	//private GameManager gm {get{return GameManager.Instance;}}
 	private GameNetworkManager nm {get{return GameNetworkManager.Instance;}}
-	[SyncVar] public int nReady;
+	public int nReady;
 	public Transform readyLayoutHolder;
 	[SerializeField] private Button[] readyBtns;
 	[SerializeField] private PreviewControls[] pcs;
@@ -24,7 +24,7 @@ public class PreviewManager : NetworkBehaviour
 	} 
 	private void OnEnable() 
 	{
-		if (isServer) 
+		if (IsServer) 
 		{
 			started = true;
 			nm.PreviewManagerLoaded();
@@ -44,38 +44,38 @@ public class PreviewManager : NetworkBehaviour
 	}
 	
 
-	[Command(requiresAuthority=false)] public void CmdCheckReady()
+	[ServerRpc] public void CheckReadyServerRpc()
 	{
-		if (nReady >= nm.GetNumMinigamePlayers())
+		if (nReady >= NetworkManager.Singleton.ConnectedClients.Count)
 			nm.StartActualMiniGame();
 	}
-	[Command(requiresAuthority=false)] public void CmdReadyUp()
+	[ServerRpc] public void ReadyUpServerRpc()
 	{
 		++nReady;
-		if (nReady >= nm.GetNumMinigamePlayers())
+		if (nReady >= NetworkManager.Singleton.ConnectedClients.Count)
 			nm.StartActualMiniGame();
 	}
 
-	[Command(requiresAuthority=false)] public void CmdSetup() 
+	[ServerRpc] public void SetupServerRpc() 
 	{
 		if (!hasSetup)
 		{
 			hasSetup = true;
 			nReady = 0;
-			RpcToggleReadyButton(true, nm.GetNumMinigamePlayers());
+			ToggleReadyButtonClientRpc(true, nm.GetNumMinigamePlayers());
 			for (int i=0 ; i<readyBtns.Length && i<nm.GetNumMinigamePlayers() ; i++)
-				RpcSetReadyButton(i);
+				SetReadyButtonClientRpc(i);
 		}
 	}
 
 
 	#region Ready Btn
-	[ClientRpc] void RpcSetReadyButton(int i)
+	[ClientRpc] void SetReadyButtonClientRpc(int i)
 	{
 		if (i >= 0 && i < readyBtns.Length && readyBtns[i] != null)
 			readyBtns[i].interactable = MinigameControls.Instance.id == i;
 	}
-	[ClientRpc] void RpcToggleReadyButton(bool active, int n)
+	[ClientRpc] void ToggleReadyButtonClientRpc(bool active, int n)
 	{
 		for (int i=0 ; i<readyBtns.Length && i<n ; i++)
 			if (readyBtns[i] != null)
@@ -97,11 +97,11 @@ public class PreviewManager : NetworkBehaviour
 
 
 	#region Transition
-	[Command(requiresAuthority=false)] public void CmdTriggerTransition(bool fadeIn)
+	[ServerRpc] public void TriggerTransitionServerRpc(bool fadeIn)
 	{
-		RpcTriggerTransition(fadeIn);
+		TriggerTransitionClientRpc(fadeIn);
 	}
-	[ClientRpc] private void RpcTriggerTransition(bool fadeIn)
+	[ClientRpc] private void TriggerTransitionClientRpc(bool fadeIn)
 	{
 		anim.SetTrigger(fadeIn ? "in" : "out");
 	}

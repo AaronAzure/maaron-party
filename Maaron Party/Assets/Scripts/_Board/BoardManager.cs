@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using Mirror;
+using Unity.Netcode;
 using Cinemachine;
+using Unity.Collections;
 
 public class BoardManager : NetworkBehaviour
 {
@@ -19,9 +20,9 @@ public class BoardManager : NetworkBehaviour
 
 
 	[Space] [Header("Text")]
-	[TextArea(2, 5)] [SerializeField] string[] introSents;
-	[TextArea(2, 5)] [SerializeField] string[] lastSents;
-	[TextArea(2, 5)] [SerializeField] string[] gameOverSents;
+	[TextArea(2, 5)] [SerializeField] FixedString128Bytes[] introSents;
+	[TextArea(2, 5)] [SerializeField] FixedString128Bytes[] lastSents;
+	[TextArea(2, 5)] [SerializeField] FixedString128Bytes[] gameOverSents;
 
 
 	[Space] [Header("Universal")]
@@ -37,12 +38,11 @@ public class BoardManager : NetworkBehaviour
 	[SerializeField] private GameObject placementUi;
 	[SerializeField] private CinemachineVirtualCamera boardCam;
 	[SerializeField] private PlacementButton[] placementBtns;
-	[SyncVar] bool[] placementChosen;
+	NetworkVariable<bool[]> placementChosen = new();
 
 	[Space] [SerializeField] private TreasureChest[] chests;
-	[SyncVar] public int nBmReady; 
-	[SyncVar] public int n;
-	bool isChoosingStar;
+	public int nBmReady; 
+	//bool isChoosingStar;
 
 
 	[Space] [Header("MUST REFERENCE PER BOARD")]
@@ -80,53 +80,50 @@ public class BoardManager : NetworkBehaviour
 
 	private void Start() 
 	{
-		CmdReadyUp();
-		turnTxt.text = $"Turn: {gm.nTurn}/{gm.maxTurns}";
+		ReadyUpServerRpc();
+		turnTxt.text = $"Turn: {gm.nTurn.Value}/{gm.maxTurns.Value}";
 
 		if (!gm.gameStarted)
 		{
 			ToggleMainUi(false);
-			CmdToggleMainUi(false);
-			if (isServer)
+			ToggleMainUiServerRpc(false);
+			if (IsServer)
 			{
-				placementChosen = new bool[placementBtns.Length];
-				gm.CmdSetupDoorTolls(doors == null ? 0 : doors.Length);
+				placementChosen = new NetworkVariable<bool[]>(new bool[placementBtns.Length], NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+				//placementChosen = new bool[placementBtns.Length];
+				gm.SetupDoorTollsServerRpc(doors == null ? 0 : doors.Length);
 			}
 		}
 	}
 
 
-	[Command(requiresAuthority=false)] public void CmdReadyUp()
+	[ServerRpc] public void ReadyUpServerRpc()
 	{
 		++nBmReady;
 		//Debug.Log($"<color=white>{nBmReady} >= {nm.numPlayers}</color>");
-		if (nBmReady >= nm.numPlayers)
+		if (nBmReady >= NetworkManager.Singleton.ConnectedClients.Count)
 		{
-			RpcSetUpPlayer();
+			SetUpPlayerClientRpc();
 			nm.UnparentBoardControls();
 		}
 	} 
-	[ClientRpc] private void RpcSetUpPlayer()
+	[ClientRpc] private void SetUpPlayerClientRpc()
 	{
 		_player = PlayerControls.Instance;
-		if (gm.nTurn == 1)
+		if (gm.nTurn.Value == 1)
 			_player.SetStartNode(startNode);
-		if (isServer)
+		if (IsServer)
 			StartCoroutine( StartGameCo() );
 	}
 	public Transform GetSpawnPos() => spawnPos;
-	public int GetNth()
-	{
-		return n++;
-	}
 	
 	#region Start game
 	IEnumerator StartGameCo()
 	{
 		//yield return new WaitForSeconds(0.5f);
-		//gm.CmdTriggerTransition(false);
+		//gm.TriggerTransitionServerRpc(false);
 		if (turret != null)
-			CmdTurretStart();
+			TurretStartServerRpc();
 
 		yield return new WaitForSeconds(1);
 		// turn 1
@@ -142,62 +139,62 @@ public class BoardManager : NetworkBehaviour
 			{
 				yield return ChooseStarCo(0);
 				ToggleMainUi(true);
-				CmdToggleMainUi(true);
+				ToggleMainUiServerRpc(true);
 			}
 			else
 			{
 				isIntro = true;
-				CmdToggleStartCam(true);
+				ToggleStartCamServerRpc(true);
 				
 				yield return new WaitForSeconds(1.5f);
-				CmdMaaronIntro();
+				MaaronIntroServerRpc();
 
 				yield return new WaitForSeconds(2);
 				ToggleDialogue(true, introSents);
-				CmdToggleDialogue(true, introSents);
-				CmdToggleNextButton(true);
+				ToggleDialogueServerRpc(true, introSents);
+				ToggleNextButtonServerRpc(true);
 
 				yield break;
 			}
 			//yield return ChooseStarCo(0);
 		}
 		// Game Over
-		else if (gm.nTurn > gm.maxTurns)
+		else if (gm.nTurn.Value > gm.maxTurns.Value)
 		{
 			//isIntro = gm.gameStarted = true;
 			gameOver = true;
-			CmdToggleStartCam(true);
+			ToggleStartCamServerRpc(true);
 
 			//yield return new WaitForSeconds(1f);
-			//CmdFinalFive();
+			//FinalFiveServerRpc();
 			
 			yield return new WaitForSeconds(0.5f);
-			CmdMaaronIntro();
+			MaaronIntroServerRpc();
 
 			yield return new WaitForSeconds(2);
 			ToggleDialogue(true, gameOverSents);
-			CmdToggleDialogue(true, gameOverSents);
-			CmdToggleNextButton(true);
+			ToggleDialogueServerRpc(true, gameOverSents);
+			ToggleNextButtonServerRpc(true);
 
 			yield break;
 		}
 		// last 5 turns
-		else if (gm.nTurn == gm.maxTurns - 4)
+		else if (gm.nTurn.Value == gm.maxTurns.Value - 4)
 		{
 			//isIntro = gm.gameStarted = true;
 			isLast5 = true;
-			CmdToggleStartCam(true);
+			ToggleStartCamServerRpc(true);
 
 			yield return new WaitForSeconds(1f);
-			CmdFinalFive();
+			FinalFiveServerRpc();
 			
 			yield return new WaitForSeconds(0.5f);
-			CmdMaaronIntro();
+			MaaronIntroServerRpc();
 
 			yield return new WaitForSeconds(2);
 			ToggleDialogue(true, lastSents);
-			CmdToggleDialogue(true, lastSents);
-			CmdToggleNextButton(true);
+			ToggleDialogueServerRpc(true, lastSents);
+			ToggleNextButtonServerRpc(true);
 
 			yield break;
 		}
@@ -205,22 +202,22 @@ public class BoardManager : NetworkBehaviour
 		else
 		{
 			ToggleMainUi(true);
-			CmdToggleMainUi(true);
+			ToggleMainUiServerRpc(true);
 			StartCoroutine( SetupStarNode(gm.prevStarInd) );
 		}
 
 		yield return new WaitForSeconds(0.5f);
 		nm.NextBoardPlayerTurn();
 
-		if (gm.nTurn == 5)
+		if (gm.nTurn.Value == 5)
 		{
 			yield return new WaitForSeconds(1);
-			CmdNewStock();
+			NewStockServerRpc();
 		}
-		if (gm.nTurn == gm.maxTurns - 4)
+		if (gm.nTurn.Value == gm.maxTurns.Value - 4)
 		{
 			yield return new WaitForSeconds(1);
-			CmdNewStock();
+			NewStockServerRpc();
 		}
 	}
 	#endregion
@@ -229,48 +226,48 @@ public class BoardManager : NetworkBehaviour
 	
 	// ui = player data, turn
 	void ToggleMainUi(bool active) => mainUi.gameObject.SetActive(active);
-	[Command(requiresAuthority=false)] public void CmdToggleMainUi(bool active) => RpcToggleMainUi(active);
-	[ClientRpc(includeOwner=false)] void RpcToggleMainUi(bool active) => mainUi.gameObject.SetActive(active);
+	[ServerRpc] public void ToggleMainUiServerRpc(bool active) => ToggleMainUiClientRpc(active);
+	[ClientRpc] void ToggleMainUiClientRpc(bool active) => mainUi.gameObject.SetActive(active);
 	
 	// Dialogue
-	public void ToggleDialogue(bool active, string[] sents) => dialogue.SetSentence(active, "Maaron", sents);
-	[Command(requiresAuthority=false)] public void CmdToggleDialogue(bool active, string[] sents) => RpcToggleDialogue(active, sents);
-	[ClientRpc(includeOwner=false)] void RpcToggleDialogue(bool active, string[] sents) => dialogue.SetSentence(active, "Maaron", sents);
+	public void ToggleDialogue(bool active, FixedString128Bytes[] sents) => dialogue.SetSentence(active, "Maaron", sents);
+	[ServerRpc] public void ToggleDialogueServerRpc(bool active, FixedString128Bytes[] sents) => ToggleDialogueClientRpc(active, sents);
+	[ClientRpc] void ToggleDialogueClientRpc(bool active, FixedString128Bytes[] sents) => dialogue.SetSentence(active, "Maaron", sents);
 
-	[Command(requiresAuthority=false)] public void CmdToggleNextButton(bool targeted) 
+	[ServerRpc] public void ToggleNextButtonServerRpc(bool targeted) 
 	{
 		if (targeted)
-			TargetToggleNextButton(_player.netIdentity.connectionToClient);
+			ToggleNextButtonClientRpc(new ClientRpcParams{ Send = { TargetClientIds = new[] { _player.OwnerClientId } }});
 		else
-			RpcDisableNextButton();
+			DisableNextButtonClientRpc();
 	}
-	[TargetRpc] void TargetToggleNextButton(NetworkConnectionToClient target) => dialogue.ToggleButton(true);
-	[ClientRpc] void RpcDisableNextButton() => dialogue.ToggleButton(false);
+	[ClientRpc] void ToggleNextButtonClientRpc(ClientRpcParams rpc) => dialogue.ToggleButton(true);
+	[ClientRpc] void DisableNextButtonClientRpc() => dialogue.ToggleButton(false);
 	
 	public void NextDialogue() => dialogue.NextSentence();
-	[Command(requiresAuthority=false)] public void CmdNextDialogue() => RpcNextDialogue();
-	[ClientRpc(includeOwner=false)] void RpcNextDialogue() => dialogue.NextSentence();
+	[ServerRpc] public void NextDialogueServerRpc() => NextDialogueClientRpc();
+	[ClientRpc] void NextDialogueClientRpc() => dialogue.NextSentence();
 
 	Coroutine teleportCo;
 	//~ --------------------------------------------------------
-	[Command(requiresAuthority=false)] public void CmdEndDialogue() 
+	[ServerRpc] public void EndDialogueServerRpc() 
 	{
-		RpcEndDialogue();
-		if (isIntro && isServer && teleportCo == null)
+		EndDialogueClientRpc();
+		if (isIntro && IsServer && teleportCo == null)
 		{
 			StartCoroutine( PlacementCardsCo() );
 		}
-		if (isLast5 && isServer)
+		if (isLast5 && IsServer)
 		{
-			CmdSpawnChests();
+			SpawnChestsServerRpc();
 		}
-		if (gameOver && isServer)
+		if (gameOver && IsServer)
 		{
 			StartCoroutine( WinnerCo() );
 		}
 	}
 	public void EndDialogue() => dialogue.CloseDialogue();
-	[ClientRpc(includeOwner=false)] void RpcEndDialogue() => dialogue.CloseDialogue();
+	[ClientRpc] void EndDialogueClientRpc() => dialogue.CloseDialogue();
 
 	#endregion
 
@@ -287,28 +284,28 @@ public class BoardManager : NetworkBehaviour
 		}
 
 		yield return new WaitForSeconds(1);
-		RpcTogglePlacementUi(true);
+		TogglePlacementUiClientRpc(true);
 		// create random order
 		for (int i=0 ; i<nm.GetNumPlayers() ; i++)
 		{
 			int rng = temp[Random.Range(0, temp.Count)];
-			RpcSetPlacementCard(i, rng);
+			SetPlacementCardClientRpc(i, rng);
 			temp.Remove(rng);
 		}
-		RpcTogglePlacementCard(true);
+		TogglePlacementCardClientRpc(true);
 	}
-	[ClientRpc] void RpcSetPlacementCard(int i, int rng)
+	[ClientRpc] void SetPlacementCardClientRpc(int i, int rng)
 	{
 		if (i >= 0 && i < placementBtns.Length && placementBtns[i] != null)
 			placementBtns[i].SetPlacement(rng, i);
 	}
-	[ClientRpc] void RpcTogglePlacementCard(bool active)
+	[ClientRpc] void TogglePlacementCardClientRpc(bool active)
 	{
 		for (int i=0 ; i<placementBtns.Length && i<nm.GetNumPlayers() ; i++)
 			if (placementBtns[i] != null)
 				placementBtns[i].gameObject.SetActive(active);
 	}
-	[ClientRpc] void RpcTogglePlacementUi(bool active) => placementUi.SetActive(active);
+	[ClientRpc] void TogglePlacementUiClientRpc(bool active) => placementUi.SetActive(active);
 
 
 	
@@ -316,40 +313,40 @@ public class BoardManager : NetworkBehaviour
 	public void DoneChoosingPlacement(int placement)
 	{
 		placementCg.interactable = false;
-		gm.CmdSavePlacements(placement, _player.id);
-		_player.CmdSetDataUi(placement);
+		gm.SavePlacementsServerRpc(placement, _player.id.Value);
+		_player.SetDataUiServerRpc(placement);
 	}
-	[Command(requiresAuthority=false)] public void CmdRevealPlacementCard(
-		int ind, int playerId, int characterInd, int placement, NetworkConnectionToClient conn
+	[ServerRpc] public void RevealPlacementCardServerRpc(
+		int ind, int playerId, int characterInd, int placement, ulong targetId
 	) 
 	{
 		// already chosen
 		if (!placementBtns[ind].enabled) return;
 
 		if (ind >= 0 && ind < placementBtns.Length && placementBtns[ind] != null &&
-			ind < placementChosen.Length && !placementChosen[ind])
+			ind < placementChosen.Value.Length && !placementChosen.Value[ind])
 		{
 			placementBtns[ind].enabled = false;
-			placementChosen[ind] = true;
+			placementChosen.Value[ind] = true;
 			tempPlayerOrder[placement] = playerId;
-			TargetRevealPlacementCard(conn, ind);
-			RpcRevealPlacementCard(ind, characterInd);
+			RevealPlacementCardClientRpc(ind, new ClientRpcParams{Send={TargetClientIds=new ulong[]{targetId}}});
+			RevealPlacementCardClientRpc(ind, characterInd);
 		}
 		bool allReady = true;
 		for (int i=0 ; i<tempPlayerOrder.Count ; i++)
-			if (!placementChosen[i])
+			if (!placementChosen.Value[i])
 				allReady = false;
 		if (allReady && endPlacementCo == null)
 			endPlacementCo = StartCoroutine( EndPlacementCo() );
 	}
-	[TargetRpc] void TargetRevealPlacementCard(NetworkConnectionToClient conn, int ind)
+	[ClientRpc] void RevealPlacementCardClientRpc(int ind, ClientRpcParams rpc)
 	{
 		if (ind >= 0 && ind < placementBtns.Length && placementBtns[ind] != null)
 		{
 			placementBtns[ind].ChooseCard();
 		}
 	}
-	[ClientRpc] void RpcRevealPlacementCard(int ind, int characterInd)
+	[ClientRpc] void RevealPlacementCardClientRpc(int ind, int characterInd)
 	{
 		if (ind >= 0 && ind < placementBtns.Length && placementBtns[ind] != null)
 		{
@@ -362,8 +359,8 @@ public class BoardManager : NetworkBehaviour
 	IEnumerator EndPlacementCo()
 	{
 		yield return new WaitForSeconds(1);
-		RpcTogglePlacementCard(false);
-		RpcTogglePlacementUi(false);
+		TogglePlacementCardClientRpc(false);
+		TogglePlacementUiClientRpc(false);
 		nm.SetPlayerOrder(tempPlayerOrder);
 
 		yield return new WaitForSeconds(0.5f);
@@ -376,12 +373,12 @@ public class BoardManager : NetworkBehaviour
 	#region Introduction
 
 	// start location camera
-	[Command(requiresAuthority=false)] public void CmdToggleStartCam(bool active) => RpcToggleStartCam(active);
-	[ClientRpc] void RpcToggleStartCam(bool active) => startCam.SetActive(active);
+	[ServerRpc] public void ToggleStartCamServerRpc(bool active) => ToggleStartCamClientRpc(active);
+	[ClientRpc] void ToggleStartCamClientRpc(bool active) => startCam.SetActive(active);
 	
 	// spawn maaron at start location
-	[Command(requiresAuthority=false)] public void CmdMaaronIntro() => RpcMaaronIntro();
-	[ClientRpc] void RpcMaaronIntro() 
+	[ServerRpc] public void MaaronIntroServerRpc() => MaaronIntroClientRpc();
+	[ClientRpc] void MaaronIntroClientRpc() 
 	{ 
 		maaronAnim.gameObject.SetActive(false);
 		maaronAnim.gameObject.SetActive(true);
@@ -394,12 +391,12 @@ public class BoardManager : NetworkBehaviour
 
 	#region Trap
 
-	[Command(requiresAuthority=false)] public void CmdTrapReward(int atkId, int stolen, bool isStar) 
+	[ServerRpc] public void TrapRewardServerRpc(int atkId, int stolen, bool isStar) 
 		=> StartCoroutine(TrapCo(atkId, stolen, isStar));
 	IEnumerator TrapCo(int atkId, int stolen, bool isStar)
 	{
 		yield return new WaitForSeconds(1);
-		nm.ToggleBoardControlCam(atkId, true);
+		nm.ToggleBoardControlCam(atkId, true); 
 
 		yield return new WaitForSeconds(1);
 		nm.RewardBoardControl(atkId, stolen, isStar);
@@ -408,28 +405,28 @@ public class BoardManager : NetworkBehaviour
 		nm.ToggleBoardControlCam(atkId, false);
 	}
 
-	[Command(requiresAuthority=false)] public void CmdThornNode(int nodeId, int playerId, int characterInd, int trapId) 
-		=> RpcThornNode(nodeId, playerId, characterInd, trapId);
-	[ClientRpc] private void RpcThornNode(int nodeId, int playerId, int characterInd, int trapId) 
+	[ServerRpc] public void ThornNodeServerRpc(int nodeId, int playerId, int characterInd, int trapId) 
+		=> ThornNodeClientRpc(nodeId, playerId, characterInd, trapId);
+	[ClientRpc] private void ThornNodeClientRpc(int nodeId, int playerId, int characterInd, int trapId) 
 		=> NodeManager.Instance.GetNode(nodeId).ToggleThorn(true, playerId, characterInd, trapId);
 
-	[Command(requiresAuthority=false)] public void CmdPlayDoorAnim(int nodeId) => RpcPlayDoorAnim(nodeId);
-	[ClientRpc] private void RpcPlayDoorAnim(int nodeId) => NodeManager.Instance.GetNode(nodeId).PlayDoorAnim();
+	[ServerRpc] public void PlayDoorAnimServerRpc(int nodeId) => PlayDoorAnimClientRpc(nodeId);
+	[ClientRpc] private void PlayDoorAnimClientRpc(int nodeId) => NodeManager.Instance.GetNode(nodeId).PlayDoorAnim();
 
-	[Command(requiresAuthority=false)] public void CmdSetNewToll(int doorInd, int newToll) => RpcSetNewToll(doorInd, newToll);
-	[ClientRpc] private void RpcSetNewToll(int doorInd, int newToll) => NodeManager.Instance.GetNode(doors[doorInd].nodeId).SetNewToll(newToll);
+	[ServerRpc] public void SetNewTollServerRpc(int doorInd, int newToll) => SetNewTollClientRpc(doorInd, newToll);
+	[ClientRpc] private void SetNewTollClientRpc(int doorInd, int newToll) => NodeManager.Instance.GetNode(doors[doorInd].nodeId).SetNewToll(newToll);
 
 	#endregion
 
 	#region Chest
 
 	// spawn chests
-	[Command(requiresAuthority=false)] public void CmdSpawnChests()
+	[ServerRpc] public void SpawnChestsServerRpc()
 	{
-		RpcSpawnChests();
-		TargetChooseChest(nm.GetLosingPlayer());
+		SpawnChestsClientRpc();
+		ChooseChestClientRpc(new ClientRpcParams{Send={TargetClientIds=new ulong[]{nm.GetLosingPlayer()}}});
 	} 
-	[ClientRpc] void RpcSpawnChests() 
+	[ClientRpc] void SpawnChestsClientRpc() 
 	{ 
 		maaronAnim.SetTrigger("magic");
 		//foreach (TreasureChest chest in chests)
@@ -439,39 +436,39 @@ public class BoardManager : NetworkBehaviour
 			chests[i].ind = i;
 		}
 	}
-	[TargetRpc] void TargetChooseChest(NetworkConnectionToClient target) 
+	[ClientRpc] void ChooseChestClientRpc(ClientRpcParams rpc) 
 	{ 
 		foreach (TreasureChest chest in chests)
 			chest.ToggleChooseable(true);
 	}
 
-	[Command(requiresAuthority=false)] public void CmdSelectChest(int n) 
+	[ServerRpc] public void SelectChestServerRpc(int n) 
 	{
-		RpcSelectChest(n);
+		SelectChestClientRpc(n);
 		StartCoroutine( OpenChestCo() );
 	}
-	[ClientRpc] private void RpcSelectChest(int n)
+	[ClientRpc] private void SelectChestClientRpc(int n)
 	{
 		chests[n].OpenChest();
 	}
 	IEnumerator OpenChestCo()
 	{
 		yield return new WaitForSeconds(2);
-		CmdMaaronTeleport();
+		MaaronTeleportServerRpc();
 
 		yield return new WaitForSeconds(2);
-		//CmdSetMaaron(gm.prevStarInd, true);
-		CmdSetMaaron(gm.prevStarInd, true);
-		CmdSetStarNode(starNodes[gm.prevStarInd].node.nodeId, true);
+		//SetMaaronServerRpc(gm.prevStarInd, true);
+		SetMaaronServerRpc(gm.prevStarInd, true);
+		SetStarNodeServerRpc(starNodes[gm.prevStarInd].node.nodeId, true);
 		
 		yield return new WaitForSeconds(1);
-		CmdToggleStartCam(false);
+		ToggleStartCamServerRpc(false);
 		nm.NextBoardPlayerTurn();
 		ToggleMainUi(true);
-		CmdToggleMainUi(true);
+		ToggleMainUiServerRpc(true);
 
 		yield return new WaitForSeconds(1);
-		CmdToggleSpotlight(true);
+		ToggleSpotlightServerRpc(true);
 	}
 
 	#endregion
@@ -483,7 +480,7 @@ public class BoardManager : NetworkBehaviour
 	IEnumerator TeleportToStarCo(int fixedInd=-1, bool changeLoc=false)
 	{
 		if (changeLoc)
-			CmdSetStarNode(gm.prevStarInd, false);
+			SetStarNodeServerRpc(gm.prevStarInd, false);
 		int rng = fixedInd == -1 ? Random.Range(0, starNodes.Length) : fixedInd;
 		while (rng == gm.prevStarInd || 
 			(gm.prevStarInd >= 0 && gm.prevStarInd < starNodes.Length &&
@@ -493,37 +490,37 @@ public class BoardManager : NetworkBehaviour
 		}
 		gm.prevStarInd = rng;
 		starCam.m_Follow = starNodes[rng].node.transform;
-		CmdMaaronTeleport();
+		MaaronTeleportServerRpc();
 
 		yield return new WaitForSeconds(2f);
-		CmdToggleStartCam(false);
-		CmdToggleStarCam(true);
+		ToggleStartCamServerRpc(false);
+		ToggleStarCamServerRpc(true);
 
 		yield return new WaitForSeconds(1f);
 		StartCoroutine( SetupStarNode(rng) );
 		
 		yield return new WaitForSeconds(4);
-		CmdToggleStarCam(false);
+		ToggleStarCamServerRpc(false);
 		
 		//yield return new WaitForSeconds(1);
 		isIntro = false;
 		nm.NextBoardPlayerTurn();
 		ToggleMainUi(true);
-		CmdToggleMainUi(true);
+		ToggleMainUiServerRpc(true);
 		teleportCo = null;
 	}
-	[Command(requiresAuthority=false)] public void CmdChooseStar() => StartCoroutine( ChooseStarCo(-1, true) );
+	[ServerRpc] public void ChooseStarServerRpc() => StartCoroutine( ChooseStarCo(-1, true) );
 	IEnumerator ChooseStarCo(int fixedInd=-1, bool changeLoc=false)
 	{
 		if (changeLoc)
 		{
-			CmdToggleSpotlight(false);
+			ToggleSpotlightServerRpc(false);
 
 			yield return new WaitForSeconds(1f);
-			RpcMaaronTeleport();
+			MaaronTeleportClientRpc();
 
 			yield return new WaitForSeconds(1f);
-			CmdSetStarNode(starNodes[gm.prevStarInd].node.nodeId, false);
+			SetStarNodeServerRpc(starNodes[gm.prevStarInd].node.nodeId, false);
 
 			yield return new WaitForSeconds(0.5f);
 		}
@@ -538,35 +535,35 @@ public class BoardManager : NetworkBehaviour
 		starCam.m_Follow = starNodes[rng].node.transform;
 
 		yield return new WaitForSeconds(1f);
-		CmdToggleStarCam(true);
+		ToggleStarCamServerRpc(true);
 
 		yield return new WaitForSeconds(1f);
 		StartCoroutine( SetupStarNode(rng) );
 		
 		yield return new WaitForSeconds(4);
-		CmdToggleStarCam(false);
+		ToggleStarCamServerRpc(false);
 	}
-	[Command(requiresAuthority=false)] void CmdToggleStarCam(bool active) => RpcToggleStarCam(active);
-	[ClientRpc] void RpcToggleStarCam(bool active) => starCam.gameObject.SetActive(active);
+	[ServerRpc] void ToggleStarCamServerRpc(bool active) => ToggleStarCamClientRpc(active);
+	[ClientRpc] void ToggleStarCamClientRpc(bool active) => starCam.gameObject.SetActive(active);
 	private IEnumerator SetupStarNode(int ind)
 	{
-		CmdSetMaaron(ind, true);
-		CmdSetStarNode(starNodes[ind].node.nodeId, true);
+		SetMaaronServerRpc(ind, true);
+		SetStarNodeServerRpc(starNodes[ind].node.nodeId, true);
 		
 		yield return new WaitForSeconds(2);
-		CmdToggleSpotlight(true);
+		ToggleSpotlightServerRpc(true);
 	}
 
 	// maaron teleports
-	[Command(requiresAuthority=false)] void CmdMaaronTeleport() => RpcMaaronTeleport();
-	[ClientRpc] void RpcMaaronTeleport() => maaronAnim.SetTrigger("teleport");
+	[ServerRpc] void MaaronTeleportServerRpc() => MaaronTeleportClientRpc();
+	[ClientRpc] void MaaronTeleportClientRpc() => maaronAnim.SetTrigger("teleport");
 
-	[Command(requiresAuthority=false)] public void CmdMaaronClap(bool active) => RpcMaaronClap(active);
-	[ClientRpc] void RpcMaaronClap(bool active) => maaronAnim.SetBool("isClapping", active);
+	[ServerRpc] public void MaaronClapServerRpc(bool active) => MaaronClapClientRpc(active);
+	[ClientRpc] void MaaronClapClientRpc(bool active) => maaronAnim.SetBool("isClapping", active);
 
 	// set maaron location
-	[Command(requiresAuthority=false)] void CmdSetMaaron(int nodeId, bool isStarSpace) => RpcSetMaaron(nodeId, isStarSpace);
-	[ClientRpc] void RpcSetMaaron(int nodeId, bool isStarSpace) 
+	[ServerRpc] void SetMaaronServerRpc(int nodeId, bool isStarSpace) => SetMaaronClientRpc(nodeId, isStarSpace);
+	[ClientRpc] void SetMaaronClientRpc(int nodeId, bool isStarSpace) 
 	{ 
 		maaronAnim.gameObject.SetActive(false);
 		maaronAnim.gameObject.SetActive(isStarSpace);
@@ -575,8 +572,8 @@ public class BoardManager : NetworkBehaviour
 	}
 
 	// toggle spotlight for maaron
-	[Command(requiresAuthority=false)] void CmdToggleSpotlight(bool active) => RpcToggleSpotlight(active);
-	[ClientRpc] void RpcToggleSpotlight(bool active) 
+	[ServerRpc] void ToggleSpotlightServerRpc(bool active) => ToggleSpotlightClientRpc(active);
+	[ClientRpc] void ToggleSpotlightClientRpc(bool active) 
 	{
 		if (active)
 			maaronSpotlightPs.Play();
@@ -585,16 +582,16 @@ public class BoardManager : NetworkBehaviour
 	}
 
 	// set node space (star)
-	[Command(requiresAuthority=false)] void CmdSetStarNode(int nodeId, bool isStarSpace) => RpcSetStarNode(nodeId, isStarSpace);
-	[ClientRpc] void RpcSetStarNode(int nodeId, bool isStarSpace) => NodeManager.Instance.GetNode(nodeId).ToggleStarNode(isStarSpace);
+	[ServerRpc] void SetStarNodeServerRpc(int nodeId, bool isStarSpace) => SetStarNodeClientRpc(nodeId, isStarSpace);
+	[ClientRpc] void SetStarNodeClientRpc(int nodeId, bool isStarSpace) => NodeManager.Instance.GetNode(nodeId).ToggleStarNode(isStarSpace);
 
 	// new stock text
-	[Command(requiresAuthority=false)] void CmdNewStock() => RpcNewStock();
-	[ClientRpc] void RpcNewStock() => newStockUi.SetActive(true);
+	[ServerRpc] void NewStockServerRpc() => NewStockClientRpc();
+	[ClientRpc] void NewStockClientRpc() => newStockUi.SetActive(true);
 
 	// new stock text
-	[Command(requiresAuthority=false)] void CmdFinalFive() => RpcFinalFive();
-	[ClientRpc] void RpcFinalFive() => finalFiveUi.SetActive(true);
+	[ServerRpc] void FinalFiveServerRpc() => FinalFiveClientRpc();
+	[ClientRpc] void FinalFiveClientRpc() => finalFiveUi.SetActive(true);
 	
 	#endregion
 
@@ -603,28 +600,28 @@ public class BoardManager : NetworkBehaviour
 	#region Winner
 	IEnumerator WinnerCo()
 	{
-		CmdMaaronMagic();
+		MaaronMagicServerRpc();
 		yield return new WaitForSeconds(2);
 		nm.PunishNonWinners();
 
 		yield return new WaitForSeconds(1);
 		nm.ShowWinner();
-		CmdShowFinalData();
+		ShowFinalDataServerRpc();
 	}
-	[Command(requiresAuthority=false)] void CmdMaaronMagic() => RpcMaaronMagic();
-	[ClientRpc] void RpcMaaronMagic() => maaronAnim.SetTrigger("magicOnly");
+	[ServerRpc] void MaaronMagicServerRpc() => MaaronMagicClientRpc();
+	[ClientRpc] void MaaronMagicClientRpc() => maaronAnim.SetTrigger("magicOnly");
 
-	[Command(requiresAuthority=false)] void CmdShowFinalData() => RpcShowFinalData();
-	[ClientRpc] void RpcShowFinalData() => _player.CmdSetFinalUi();
+	[ServerRpc] void ShowFinalDataServerRpc() => ShowFinalDataClientRpc();
+	[ClientRpc] void ShowFinalDataClientRpc() => _player.SetFinalUiServerRpc();
 	#endregion
 
 	public void NextPlayerTurn()
 	{
-		CmdNextPlayerTurn(); // calls to server
+		NextPlayerTurnServerRpc(); // calls to server
 	}
-	[Command(requiresAuthority=false)] private void CmdNextPlayerTurn()
+	[ServerRpc] private void NextPlayerTurnServerRpc()
 	{
-		//Debug.Log($"<color=cyan>CmdNextPlayerTurn()</color>");
+		//Debug.Log($"<color=cyan>NextPlayerTurnServerRpc()</color>");
 		if (turret != null)
 		{
 			if (nm.StillHavePlayerTurns())
@@ -641,13 +638,13 @@ public class BoardManager : NetworkBehaviour
 		//	//nPlayerOrder = ++nPlayerOrder % nPlayers;
 		//	players[nPlayerOrder].YourTurn();
 		//if (nPlayerOrder.Value >= 0 && nPlayerOrder.Value < players.Length)
-		//	gm.CmdNextPlayerTurn((ulong) ++nPlayerOrder.Value);
+		//	gm.NextPlayerTurnServerRpc((ulong) ++nPlayerOrder.Value);
 		//else if (nPlayerOrder.Value >= nPlayers)
 		//{
-		//	//CmdDisablePlayer();
-		//	gm.CmdLoadPreviewMinigame("TestMinigame");
+		//	//DisablePlayerServerRpc();
+		//	gm.LoadPreviewMinigameServerRpc("TestMinigame");
 		//}
-			//gm.CmdLoadMinigame();
+			//gm.LoadMinigameServerRpc();
 			//LoadMinigame("TestMinigame");
 	}
 
@@ -655,77 +652,76 @@ public class BoardManager : NetworkBehaviour
 	IEnumerator TurretCo(bool goToNextPlayer=true)
 	{
 		yield return new WaitForSeconds(goToNextPlayer ? 0 : 0.5f);
-		CmdToggleTurretCam(true);
+		ToggleTurretCamServerRpc(true);
 
 		// ui showing Freakin' giant turret's turn!
 		if (goToNextPlayer)
 		{
-			CmdTurretIntro(true);
+			TurretIntroServerRpc(true);
 			
 			yield return new WaitForSeconds(1f);
-			CmdTurretIntro(false);
+			TurretIntroServerRpc(false);
 		}
 
 		yield return new WaitForSeconds(1f);
-		CmdTurretTurn(++gm.turretReady);
-		if (gm.turretReady == 5 || fireTurret)
+		TurretTurnServerRpc(++gm.turretReady.Value);
+		if (gm.turretReady.Value == 5 || fireTurret)
 		{
 			int temp = boardCam.m_Priority;
-			CmdSetBoardCamPriority(10000);
-			CmdToggleTurretCam(false);
+			SetBoardCamPriorityServerRpc(10000);
+			ToggleTurretCamServerRpc(false);
 			yield return new WaitForSeconds(7);
-			CmdSetBoardCamPriority(temp);
+			SetBoardCamPriorityServerRpc(temp);
 		}
-		gm.turretReady = gm.turretReady == 5 ? 0 : gm.turretReady;
+		gm.turretReady.Value = gm.turretReady.Value == 5 ? 0 : gm.turretReady.Value;
 
 		yield return new WaitForSeconds(1);
-		CmdToggleTurretCam(false);
+		ToggleTurretCamServerRpc(false);
 		if (goToNextPlayer)
 			nm.NextBoardPlayerTurn();
 	}
 	IEnumerator TurretRotateCo()
 	{
 		yield return new WaitForSeconds(0.5f);
-		CmdToggleTurretCam(true);
+		ToggleTurretCamServerRpc(true);
 
 		yield return new WaitForSeconds(1f);
-		RpcTurretRotate(gm.turretRot, gm.turretRot+1);
-		++gm.turretRot;
+		TurretRotateClientRpc(gm.turretRot.Value, gm.turretRot.Value+1);
+		++gm.turretRot.Value;
 
 		yield return new WaitForSeconds(2);
-		CmdToggleTurretCam(false);
+		ToggleTurretCamServerRpc(false);
 	}
 
-	[Command(requiresAuthority=false)] public void CmdTurretStart() => RpcTurretStart(gm.turretReady, gm.turretRot);
-	[ClientRpc] void RpcTurretStart(int x, int y) => turret.RemoteStart(x, y);
+	[ServerRpc] public void TurretStartServerRpc() => TurretStartClientRpc(gm.turretReady.Value, gm.turretRot.Value);
+	[ClientRpc] void TurretStartClientRpc(int x, int y) => turret.RemoteStart(x, y);
 
-	[Command(requiresAuthority=false)] public void CmdSetBoardCamPriority(int val) => RpcSetBoardCamPriority(val);
-	[ClientRpc] void RpcSetBoardCamPriority(int val) => boardCam.m_Priority = val;
+	[ServerRpc] public void SetBoardCamPriorityServerRpc(int val) => SetBoardCamPriorityClientRpc(val);
+	[ClientRpc] void SetBoardCamPriorityClientRpc(int val) => boardCam.m_Priority = val;
 
-	[Command(requiresAuthority=false)] public void CmdTurretIntro(bool active) => RpcTurretIntro(active);
-	[ClientRpc] void RpcTurretIntro(bool active)
+	[ServerRpc] public void TurretIntroServerRpc(bool active) => TurretIntroClientRpc(active);
+	[ClientRpc] void TurretIntroClientRpc(bool active)
 	{
 		if (active) turretIntro.gameObject.SetActive(true);
 		else turretIntro.SetTrigger("close");
 	}
 
-	[Command(requiresAuthority=false)] public void CmdTurretTurnCo() => StartCoroutine( TurretCo(false) );
-	[Command(requiresAuthority=false)] public void CmdTurretTurn(int x) => RpcTurretTurn(x);
-	[ClientRpc] void RpcTurretTurn(int x)
+	[ServerRpc] public void TurretTurnCoServerRpc() => StartCoroutine( TurretCo(false) );
+	[ServerRpc] public void TurretTurnServerRpc(int x) => TurretTurnClientRpc(x);
+	[ClientRpc] void TurretTurnClientRpc(int x)
 	{
 		if (fireTurret) turret.JustFire();
 		else turret.IncreaseReady(x);
 	} 
 
-	[Command(requiresAuthority=false)] public void CmdTurretRotateCo() => StartCoroutine( TurretRotateCo() );
-	//[Command(requiresAuthority=false)] public void CmdTurretRotate() { gm.turretRot++; RpcTurretRotate(gm.turretRot); }
-	[ClientRpc] void RpcTurretRotate(int n, int m) => turret.RotateTurret(n, m);
+	[ServerRpc] public void TurretRotateCoServerRpc() => StartCoroutine( TurretRotateCo() );
+	[ClientRpc] void TurretRotateClientRpc(int n, int m) => turret.RotateTurret(n, m);
 
-	[Command(requiresAuthority=false)] public void CmdToggleTurretCam(bool active) => RpcToggleTurretCam(active);
-	[ClientRpc] void RpcToggleTurretCam(bool active) => turret.ToggleCam(active);
+	[ServerRpc] public void ToggleTurretCamServerRpc(bool active) => ToggleTurretCamClientRpc(active);
+	[ClientRpc] void ToggleTurretCamClientRpc(bool active) => turret.ToggleCam(active);
 
-	[Command(requiresAuthority=false)] public void CmdShakeCam(float intensity, float duration) => RpcShakeCam(intensity, duration);
-	[ClientRpc] void RpcShakeCam(float intensity, float duration) => CinemachineShake.Instance.ShakeCam(intensity, duration);
+	[ServerRpc] public void ShakeCamServerRpc(float intensity, float duration) => ShakeCamClientRpc(intensity, duration);
+	[ClientRpc] void ShakeCamClientRpc(float intensity, float duration) => CinemachineShake.Instance.ShakeCam(intensity, duration);
 
 	#endregion
 }

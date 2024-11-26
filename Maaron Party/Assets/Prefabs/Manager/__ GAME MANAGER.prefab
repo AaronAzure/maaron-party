@@ -2710,7 +2710,7 @@ GameObject:
   - component: {fileID: 3634250872829894572}
   - component: {fileID: 3120356282450522442}
   - component: {fileID: 7288775949962906796}
-  - component: {fileID: 6969228504031060560}
+  - component: {fileID: 2086898049970924977}
   m_Layer: 5
   m_Name: TRANSITION Canvas
   m_TagString: Untagged
@@ -2805,7 +2805,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &6969228504031060560
+--- !u!114 &2086898049970924977
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2814,14 +2814,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 3851289919231256873}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7f6f3bf89aa97405989c802ba270f815, type: 3}
+  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 1
-  syncMode: 0
-  syncInterval: 0
-  clientAuthority: 1
-  animator: {fileID: 7288775949962906796}
+  TransitionStateInfoList: []
+  m_Animator: {fileID: 7288775949962906796}
 --- !u!1 &4003737267415816528
 GameObject:
   m_ObjectHideFlags: 0
@@ -3209,8 +3206,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2298832409760039847}
   - component: {fileID: 7063794103719922717}
+  - component: {fileID: 8191416430967923049}
   - component: {fileID: 1394956670957801121}
-  - component: {fileID: 5151234886908247087}
   - component: {fileID: 1368920899764181810}
   m_Layer: 0
   m_Name: __ GAME MANAGER
@@ -3246,6 +3243,27 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4357352453857552675}
   m_Enabled: 1
+--- !u!114 &8191416430967923049
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4357352453857552675}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 0
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!114 &1394956670957801121
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3258,46 +3276,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ed6375247d6c234196202042d3fb26a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
+  pm: {fileID: 0}
   spawnHolder: {fileID: 0}
   rewardUi: {fileID: 0}
   dataUis: []
   currNodes: 
-  placements: 
-  coins: 
-  stars: 
-  manas: 
-  doorTolls: 
-  nTurn: 1
-  maxTurns: 20
-  isPractice: 0
-  pm: {fileID: 0}
+  nTurn:
+    m_InternalValue: 1
+  maxTurns:
+    m_InternalValue: 20
+  isPractice:
+    m_InternalValue: 0
   pmObj: {fileID: 0}
   gameStarted: 0
   prevStarInd: -1
-  turretReady: 0
-  turretRot: 0
+  turretReady:
+    m_InternalValue: 0
+  turretRot:
+    m_InternalValue: 0
   anim: {fileID: 7288775949962906796}
-  minigameName: 
---- !u!114 &5151234886908247087
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4357352453857552675}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  _assetId: 309589065
-  serverOnly: 0
-  visibility: 0
-  hasSpawned: 0
+  minigameName:
+    m_InternalValue: 
 --- !u!114 &1368920899764181810
 MonoBehaviour:
   m_ObjectHideFlags: 0

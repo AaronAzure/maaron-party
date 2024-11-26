@@ -4,7 +4,7 @@ using TMPro;
 using Rewired;
 using UnityEngine;
 using UnityEngine.UI;
-using Mirror;
+using Unity.Netcode;
 using Cinemachine;
 
 public class PlayerControls : NetworkBehaviour
@@ -25,9 +25,9 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private float rotateSpeed=5f;
 	private Vector3 startPos;
 	private float time;
-	[SyncVar] public int characterInd=-1;
-	[SyncVar] public int id=-1;
-	[SyncVar] public int boardOrder;
+	public NetworkVariable<int> characterInd = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+	public NetworkVariable<int> id = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+	public NetworkVariable<int> boardOrder = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
 	
 	
@@ -90,11 +90,11 @@ public class PlayerControls : NetworkBehaviour
 	#region Stats
 
 	[Space] [Header("Stats")]
-	[SyncVar] [SerializeField] private int coins=10;
+	[SerializeField] private NetworkVariable<int> coins = new NetworkVariable<int>(10, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 	private int coinsT;
-	[SyncVar] [SerializeField] private int stars;
+	[SerializeField] private NetworkVariable<int> stars = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 	private int starsT;
-	[SyncVar] [SerializeField] private int mana=5;
+	[SerializeField] private NetworkVariable<int> mana = new NetworkVariable<int>(5, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 	//private int manaT;
 	[SerializeField] private float currencyT;
 	private float currencySpeedT=0.5f;
@@ -165,7 +165,7 @@ public class PlayerControls : NetworkBehaviour
 	[SerializeField] private bool inMap;
 	[SerializeField] private bool isDashing;
 	[SerializeField] private bool inSpellAnimation;
-	[SyncVar] bool yourTurn;
+	bool yourTurn;
 	public bool isShield {get; private set;}
 	bool usingFireSpell1;
 	private bool isCurrencyAsync;
@@ -176,7 +176,7 @@ public class PlayerControls : NetworkBehaviour
 
 	[Space] [Header("Shop")]
 	[SerializeField] private Button[] shopItems;
-	[SyncVar] [SerializeField] List<int> itemInds = new();
+	[SerializeField] NetworkVariable<List<int>> itemInds = new NetworkVariable<List<int>>(null, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 	[SerializeField] Image[] itemImgs;
 	[SerializeField] private Sprite emptySpr;
 	[SerializeField] private GameObject buyBtnObj;
@@ -211,97 +211,96 @@ public class PlayerControls : NetworkBehaviour
 	{
 		DontDestroyOnLoad(this);
 	}
-	public override void OnStartClient()
+	public override void OnNetworkSpawn()
 	{
-		base.OnStartClient();
-		if (isOwned)
+		base.OnNetworkSpawn();
+		if (IsOwner)
 			Instance = this;	
 		nm.AddBoardConnection(this);
 	}
-	public override void OnStopClient()
+	public override void OnNetworkDespawn()
 	{
-		//Debug.Log($"<color=#FF9900>PLAYER DISCONNECT ({isOwned}) | {isServer} | {yourTurn}</color>");
-		base.OnStopClient();
-		if (isOwned)
+		//Debug.Log($"<color=#FF9900>PLAYER DISCONNECT ({IsOwner}) | {IsServer} | {yourTurn}</color>");
+		base.OnNetworkDespawn();
+		if (IsOwner)
 		{
 			nm.RemoveBoardConnection(this);
 		}
-		if (isServer && yourTurn)
+		if (IsServer && yourTurn)
 			bm.NextPlayerTurn();
 	}
 
 
 	public void MediateRemoteStart()
 	{
-		TargetRemoteStart(netIdentity.connectionToClient);
+		RemoteStartClientRpc(new ClientRpcParams{Send={TargetClientIds=new[]{OwnerClientId}}});
 	}
 	
 	// Start()
-	[TargetRpc] private void TargetRemoteStart(NetworkConnectionToClient target) 
+	[ClientRpc] private void RemoteStartClientRpc(ClientRpcParams rpc) 
 	{
 		//Debug.Log($"<color=yellow>TargetRemoteStart</color>");
 		player = ReInput.players.GetPlayer(0);
 		if (vCam != null)
 			vCam.parent = null;
 		
-		CmdSetModel(characterInd);
+		SetModelServerRpc(characterInd.Value);
 		model.rotation = Quaternion.LookRotation(Vector3.back);
 
 		// first turn
-		if (gm.nTurn == 1)
+		if (gm.nTurn.Value == 1)
 		{
-			transform.position = BoardManager.Instance.GetSpawnPos().position + new Vector3(-4 + 2*id,0,-2);
+			transform.position = BoardManager.Instance.GetSpawnPos().position + new Vector3(-4 + 2*id.Value,0,-2);
 			startPos = this.transform.position;
 			if (nm.skipIntro)
-				CmdSetDataUi(id);
+				SetDataUiServerRpc(id.Value);
 		}
 		// game over
-		else if (gm.nTurn > gm.maxTurns)
+		else if (gm.nTurn.Value > gm.maxTurns.Value)
 		{
-			transform.position = BoardManager.Instance.GetSpawnPos().position + new Vector3(-4 + 2*id,0,-2);
-			coinsT = coins = gm.GetCoins(id);
-			starsT = stars = gm.GetStars(id);
+			transform.position = BoardManager.Instance.GetSpawnPos().position + new Vector3(-4 + 2*id.Value,0,-2);
+			coinsT = coins.Value = gm.GetCoins(id.Value);
+			starsT = stars.Value = gm.GetStars(id.Value);
 			return;
 		}
 		
-		if (!isOwned) {
+		if (!IsOwner) {
 			enabled = false;
 			return;
 		}
 		
 		// after first turn
-		if (gm.nTurn > 1)
+		if (gm.nTurn.Value > 1)
 		{
 			LoadData();
-			CmdSetDataUi(nm.skipIntro ? id : gm.GetPlacements(id));
+			SetDataUiServerRpc(nm.skipIntro ? id.Value : gm.GetPlacements(id.Value));
 		}
 		// 第一名 
 		else
 		{
-			coinsT = coins;
-			starsT = stars;
+			coinsT = coins.Value;
+			starsT = stars.Value;
 		}
 		
-		CmdSetCoinText(coins);
-		CmdSetStarText(stars);
-		CmdShowMana(mana);
-		CmdReplaceItems(itemInds);
-		CmdShowItems();
+		SetCoinTextServerRpc(coins.Value);
+		SetStarTextServerRpc(stars.Value);
+		ShowManaServerRpc(mana.Value);
+		ShowItemsServerRpc();
 	}
 
-	[Command(requiresAuthority = false)] public void CmdSetModel(int ind) => RpcSetModel(ind);
-	[ClientRpc] public void RpcSetModel(int ind)
+	[ServerRpc] public void SetModelServerRpc(int ind) => SetModelClientRpc(ind);
+	[ClientRpc] public void SetModelClientRpc(int ind)
 	{
-		name = $"__ PLAYER {id} __";
-		//if (isOwned)
-		//	CmdPing();
+		name = $"__ PLAYER {id.Value} __";
+		//if (IsOwner)
+		//	PingServerRpc();
 		transform.parent = bm.transform;
 		for (int i=0 ; i<models.Length ; i++)
 			models[i].SetActive(false);
 		if (models != null && ind >= 0 && ind < models.Length)
 			models[ind].SetActive(true);
 
-		if (isOwned)
+		if (IsOwner)
 			anim = models[ind].GetComponent<Animator>();
 
 		//if (bm != null)
@@ -327,15 +326,15 @@ public class PlayerControls : NetworkBehaviour
 				: ind == 2 ? new Color(0.85f,0.85f,0.5f) : new Color(0.7f,0.5f,0.8f);
 	}
 
-	[Command(requiresAuthority=false)] public void CmdSetDataUi(int n) => RpcSetDataUi(n);
-	[ClientRpc] private void RpcSetDataUi(int n)
+	[ServerRpc] public void SetDataUiServerRpc(int n) => SetDataUiClientRpc(n);
+	[ClientRpc] private void SetDataUiClientRpc(int n)
 	{
 		dataUi.anchoredPosition = new Vector3(125, -137.5f - 175 * n);
 		dataUi.gameObject.SetActive(true);
 	}
 
-	[Command(requiresAuthority=false)] public void CmdSetFinalUi() => RpcSetFinalUi(id, coins, stars);
-	[ClientRpc] private void RpcSetFinalUi(int n, int coins, int stars)
+	[ServerRpc] public void SetFinalUiServerRpc() => SetFinalUiClientRpc(id.Value, coins.Value, stars.Value);
+	[ClientRpc] private void SetFinalUiClientRpc(int n, int coins, int stars)
 	{
 		finalUi.anchoredPosition = new Vector3(400 + 250 * n, -650);
 		finalUi.gameObject.SetActive(true);
@@ -343,20 +342,20 @@ public class PlayerControls : NetworkBehaviour
 		finalStarsTxt.text = $"{stars}";
 	}
 
-	[Command(requiresAuthority=false)] public void CmdSetOrder(int order) => boardOrder = order;
+	[ServerRpc] public void SetOrderServerRpc(int order) => boardOrder.Value = order;
 
 	public void SetStartNode(Node startNode) => nextNode = startNode;
 
-	[Command(requiresAuthority=false)] private void CmdSetCoinText(int n) => RpcSetCoinText(n);
-	[ClientRpc] private void RpcSetCoinText(int n) => coinTxt.text = $"{n}";
-	[Command(requiresAuthority=false)] private void CmdSetStarText(int n) => RpcSetStarText(n);
-	[ClientRpc] private void RpcSetStarText(int n) => starTxt.text = $"{n}";
+	[ServerRpc] private void SetCoinTextServerRpc(int n) => SetCoinTextClientRpc(n);
+	[ClientRpc] private void SetCoinTextClientRpc(int n) => coinTxt.text = $"{n}";
+	[ServerRpc] private void SetStarTextServerRpc(int n) => SetStarTextClientRpc(n);
+	[ClientRpc] private void SetStarTextClientRpc(int n) => starTxt.text = $"{n}";
 
 
-	[Command(requiresAuthority=false)] void CmdPlayerThinking(bool active, int ind) => RpcPlayerThinking(active, ind); 
-	[ClientRpc(includeOwner=false)] void RpcPlayerThinking(bool active, int ind)
+	[ServerRpc] void PlayerThinkingServerRpc(bool active, int ind) => PlayerThinkingClientRpc(active, ind); 
+	[ClientRpc] void PlayerThinkingClientRpc(bool active, int ind)
 	{
-		if (!isOwned)
+		if (!IsOwner)
 		{
 			thinkingTxt.gameObject.SetActive(active);
 			//introTxt.color = ind == 0 ? new Color(0.7f,0.13f,0.13f) : ind == 1 ? new Color(0.4f,0.7f,0.3f) 
@@ -383,8 +382,8 @@ public class PlayerControls : NetworkBehaviour
 	#region FixedUpdate
 	void FixedUpdate()
 	{
-		if (!isOwned) return;
-		if (coins != coinsT)
+		if (!IsOwner) return;
+		if (coins.Value != coinsT)
 		{
 			if (currencyT < currencySpeedT)
 			{
@@ -392,11 +391,11 @@ public class PlayerControls : NetworkBehaviour
 			} 
 			else
 			{
-				coinsT = coinsT < coins ? coinsT + 1 : coinsT - 1;
-				CmdSetCoinText(coinsT);
+				coinsT = coinsT < coins.Value ? coinsT + 1 : coinsT - 1;
+				SetCoinTextServerRpc(coinsT);
 				currencyT = 0;
 			}
-			if (coins == coinsT)
+			if (coins.Value == coinsT)
 			{
 				isCurrencyAsync = false;
 				if (!yourTurn)
@@ -406,7 +405,7 @@ public class PlayerControls : NetworkBehaviour
 				}
 			}
 		}
-		else if (stars != starsT)
+		else if (stars.Value != starsT)
 		{
 			if (currencyT < currencySpeedT)
 			{
@@ -414,11 +413,11 @@ public class PlayerControls : NetworkBehaviour
 			} 
 			else
 			{
-				starsT = starsT < stars ? starsT + 1 : starsT - 1;
-				CmdSetStarText(starsT);
+				starsT = starsT < stars.Value ? starsT + 1 : starsT - 1;
+				SetStarTextServerRpc(starsT);
 				currencyT = 0;
 			}
-			if (stars == starsT)
+			if (stars.Value == starsT)
 			{
 				isCurrencyAsync = false;
 			}
@@ -473,8 +472,8 @@ public class PlayerControls : NetworkBehaviour
 
 				if (nextNode.DoesConsumeMovement())
 					movesLeft--;
-				CmdPlayNodeTraverseVfx(nextNode.nodeId);
-				CmdUpdateMovesLeft(movesLeft);
+				PlayNodeTraverseVfxServerRpc(nextNode.nodeId);
+				UpdateMovesLeftServerRpc(movesLeft);
 
 				// end at space
 				if (movesLeft <= 0)
@@ -492,7 +491,7 @@ public class PlayerControls : NetworkBehaviour
 						startPos = transform.position;
 						if (canvas != null)
 							canvas.SetActive(true);
-						CmdToggleDashVfx(false);
+						ToggleDashVfxServerRpc(false);
 						canMove = isDashing = false;
 						if (nextNode.nextNodes.Count == 1)
 							nextNode = nextNode.nextNodes[0];
@@ -520,53 +519,48 @@ public class PlayerControls : NetworkBehaviour
 
 	#endregion
 
-	public void YourTurn()
+	[ClientRpc] public void YourTurnClientRpc(ClientRpcParams crp)
 	{
 		//Debug.Log("<color=cyan>YOUR TURN!!\n currNode != null => {currNode != null} nextNode != null => {nextNode != null}</color>");
-		CmdCamToggle(true);
-		TargetYourTurn(netIdentity.connectionToClient);
-	}
-	private void ShowDistanceAway(int n)
-	{
-		distanceTxt.text = n == -1 ? "? spaces away" : n == 1 ? "1 space away" : $"{n} spaces away";
-	}
-	[Command(requiresAuthority=false)] public void CmdCamToggle(bool activate) => RpcCamToggle(activate);
-	[ClientRpc] private void RpcCamToggle(bool activate) => vCam.gameObject.SetActive(activate);
-	[Command(requiresAuthority=false)] private void CmdShoveToggle(bool activate) => RpcShoveToggle(activate);
-	[ClientRpc(includeOwner=false)] private void RpcShoveToggle(bool activate) => shoveObj.SetActive(activate);
-	[TargetRpc] public void TargetYourTurn(NetworkConnectionToClient target)
-	{
+		CamToggleServerRpc(true);
 		if (currNode != null)
 			ShowDistanceAway(currNode.GetDistanceAway(0));
 		else if (nextNode != null)
 			ShowDistanceAway(nextNode.GetDistanceAway(1));
 		this.enabled = true;
-		CmdToggleYourTurn(true);
-		CmdToggleIntroUi(true);
-		if (ragdollObj[characterInd].activeSelf)
+		ToggleYourTurnServerRpc(true);
+		ToggleIntroUiServerRpc(true);
+		if (ragdollObj[characterInd.Value].activeSelf)
 		{
-			CmdPlayerToggle(true);
-			CmdRagdollToggle(false);
+			PlayerToggleServerRpc(true);
+			RagdollToggleServerRpc(false);
 		}
-		//CmdShoveToggle(true);
 	}
+	private void ShowDistanceAway(int n)
+	{
+		distanceTxt.text = n == -1 ? "? spaces away" : n == 1 ? "1 space away" : $"{n} spaces away";
+	}
+	[ServerRpc] public void CamToggleServerRpc(bool activate) => CamToggleClientRpc(activate);
+	[ClientRpc] private void CamToggleClientRpc(bool activate) => vCam.gameObject.SetActive(activate);
+	[ServerRpc] private void ShoveToggleServerRpc(bool activate) => ShoveToggleClientRpc(activate);
+	[ClientRpc] private void ShoveToggleClientRpc(bool activate) => shoveObj.SetActive(activate);
 	public void EndTurn()
 	{
-		CmdCamToggle(false);
+		CamToggleServerRpc(false);
 		//vCam.gameObject.SetActive(false);
 		if (canvas != null)
 			canvas.SetActive(false);
-		CmdShoveToggle(false);
+		ShoveToggleServerRpc(false);
 		this.enabled = false;
-		CmdToggleYourTurn(false);
+		ToggleYourTurnServerRpc(false);
 		SaveData();
 	}
-	[Command(requiresAuthority=false)] private void CmdToggleYourTurn(bool active) => yourTurn = active;
-	[Command(requiresAuthority=false)] void CmdToggleIntroUi(bool active) => RpcToggleIntroUi(active);
-	[ClientRpc] void RpcToggleIntroUi(bool active)
+	[ServerRpc] private void ToggleYourTurnServerRpc(bool active) => yourTurn = active;
+	[ServerRpc] void ToggleIntroUiServerRpc(bool active) => ToggleIntroUiClientRpc(active);
+	[ClientRpc] void ToggleIntroUiClientRpc(bool active)
 	{
-		introBtn.interactable = isOwned;
-		clickAnywhereUi.SetActive(isOwned);
+		introBtn.interactable = IsOwner;
+		clickAnywhereUi.SetActive(IsOwner);
 
 		if (active)
 			introAnim.gameObject.SetActive(active);
@@ -576,36 +570,36 @@ public class PlayerControls : NetworkBehaviour
 
 
 	#region Saving data
-	[Command(requiresAuthority=false)] public void CmdSaveData() => TargetSaveData(netIdentity.connectionToClient);
-	[TargetRpc] public void TargetSaveData(NetworkConnectionToClient target) 
+	[ServerRpc] public void SaveDataServerRpc() => SaveDataClientRpc(new ClientRpcParams{Send={TargetClientIds=new[]{OwnerClientId}}});
+	[ClientRpc] public void SaveDataClientRpc(ClientRpcParams rpc) 
 	{
-		gm.SaveCurrNode(currNode.nodeId, id);
-		gm.CmdSaveCoins(coins, id);
-		gm.CmdSaveStars(stars, id);
-		gm.CmdSaveMana(mana, id);
-		gm.CmdSaveItems(itemInds, id);
-		CmdDataSaved();
+		gm.SaveCurrNode(currNode.nodeId, id.Value);
+		gm.SaveCoinsServerRpc(coins.Value, id.Value);
+		gm.SaveStarsServerRpc(stars.Value, id.Value);
+		gm.SaveManaServerRpc(mana.Value, id.Value);
+		gm.SaveItemsServerRpc(itemInds.Value.ToArray(), id.Value);
+		DataSavedServerRpc();
 	}
-	[Command(requiresAuthority=false)] void CmdDataSaved() => nm.IncreasePlayerDataSaved();
+	[ServerRpc] void DataSavedServerRpc() => nm.IncreasePlayerDataSaved();
 	
 	private void SaveData()
 	{
-		gm.SaveCurrNode(currNode.nodeId, id);
-		gm.CmdSaveCoins(coins, id);
-		gm.CmdSaveStars(stars, id);
-		gm.CmdSaveMana(mana, id);
-		gm.CmdSaveItems(itemInds, id);
+		gm.SaveCurrNode(currNode.nodeId, id.Value);
+		gm.SaveCoinsServerRpc(coins.Value, id.Value);
+		gm.SaveStarsServerRpc(stars.Value, id.Value);
+		gm.SaveManaServerRpc(mana.Value, id.Value);
+		gm.SaveItemsServerRpc(itemInds.Value.ToArray(), id.Value);
 	}
 	private void LoadData()
 	{
-		currNode = NodeManager.Instance.GetNode( gm.GetCurrNode(id) );
+		currNode = NodeManager.Instance.GetNode( gm.GetCurrNode(id.Value) );
 		currNode.AddPlayer(this);
 		startPos = transform.position = currNode.transform.position;
 		transform.position = new Vector3(transform.position.x, 0, transform.position.z);
-		coinsT = coins = gm.GetCoins(id);
-		starsT = stars = gm.GetStars(id);
-		mana = gm.GetMana(id);
-		itemInds = gm.GetItems(id);
+		coinsT = coins.Value = gm.GetCoins(id.Value);
+		starsT = stars.Value = gm.GetStars(id.Value);
+		mana.Value = gm.GetMana(id.Value);
+		itemInds = new NetworkVariable<List<int>>(gm.GetItems(id.Value), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 	}
 
 	#endregion
@@ -614,12 +608,12 @@ public class PlayerControls : NetworkBehaviour
 	#region BUTTONS
 	public void _START_PLAYER()
 	{
-		CmdToggleIntroUi(false);
-		if (gm.nTurn % 2 == 1 && gm.nTurn > 1)
+		ToggleIntroUiServerRpc(false);
+		if (gm.nTurn.Value % 2 == 1 && gm.nTurn.Value > 1)
 		{
-			mana = Mathf.Min(mana + 1, (int)manaSld.maxValue);
-			CmdShowManaBonusTxt(1);
-			CmdShowMana(mana);
+			mana.Value = Mathf.Min(mana.Value + 1, (int)manaSld.maxValue);
+			ShowManaBonusTxtServerRpc(1);
+			ShowManaServerRpc(mana.Value);
 		}
 		if (canvas != null)
 			canvas.SetActive(true);
@@ -628,9 +622,9 @@ public class PlayerControls : NetworkBehaviour
 	{
 		// show base ui
 		if (rangeObj.activeSelf)
-			CmdUseSpell(false, currNode != null ? currNode.nodeId : -1);
+			UseSpellServerRpc(false, currNode != null ? currNode.nodeId : -1);
 		if (rangeObj2.activeSelf)
-			CmdUseSpell2(false, currNode != null ? currNode.nodeId : -1);
+			UseSpell2ServerRpc(false, currNode != null ? currNode.nodeId : -1);
 
 		spellCostTxt.gameObject.SetActive(false);
 		backToBaseUi.SetActive(false);
@@ -664,18 +658,18 @@ public class PlayerControls : NetworkBehaviour
 	}
 	public void _PURCHASE_STAR(bool purchase)
 	{
-		if (purchase && (freeShop || coins >= 20))
+		if (purchase && (freeShop || coins.Value >= 20))
 		{
 			if (!freeShop)
-				coins -= 20;
-			stars++;
+				coins.Value -= 20;
+			stars.Value++;
 			currencySpeedT = 0.025f;
 			StartCoroutine(PurchaseStarCo());
 			Vector3 dir = Camera.main.transform.position - transform.position;
 			model.rotation = Quaternion.LookRotation(new Vector3(dir.x, 0, dir.z).normalized);
 		}
 		else	
-			CmdToggleStarCam(false);
+			ToggleStarCamServerRpc(false);
 
 		startPos = transform.position;
 		// more than one path
@@ -700,13 +694,13 @@ public class PlayerControls : NetworkBehaviour
 	{
 		isBuyingStar = true;
 		anim.SetBool("hasStar", true);
-		bm.CmdMaaronClap(true);
+		bm.MaaronClapServerRpc(true);
 
 		yield return new WaitForSeconds(2);
-		bm.CmdMaaronClap(false);
+		bm.MaaronClapServerRpc(false);
 		anim.SetBool("hasStar", false);
-		CmdToggleStarCam(false);
-		bm.CmdChooseStar();
+		ToggleStarCamServerRpc(false);
+		bm.ChooseStarServerRpc();
 		//StartCoroutine(WaitForNewStarCo());
 		yield return new WaitForSeconds(9.5f);
 		isBuyingStar = false;
@@ -718,11 +712,10 @@ public class PlayerControls : NetworkBehaviour
 		if (!freeShop)
 			NodeEffect(-itemCost);
 
-		if (itemInds.Count < 3)
+		if (itemInds.Value.Count < 3)
 		{
-			itemInds.Add(itemId);
-			CmdReplaceItems(itemInds);
-			CmdShowItems();
+			itemInds.Value.Add(itemId);
+			ShowItemsServerRpc();
 			if (!freeShop)
 				StartCoroutine( CloseShopCo() );
 		}
@@ -731,7 +724,7 @@ public class PlayerControls : NetworkBehaviour
 		{
 			newSpellId = itemId;
 			for (int i=0 ; i<newSpellBtns.Length ; i++)
-				newSpellBtns[i].ind = i >= 0 && i < itemInds.Count ? itemInds[i] : itemId;
+				newSpellBtns[i].ind = i >= 0 && i < itemInds.Value.Count ? itemInds.Value[i] : itemId;
 			fullUi.SetActive(true);
 			shopUi.SetActive(false);
 		}
@@ -739,11 +732,10 @@ public class PlayerControls : NetworkBehaviour
 	public void _REPLACE_ITEM(int ind)
 	{
 		// replaced item
-		if (ind >= 0 && ind < itemInds.Count)
+		if (ind >= 0 && ind < itemInds.Value.Count)
 		{
-			itemInds[ind] = newSpellId;
-			CmdReplaceItems(itemInds);
-			CmdShowItems();
+			itemInds.Value[ind] = newSpellId;
+			ShowItemsServerRpc();
 			fullUi.SetActive(false);
 			//if (isAtShop)
 			//	shopUi.SetActive(true);
@@ -763,7 +755,7 @@ public class PlayerControls : NetworkBehaviour
 		tollTxt.text = $"Spend: <b>{tollSldr.value}</b> (Next person pays: <b>{tollSldr.value+1}</b>)";
 		//tollTxt.text = $"Set New Toll: <b>{gm.GetDoorToll(_doorInd)}<b>";
 		tollSldr.minValue = gm.GetDoorToll(_doorInd);
-		tollSldr.maxValue = coins;
+		tollSldr.maxValue = coins.Value;
 	}
 	public void _SET_NEW_TOLL_TEXT()
 	{
@@ -773,14 +765,14 @@ public class PlayerControls : NetworkBehaviour
 	public void _PAY_DOOR_TOLL()
 	{
 		NodeEffect(-(int)tollSldr.value);
-		bm.CmdPlayDoorAnim(nextNode.nodeId);
+		bm.PlayDoorAnimServerRpc(nextNode.nodeId);
 		isAtDoor = false;
 		doorUi.SetActive(false);
 		tollUi.SetActive(false);
 		brokeUi.SetActive(false);
 		nextNode = nextNode.nextNodes[0];
-		CmdToggleDoorCam(false);
-		gm.CmdSetDoorToll(_doorInd, (int)tollSldr.value+1);
+		ToggleDoorCamServerRpc(false);
+		gm.SetDoorTollServerRpc(_doorInd, (int)tollSldr.value+1);
 	}
 	public void _CANCEL_DOOR_TOLL()
 	{
@@ -794,7 +786,7 @@ public class PlayerControls : NetworkBehaviour
 		doorUi.SetActive(false);
 		tollUi.SetActive(false);
 		brokeUi.SetActive(false);
-		CmdToggleDoorCam(false);
+		ToggleDoorCamServerRpc(false);
 		yield return new WaitForSeconds(1);
 		nextNode = nextNode.altNode;
 		isAtDoor = false;
@@ -817,8 +809,8 @@ public class PlayerControls : NetworkBehaviour
 
 		if (shopUi != null)
 			shopUi.SetActive(false);
-		CmdToggleStarCam(false);
-		CmdPlayerThinking(false, characterInd);
+		ToggleStarCamServerRpc(false);
+		PlayerThinkingServerRpc(false, characterInd.Value);
 
 		isStop = isAtShop = false;
 	}
@@ -846,8 +838,8 @@ public class PlayerControls : NetworkBehaviour
 		movesLeft = rng;
 		if (currNode != null)
 			currNode.RemovePlayer(this);
-		CmdUpdateMovesLeft( movesLeft );
-		CmdResetMovesLeft(true);
+		UpdateMovesLeftServerRpc( movesLeft );
+		ResetMovesLeftServerRpc(true);
 
 		if (canvas != null)
 			canvas.SetActive(false);
@@ -864,17 +856,17 @@ public class PlayerControls : NetworkBehaviour
 		// deactive map
 		if (spellCam.activeSelf)
 		{
-			CmdShowNodeDistance(false, nextNode != null ? nextNode.nodeId : currNode.nodeId, nextNode != null ? 1 : 0, -1);
+			ShowNodeDistanceServerRpc(false, nextNode != null ? nextNode.nodeId : currNode.nodeId, nextNode != null ? 1 : 0, -1);
 			inMap = false;
 		}
 		else
 		{
 			spellCam.transform.localPosition = new Vector3(0,25,-10);
-			CmdShowNodeDistance(true, nextNode != null ? nextNode.nodeId : currNode.nodeId, nextNode != null ? 1 : 0, -1);
+			ShowNodeDistanceServerRpc(true, nextNode != null ? nextNode.nodeId : currNode.nodeId, nextNode != null ? 1 : 0, -1);
 			inMap = true;
 		}
 		
-		CmdToggleMapCam(!spellCam.activeSelf);
+		ToggleMapCamServerRpc(!spellCam.activeSelf);
 	}
 	
 	#endregion
@@ -882,18 +874,18 @@ public class PlayerControls : NetworkBehaviour
 
 	#region Nodes
 
-	[Command(requiresAuthority=false)] void CmdPlayNodeTraverseVfx(int nodeId) => RpcPlayNodeTraverseVfx(nodeId);
-	[ClientRpc] void RpcPlayNodeTraverseVfx(int nodeId) => NodeManager.Instance.GetNode(nodeId).PlayGlowVfx();
+	[ServerRpc] void PlayNodeTraverseVfxServerRpc(int nodeId) => PlayNodeTraverseVfxClientRpc(nodeId);
+	[ClientRpc] void PlayNodeTraverseVfxClientRpc(int nodeId) => NodeManager.Instance.GetNode(nodeId).PlayGlowVfx();
 	private void StuckAtFork()
 	{
 		isAtFork = true;
 		if (anim != null) anim.SetFloat("moveSpeed", 0);
 		HidePaths();
-		CmdShowNodeDistance(true, nextNode != null ? nextNode.nodeId : currNode.nodeId, 0, movesLeft);
+		ShowNodeDistanceServerRpc(true, nextNode != null ? nextNode.nodeId : currNode.nodeId, 0, movesLeft);
 		spellCam.transform.localPosition = new Vector3(0,25,-10);
 		inMap = true;
-		CmdToggleMapCam(true);
-		CmdPlayerThinking(true, characterInd);
+		ToggleMapCamServerRpc(true);
+		PlayerThinkingServerRpc(true, characterInd.Value);
 		if (nextNode != null)
 		{
 			int shortestPath = 9999;
@@ -929,11 +921,11 @@ public class PlayerControls : NetworkBehaviour
 				ShowShortestPath(currNode.nextNodes[shortestInd].transform.position);
 		}
 	}
-	[Command(requiresAuthority=false)] void CmdToggleMapCam(bool active) => RpcToggleMapCam(active);
-	[ClientRpc] void RpcToggleMapCam(bool active) => spellCam.SetActive(active);
-	[Command(requiresAuthority=false)] void CmdShowNodeDistance(bool active, ushort nodeId, int num, int movesLeft) 
-		=> RpcShowNodeDistance(active, nodeId, num, movesLeft);
-	[ClientRpc] void RpcShowNodeDistance(bool active, ushort nodeId, int num, int movesLeft) 
+	[ServerRpc] void ToggleMapCamServerRpc(bool active) => ToggleMapCamClientRpc(active);
+	[ClientRpc] void ToggleMapCamClientRpc(bool active) => spellCam.SetActive(active);
+	[ServerRpc] void ShowNodeDistanceServerRpc(bool active, ushort nodeId, int num, int movesLeft) 
+		=> ShowNodeDistanceClientRpc(active, nodeId, num, movesLeft);
+	[ClientRpc] void ShowNodeDistanceClientRpc(bool active, ushort nodeId, int num, int movesLeft) 
 	{
 		if (active)
 			NodeManager.Instance.SetDistanceAway(nodeId, num, movesLeft);
@@ -963,8 +955,8 @@ public class PlayerControls : NetworkBehaviour
 			Vector3 dir = (nextNode.target.position - transform.position).normalized;
 			RotateDirection(dir);
 		}
-		CmdToggleDoorCam(true);
-		if (coins >= gm.GetDoorToll(_doorInd))
+		ToggleDoorCamServerRpc(true);
+		if (coins.Value >= gm.GetDoorToll(_doorInd))
 			doorUi.SetActive(true);
 		else
 			brokeUi.SetActive(true);
@@ -974,7 +966,7 @@ public class PlayerControls : NetworkBehaviour
 	public void OnShopNode()
 	{
 		isAtShop = true;
-		CmdPlayerThinking(true, characterInd);
+		PlayerThinkingServerRpc(true, characterInd.Value);
 
 		if (buyBtnObj != null) buyBtnObj.SetActive(false);
 		if (titleTxt != null) titleTxt.text = "Click on an Item!";
@@ -987,7 +979,7 @@ public class PlayerControls : NetworkBehaviour
 			Vector3 dir = (nextNode.target.position - transform.position).normalized;
 			RotateDirection(dir);
 		}
-		CmdToggleStarCam(true);
+		ToggleStarCamServerRpc(true);
 		shopUi.SetActive(true);
 		isStop = false;
 	}
@@ -996,7 +988,7 @@ public class PlayerControls : NetworkBehaviour
 		isAtStar = true;
 		if (anim != null) anim.SetFloat("moveSpeed", 0);
 
-		if (coins >= 20)
+		if (coins.Value >= 20)
 			starUi.SetActive(true);
 		else
 			brokeUi.SetActive(true);
@@ -1005,15 +997,15 @@ public class PlayerControls : NetworkBehaviour
 			Vector3 dir = (nextNode.GetTargetTransform().position - transform.position).normalized;
 			RotateDirection(dir);
 		}
-		CmdToggleStarCam(true);
+		ToggleStarCamServerRpc(true);
 		isStop = false;
 	}
-	public int GetMana() => mana;
-	public int GetCoins() => coins;
-	public int GetStars() => stars;
-	[Command(requiresAuthority=false)] public void CmdNodeEffect(int bonus, bool isStar) 
-		=> TargetNodeEffect(netIdentity.connectionToClient, bonus, isStar);
-	[TargetRpc] public void TargetNodeEffect(NetworkConnectionToClient target, int bonus, bool isStar) 
+	public int GetMana() => mana.Value;
+	public int GetCoins() => coins.Value;
+	public int GetStars() => stars.Value;
+	[ServerRpc] public void NodeEffectServerRpc(int bonus, bool isStar) 
+		=> NodeEffectClientRpc(bonus, isStar, new ClientRpcParams{Send={TargetClientIds=new ulong[]{OwnerClientId}}});
+	[ClientRpc] public void NodeEffectClientRpc(int bonus, bool isStar, ClientRpcParams rpc) 
 		=> NodeEffect(bonus, isStar);
 	public void NodeEffect(int bonus, bool isStar=false)
 	{
@@ -1021,54 +1013,54 @@ public class PlayerControls : NetworkBehaviour
 		if (isStar)
 		{
 			currencySpeedT = 0.05f;
-			stars = Mathf.Max(stars+bonus, 0);
-			if (stars != 0)
+			stars.Value = Mathf.Max(stars.Value+bonus, 0);
+			if (stars.Value != 0)
 				this.enabled = isCurrencyAsync = true;
 		}
 		// coin related
 		else
 		{
 			if (bonus != 0) currencySpeedT = 0.5f / Mathf.Abs(bonus);
-			coins = Mathf.Clamp(coins + bonus, 0, 999);
-			if (coins != 0)
+			coins.Value = Mathf.Clamp(coins.Value + bonus, 0, 999);
+			if (coins.Value != 0)
 				this.enabled = isCurrencyAsync = true;
 		}
-		CmdShowBonusTxt(bonus, isStar);
+		ShowBonusTxtServerRpc(bonus, isStar);
 	}
 	public void LoseAllCoins()
 	{
 		//Debug.Log($"<color=white>{name} LOST ALL COINS</color>");
-		if (coins != 0) currencySpeedT = 0.5f / coins;
-		int temp = coins;
-		coins = 0;
+		if (coins.Value != 0) currencySpeedT = 0.5f / coins.Value;
+		int temp = coins.Value;
+		coins.Value = 0;
 		this.enabled = isCurrencyAsync = true;
-		CmdShowBonusTxt(-temp, false);
+		ShowBonusTxtServerRpc(-temp, false);
 	}
-	[Command] private void CmdShowBonusTxt(int n, bool isStar) => RpcShowBonusTxt(n, isStar);
-	[ClientRpc] private void RpcShowBonusTxt(int n, bool isStar)
+	[ServerRpc] private void ShowBonusTxtServerRpc(int n, bool isStar) => ShowBonusTxtClientRpc(n, isStar);
+	[ClientRpc] private void ShowBonusTxtClientRpc(int n, bool isStar)
 	{
 		bonusObj.SetActive(false);
 		bonusObj.SetActive(true);
 		bonusTxt.text = isStar ? "<sprite name=\"star\">" : $"<sprite name=\"coin\">";
 		bonusTxt.text += n >= 0 ? $"+{n}" : $"{n}";
 	}
-	[Command] private void CmdShowManaBonusTxt(int n) => RpcShowManBonusTxt(n);
-	[ClientRpc] private void RpcShowManBonusTxt(int n)
+	[ServerRpc] private void ShowManaBonusTxtServerRpc(int n) => ShowManBonusTxtClientRpc(n);
+	[ClientRpc] private void ShowManBonusTxtClientRpc(int n)
 	{
 		bonusObj.SetActive(false);
 		bonusObj.SetActive(true);
-		bonusTxt.text = "<sprite name=mana>";
+		bonusTxt.text = "<sprite name=mana.Value>";
 		bonusTxt.text += n >= 0 ? $"+{n}" : $"{n}";
 	}
 
-	[Command(requiresAuthority=false)] private void CmdToggleStarCam(bool active) => RpcToggleStarCam(active);
-	[ClientRpc] private void RpcToggleStarCam(bool active) => starCam.SetActive(active);
-	[Command(requiresAuthority=false)] private void CmdToggleDoorCam(bool active) => RpcToggleDoorCam(active);
-	[ClientRpc] private void RpcToggleDoorCam(bool active) => doorCam.SetActive(active);
+	[ServerRpc] private void ToggleStarCamServerRpc(bool active) => ToggleStarCamClientRpc(active);
+	[ClientRpc] private void ToggleStarCamClientRpc(bool active) => starCam.SetActive(active);
+	[ServerRpc] private void ToggleDoorCamServerRpc(bool active) => ToggleDoorCamClientRpc(active);
+	[ClientRpc] private void ToggleDoorCamClientRpc(bool active) => doorCam.SetActive(active);
 
 	private IEnumerator NodeEffectCo()
 	{
-		CmdTriggerNodeVfx(currNode.nodeId); // vfx on node
+		TriggerNodeVfxServerRpc(currNode.nodeId); // vfx on node
 		yield return new WaitForSeconds(currNode.GetNodeLandEffect(this)); // event duration
 		// no event
 		//if (currNode.GetNodeLandEffect(this))
@@ -1081,8 +1073,8 @@ public class PlayerControls : NetworkBehaviour
 		EndTurn();
 		bm.NextPlayerTurn();
 	}
-	[Command(requiresAuthority=false)] void CmdTriggerNodeVfx(int nodeId) => RpcTriggerNodeVfx(nodeId);
-	[ClientRpc] void RpcTriggerNodeVfx(int nodeId) => NodeManager.Instance.GetNode(nodeId).TriggerNodeLandVfx();
+	[ServerRpc] void TriggerNodeVfxServerRpc(int nodeId) => TriggerNodeVfxClientRpc(nodeId);
+	[ClientRpc] void TriggerNodeVfxClientRpc(int nodeId) => NodeManager.Instance.GetNode(nodeId).TriggerNodeLandVfx();
 
 	//private IEnumerator WaitForNewStarCo()
 	//{
@@ -1189,12 +1181,12 @@ public class PlayerControls : NetworkBehaviour
 
 	public void ChoosePath(int ind)
 	{
-		CmdShowNodeDistance(false, nextNode != null ? nextNode.nodeId : currNode.nodeId, 0, movesLeft);
+		ShowNodeDistanceServerRpc(false, nextNode != null ? nextNode.nodeId : currNode.nodeId, 0, movesLeft);
 		nextNode = nextNode.nextNodes[ind];
-		CmdPlayerThinking(false, characterInd);
+		PlayerThinkingServerRpc(false, characterInd.Value);
 		IsStuckAtDoor();
 		HidePaths();
-		CmdToggleMapCam(false);
+		ToggleMapCamServerRpc(false);
 		inMap = isAtFork = false;
 	}
 
@@ -1220,11 +1212,11 @@ public class PlayerControls : NetworkBehaviour
 	}
 	public void ConsumeMana(int cost)
 	{
-		mana = Mathf.Max(mana - cost, 0);
-		CmdShowMana(mana);
+		mana.Value = Mathf.Max(mana.Value - cost, 0);
+		ShowManaServerRpc(mana.Value);
 	}
-	[Command(requiresAuthority=false)] private void CmdShowMana(int mana) => RpcShowMana(mana);
-	[ClientRpc] private void RpcShowMana(int mana) 
+	[ServerRpc] private void ShowManaServerRpc(int mana) => ShowManaClientRpc(mana);
+	[ClientRpc] private void ShowManaClientRpc(int mana) 
 	{
 		manaSld.value = mana;
 		manaTxt.text = $"{mana}/{manaSld.maxValue}";
@@ -1232,26 +1224,25 @@ public class PlayerControls : NetworkBehaviour
 
 	private void RemoveSpell(int ind)
 	{
-		if (itemInds != null && ind >= 0 && ind < itemInds.Count)
-			itemInds.RemoveAt(ind);
-		CmdReplaceItems(itemInds);
-		CmdShowItems();
+		if (itemInds != null && ind >= 0 && ind < itemInds.Value.Count)
+			itemInds.Value.RemoveAt(ind);
+		ShowItemsServerRpc();
 	}
-	[Command(requiresAuthority=false)] private void CmdShowItems() => RpcShowItems();
-	[ClientRpc] private void RpcShowItems()
+	[ServerRpc] private void ShowItemsServerRpc() => ShowItemsClientRpc();
+	[ClientRpc] private void ShowItemsClientRpc()
 	{
 		for (int i = 0; i < itemImgs.Length; i++)
 		{
-			if (itemInds.Count > i)
-				itemImgs[i].sprite = Item.instance.GetSprite( itemInds[i] );
+			if (itemInds.Value.Count > i)
+				itemImgs[i].sprite = Item.instance.GetSprite( itemInds.Value[i] );
 			else
 				itemImgs[i].sprite = emptySpr;
 		}
 		for (int i = 0; i < items.Length; i++)
 		{
-			if (itemInds.Count > i)
+			if (itemInds.Value.Count > i)
 			{
-				items[i].ind = itemInds[i];
+				items[i].ind = itemInds.Value[i];
 				items[i].SetImage();
 			}
 			else
@@ -1262,25 +1253,25 @@ public class PlayerControls : NetworkBehaviour
 		}
 	}
 	
-	[Command(requiresAuthority=false)] private void CmdReplaceItems(List<int> ints) => RpcReplaceItems(ints);
-	[ClientRpc(includeOwner=false)] private void RpcReplaceItems(List<int> ints)
-	{
-		itemInds = ints;
-	}
+	//![ServerRpc] private void ReplaceItemsServerRpc(List<int> ints) => ReplaceItemsClientRpc(ints);
+	//![ClientRpc] private void ReplaceItemsClientRpc(List<int> ints)
+	//!{
+	//!	itemInds = ints;
+	//!}
 	
 	public void SetSpellCost(int n, int extra)
 	{
 		if (extra > 0)
-			spellCostTxt.text = $"<sprite name=mana><color=red>-{n+extra}</color>";
+			spellCostTxt.text = $"<sprite name=mana.Value><color=red>-{n+extra}</color>";
 		else
-			spellCostTxt.text = $"<sprite name=mana>-{n}";
+			spellCostTxt.text = $"<sprite name=mana.Value>-{n}";
 	}
 
 	public void _USE_SPELL(int slot, int ind) 
 	{
 		_spellSlot = slot;
 		_spellInd = ind;
-		CmdUseSpell(!rangeObj.activeSelf, currNode != null ? currNode.nodeId : -1);
+		UseSpellServerRpc(!rangeObj.activeSelf, currNode != null ? currNode.nodeId : -1);
 		switch (_spellInd)
 		{
 			case 0: SetSpellCost(1, 0); break;
@@ -1296,7 +1287,7 @@ public class PlayerControls : NetworkBehaviour
 	{
 		_spellSlot = slot;
 		_spellInd = ind;
-		CmdUseSpell2(!rangeObj.activeSelf, currNode != null ? currNode.nodeId : -1);
+		UseSpell2ServerRpc(!rangeObj.activeSelf, currNode != null ? currNode.nodeId : -1);
 		switch (_spellInd)
 		{
 			case 0: SetSpellCost(1, 0); break;
@@ -1309,9 +1300,9 @@ public class PlayerControls : NetworkBehaviour
 		}
 	}
 	
-	[Command(requiresAuthority=false)] private void CmdToggleRange(
-		bool active, int nodeId) => RpcToggleRange(active, nodeId);
-	[ClientRpc] private void RpcToggleRange(bool active, int nodeId)
+	[ServerRpc] private void ToggleRangeServerRpc(
+		bool active, int nodeId) => ToggleRangeClientRpc(active, nodeId);
+	[ClientRpc] private void ToggleRangeClientRpc(bool active, int nodeId)
 	{
 		if (!active && nodeId != -1)
 			NodeManager.Instance.GetNode(nodeId).SetCanSpellTargetDelay(true);
@@ -1324,9 +1315,9 @@ public class PlayerControls : NetworkBehaviour
 		rangeAnim.SetTrigger(active ? "on" : "off");
 		spellCostTxt.gameObject.SetActive(active);
 	}
-	[Command(requiresAuthority=false)] private void CmdToggleRange2(
-		bool active, int nodeId) => RpcToggleRange2(active, nodeId);
-	[ClientRpc] private void RpcToggleRange2(bool active, int nodeId)
+	[ServerRpc] private void ToggleRange2ServerRpc(
+		bool active, int nodeId) => ToggleRange2ClientRpc(active, nodeId);
+	[ClientRpc] private void ToggleRange2ClientRpc(bool active, int nodeId)
 	{
 		if (!active && nodeId != -1)
 			NodeManager.Instance.GetNode(nodeId).SetCanSpellTargetDelay(true);
@@ -1340,9 +1331,9 @@ public class PlayerControls : NetworkBehaviour
 		spellCostTxt.gameObject.SetActive(active);
 	}
 	
-	[Command(requiresAuthority=false)] private void CmdUseSpell(bool active, int nodeId) 
-		=> RpcUseSpell(active, nodeId);
-	[ClientRpc] private void RpcUseSpell(bool active, int nodeId)
+	[ServerRpc] private void UseSpellServerRpc(bool active, int nodeId) 
+		=> UseSpellClientRpc(active, nodeId);
+	[ClientRpc] private void UseSpellClientRpc(bool active, int nodeId)
 	{
 		if (!active && nodeId != -1)
 			NodeManager.Instance.GetNode(nodeId).SetCanSpellTargetDelay(true);
@@ -1354,16 +1345,16 @@ public class PlayerControls : NetworkBehaviour
 		spellCam.SetActive(active);
 		rangeAnim.SetTrigger(active ? "on" : "off");
 		spellCostTxt.gameObject.SetActive(active);
-		if (isOwned)
+		if (IsOwner)
 		{
 			isUsingSpell = active;
 			backToBaseUi.SetActive(active);
 			ToggleSpellUi(false);
 		}
 	}
-	[Command(requiresAuthority=false)] private void CmdUseSpell2(bool active, int nodeId) 
-		=> RpcUseSpell2(active, nodeId);
-	[ClientRpc] private void RpcUseSpell2(bool active, int nodeId)
+	[ServerRpc] private void UseSpell2ServerRpc(bool active, int nodeId) 
+		=> UseSpell2ClientRpc(active, nodeId);
+	[ClientRpc] private void UseSpell2ClientRpc(bool active, int nodeId)
 	{
 		if (!active && nodeId != -1)
 			NodeManager.Instance.GetNode(nodeId).SetCanSpellTargetDelay(true);
@@ -1375,7 +1366,7 @@ public class PlayerControls : NetworkBehaviour
 		spellCam.SetActive(active);
 	 	rangeAnim2.SetTrigger(active ? "on" : "off");
 		spellCostTxt.gameObject.SetActive(active);
-		if (isOwned)
+		if (IsOwner)
 		{
 			isUsingSpell = active;
 			backToBaseUi.SetActive(active);
@@ -1388,10 +1379,10 @@ public class PlayerControls : NetworkBehaviour
 	{
 		if (shopUi != null)
 			shopUi.SetActive(false);
-		CmdUpdateMovesLeft(0);
+		UpdateMovesLeftServerRpc(0);
 
 		yield return new WaitForSeconds(0.5f);
-		CmdUpdateMovesLeft(movesLeft);
+		UpdateMovesLeftServerRpc(movesLeft);
 		startPos = transform.position;
 		// more than one path
 		if (nextNode.nextNodes.Count > 1)
@@ -1400,8 +1391,8 @@ public class PlayerControls : NetworkBehaviour
 		else
 			nextNode = nextNode.nextNodes[0];
 
-		CmdToggleStarCam(false);
-		CmdPlayerThinking(false, characterInd);
+		ToggleStarCamServerRpc(false);
+		PlayerThinkingServerRpc(false, characterInd.Value);
 		isStop = isAtShop = false;
 	}
 
@@ -1413,10 +1404,10 @@ public class PlayerControls : NetworkBehaviour
 	{
 		isDashing = true;
 		ToggleSpellUi(false);
-		CmdToggleDashVfx(true);
+		ToggleDashVfxServerRpc(true);
 		RemoveSpell(_spellSlot);
 		ConsumeMana(manaCost);
-		CmdShowManaBonusTxt(-manaCost);
+		ShowManaBonusTxtServerRpc(-manaCost);
 
 		if (currNode != null)
 		{
@@ -1436,14 +1427,14 @@ public class PlayerControls : NetworkBehaviour
 		movesLeft = dashMove;
 		if (currNode != null)
 			currNode.RemovePlayer(this);
-		CmdUpdateMovesLeft( movesLeft );
+		UpdateMovesLeftServerRpc( movesLeft );
 
 		if (canvas != null)
 			canvas.SetActive(false);
 		canMove = true;
 	}
-	[Command(requiresAuthority=false)] private void CmdToggleDashVfx(bool active) => RpcToggleDashVfx(active);
-	[ClientRpc] private void RpcToggleDashVfx(bool active)
+	[ServerRpc] private void ToggleDashVfxServerRpc(bool active) => ToggleDashVfxClientRpc(active);
+	[ClientRpc] private void ToggleDashVfxClientRpc(bool active)
 	{
 		if (active) 
 			dashSpellPs1.Play(true);
@@ -1455,12 +1446,12 @@ public class PlayerControls : NetworkBehaviour
 	public void UseShieldSpell()
 	{
 		ToggleSpellUi(false);
-		CmdShieldSpell(true);
+		ShieldSpellServerRpc(true);
 		//if (canvas != null)
 		//	canvas.SetActive(false);
 	}
-	[Command(requiresAuthority=false)] private void CmdShieldSpell(bool active) => RpcShieldSpell(active);
-	[ClientRpc] private void RpcShieldSpell(bool active)
+	[ServerRpc] private void ShieldSpellServerRpc(bool active) => ShieldSpellClientRpc(active);
+	[ClientRpc] private void ShieldSpellClientRpc(bool active)
 	{
 		shieldSpell1.SetActive(active);
 		isShield = active;
@@ -1472,7 +1463,7 @@ public class PlayerControls : NetworkBehaviour
 		ToggleSpellUi(false);
 		backToBaseUi.SetActive(false);
 		ConsumeMana(manaCost);
-		CmdShowManaBonusTxt(-manaCost);
+		ShowManaBonusTxtServerRpc(-manaCost);
 
 		if (spellCo == null)
 			spellCo = StartCoroutine( ThornCo(target, trapId) );
@@ -1480,9 +1471,9 @@ public class PlayerControls : NetworkBehaviour
 	IEnumerator ThornCo(Node target, int trapId)
 	{
 		nodeCam.m_Follow = target.transform;
-		CmdSaveTrap(target.nodeId, trapId);
-		CmdToggleNodeCam(true);
-		CmdToggleRange(false, currNode != null ? currNode.nodeId : -1);
+		SaveTrapServerRpc(target.nodeId, trapId);
+		ToggleNodeCamServerRpc(true);
+		ToggleRangeServerRpc(false, currNode != null ? currNode.nodeId : -1);
 		RemoveSpell(_spellSlot);
 
 		//yield return new WaitForSeconds(1f);
@@ -1490,18 +1481,18 @@ public class PlayerControls : NetworkBehaviour
 		//Debug.Log($"{CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera.VirtualCameraGameObject.name}");
 		
 		yield return new WaitForSeconds(1.5f);
-		CmdToggleNodeCam(false);
+		ToggleNodeCamServerRpc(false);
 		spellCo = null;
 		StopUsingSpells();
 	}
-	[Command(requiresAuthority=false)] private void CmdSaveTrap(int nodeId, int trapId) 
-		=> gm.SaveTrap(nodeId, id, characterInd, trapId);
+	[ServerRpc] private void SaveTrapServerRpc(int nodeId, int trapId) 
+		=> gm.SaveTrap(nodeId, id.Value, characterInd.Value, trapId);
 	public void UseFireSpell(Node target, int manaCost, int fireSpellInd)
 	{
 		ToggleSpellUi(false);
 		backToBaseUi.SetActive(false);
 		ConsumeMana(manaCost);
-		CmdShowManaBonusTxt(-manaCost);
+		ShowManaBonusTxtServerRpc(-manaCost);
 
 		usingFireSpell1 = true;
 		if (spellCo == null)
@@ -1510,43 +1501,43 @@ public class PlayerControls : NetworkBehaviour
 	IEnumerator SpellCo(Node target, int fireSpellInd)
 	{
 		nodeCam.m_Follow = target.transform;
-		CmdToggleNodeCam(true);
-		CmdToggleRange2(false, currNode != null ? currNode.nodeId : -1);
+		ToggleNodeCamServerRpc(true);
+		ToggleRange2ServerRpc(false, currNode != null ? currNode.nodeId : -1);
 		RemoveSpell(_spellSlot);
 
 		yield return new WaitForSeconds(1f);
-		if (fireSpellInd == 1) CmdFireSpell1(target.transform.position);
-		if (fireSpellInd == 2) CmdFireSpell2(target.transform.position);
-		if (fireSpellInd == 3) CmdFireSpell3(target.transform.position);
+		if (fireSpellInd == 1) FireSpell1ServerRpc(target.transform.position);
+		if (fireSpellInd == 2) FireSpell2ServerRpc(target.transform.position);
+		if (fireSpellInd == 3) FireSpell3ServerRpc(target.transform.position);
 
 		yield return new WaitForSeconds(0.5f);
-		if (fireSpellInd == 1) gm.CmdHitPlayersAtNode(target.nodeId, -15);
-		if (fireSpellInd == 2) gm.CmdHitPlayersAtNode(target.nodeId, -25);
-		if (fireSpellInd == 3) gm.CmdHitPlayersStarsAtNode(target.nodeId);
+		if (fireSpellInd == 1) gm.HitPlayersAtNodeServerRpc(target.nodeId, -15);
+		if (fireSpellInd == 2) gm.HitPlayersAtNodeServerRpc(target.nodeId, -25);
+		if (fireSpellInd == 3) gm.HitPlayersStarsAtNodeServerRpc(target.nodeId);
 		
 		yield return new WaitForSeconds(1.5f);
-		CmdToggleNodeCam(false);
+		ToggleNodeCamServerRpc(false);
 		spellCo = null;
 		StopUsingSpells();
 	}
-	[Command(requiresAuthority=false)] private void CmdToggleNodeCam(bool active) => RpcToggleNodeCam(active);
-	[ClientRpc] private void RpcToggleNodeCam(bool active) => nodeCam.gameObject.SetActive(active);
-	[Command(requiresAuthority=false)] private void CmdFireSpell1(Vector3 target) => RpcFireSpell1(target);
-	[ClientRpc] private void RpcFireSpell1(Vector3 target)
+	[ServerRpc] private void ToggleNodeCamServerRpc(bool active) => ToggleNodeCamClientRpc(active);
+	[ClientRpc] private void ToggleNodeCamClientRpc(bool active) => nodeCam.gameObject.SetActive(active);
+	[ServerRpc] private void FireSpell1ServerRpc(Vector3 target) => FireSpell1ClientRpc(target);
+	[ClientRpc] private void FireSpell1ClientRpc(Vector3 target)
 	{
 		fireSpell1.transform.position = target;
 		fireSpell1.SetActive(false);
 		fireSpell1.SetActive(true);
 	}
-	[Command(requiresAuthority=false)] private void CmdFireSpell2(Vector3 target) => RpcFireSpell2(target);
-	[ClientRpc] private void RpcFireSpell2(Vector3 target)
+	[ServerRpc] private void FireSpell2ServerRpc(Vector3 target) => FireSpell2ClientRpc(target);
+	[ClientRpc] private void FireSpell2ClientRpc(Vector3 target)
 	{
 		fireSpell2.transform.position = target;
 		fireSpell2.SetActive(false);
 		fireSpell2.SetActive(true);
 	}
-	[Command(requiresAuthority=false)] private void CmdFireSpell3(Vector3 target) => RpcFireSpell3(target);
-	[ClientRpc] private void RpcFireSpell3(Vector3 target)
+	[ServerRpc] private void FireSpell3ServerRpc(Vector3 target) => FireSpell3ClientRpc(target);
+	[ClientRpc] private void FireSpell3ClientRpc(Vector3 target)
 	{
 		fireSpell3.transform.position = target;
 		fireSpell3.SetActive(false);
@@ -1556,38 +1547,38 @@ public class PlayerControls : NetworkBehaviour
 	#endregion
 
 	
-	[Command(requiresAuthority=false)] void CmdResetMovesLeft(bool active) => RpcResetMovesLeft(active);
-	[ClientRpc] void RpcResetMovesLeft(bool active) 
+	[ServerRpc] void ResetMovesLeftServerRpc(bool active) => ResetMovesLeftClientRpc(active);
+	[ClientRpc] void ResetMovesLeftClientRpc(bool active) 
 	{
 		movesLeftTxt.gameObject.SetActive(false);
 		if (active)
 			movesLeftTxt.gameObject.SetActive(true);
 	}
 	
-	[Command(requiresAuthority=false)] void CmdUpdateMovesLeft(int x) => RpcUpdateMovesLeft(x);
-	[ClientRpc] void RpcUpdateMovesLeft(int x) => movesLeftTxt.text = $"{(x == 0 ? "" : x)}";
+	[ServerRpc] void UpdateMovesLeftServerRpc(int x) => UpdateMovesLeftClientRpc(x);
+	[ClientRpc] void UpdateMovesLeftClientRpc(int x) => movesLeftTxt.text = $"{(x == 0 ? "" : x)}";
 
 
-	[Command(requiresAuthority=false)] public void CmdPlayerToggle(bool active) => RpcPlayerToggle(active);
-	[ClientRpc] private void RpcPlayerToggle(bool active) => model.gameObject.SetActive(active);
+	[ServerRpc] public void PlayerToggleServerRpc(bool active) => PlayerToggleClientRpc(active);
+	[ClientRpc] private void PlayerToggleClientRpc(bool active) => model.gameObject.SetActive(active);
 
-	[Command(requiresAuthority=false)] public void CmdRagdollToggle(bool active) => RpcRagdollToggle(active);
-	[ClientRpc] private void RpcRagdollToggle(bool active) 
+	[ServerRpc] public void RagdollToggleServerRpc(bool active) => RagdollToggleClientRpc(active);
+	[ClientRpc] private void RagdollToggleClientRpc(bool active) 
 	{
 		if (active)
 		{
-			Rigidbody[] bones = ragdollObj[characterInd].GetComponentsInChildren<Rigidbody>();
+			Rigidbody[] bones = ragdollObj[characterInd.Value].GetComponentsInChildren<Rigidbody>();
 			foreach (Rigidbody bone in bones) {
 				bone.velocity = Vector3.up * ragdollKb;
 				bone.angularVelocity = Vector3.forward * ragdollKb;
 			}
 		}
-		ragdollObj[characterInd].transform.rotation = model.rotation;
-		ragdollObj[characterInd].SetActive(active);
+		ragdollObj[characterInd.Value].transform.rotation = model.rotation;
+		ragdollObj[characterInd.Value].SetActive(active);
 	}
 
-	[Command(requiresAuthority=false)] public void CmdLose() => RpcLose();
-	[ClientRpc] private void RpcLose() => StartCoroutine(LoseCo());
+	[ServerRpc] public void LoseServerRpc() => LoseClientRpc();
+	[ClientRpc] private void LoseClientRpc() => StartCoroutine(LoseCo());
 
 	IEnumerator LoseCo()
 	{
@@ -1596,15 +1587,15 @@ public class PlayerControls : NetworkBehaviour
 		yield return new WaitForSeconds(0.5f);
 		model.gameObject.SetActive(false);
 
-		Rigidbody[] bones = ragdollObj[characterInd].GetComponentsInChildren<Rigidbody>();
+		Rigidbody[] bones = ragdollObj[characterInd.Value].GetComponentsInChildren<Rigidbody>();
 		foreach (Rigidbody bone in bones) {
 			bone.velocity = Vector3.up * ragdollKb * 2;
 			//bone.angularVelocity = Vector3.forward * ragdollKb * 3;
 		}
-		ragdollObj[characterInd].transform.rotation = model.rotation;
-		ragdollObj[characterInd].SetActive(true);
+		ragdollObj[characterInd.Value].transform.rotation = model.rotation;
+		ragdollObj[characterInd.Value].SetActive(true);
 	}
 
-	[Command(requiresAuthority=false)] public void CmdWin() => RpcWin();
-	[ClientRpc] private void RpcWin() => maaronSpotlightVfx.SetActive(true);
+	[ServerRpc] public void WinServerRpc() => WinClientRpc();
+	[ClientRpc] private void WinClientRpc() => maaronSpotlightVfx.SetActive(true);
 }

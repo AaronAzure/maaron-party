@@ -1,9 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Mirror;
+using Unity.Netcode;
 using Rewired;
-using Unity.Mathematics;
 
 public class MinigameControls : NetworkBehaviour
 {
@@ -29,9 +28,9 @@ public class MinigameControls : NetworkBehaviour
 	
 	[Space] [Header("Model")]
 	[SerializeField] private Transform model;
-	[SyncVar] public int characterInd;
-	[SyncVar] public int id;
-	[SyncVar] public int boardOrder;
+	public int characterInd;
+	public int id;
+	public int boardOrder;
 	[SerializeField] private GameObject[] models;
 	[SerializeField] private GameObject[] ragdolls;
 	[SerializeField] private Animator anim;
@@ -46,25 +45,25 @@ public class MinigameControls : NetworkBehaviour
 	{
 		DontDestroyOnLoad(this);	
 	}
-	public override void OnStartClient()
+	public override void OnNetworkSpawn()
 	{
-		base.OnStartClient();
+		base.OnNetworkSpawn();
 		//Debug.Log($"<color=magenta>MinigameControls = StartClient ({Instance != null})</color>");
-		if (isOwned)
+		if (IsOwner)
 			Instance = this;	
 		nm.AddMinigameConnection(this);
 	}
-	public override void OnStopClient()
+	public override void OnNetworkDespawn()
 	{
-		base.OnStopClient();
-		if (isOwned)
+		base.OnNetworkDespawn();
+		if (IsOwner)
 			nm.RemoveMinigameConnection(this);
 	}
 
 	// Start is called before the first frame update
 	void Start()
 	{
-		if (!isOwned) {
+		if (!IsOwner) {
 			enabled = false;
 			return;
 		}
@@ -72,11 +71,8 @@ public class MinigameControls : NetworkBehaviour
 
 		player = ReInput.players.GetPlayer(0);
 	}
-	[Command(requiresAuthority = false)] public void CmdSetModel()
-	{
-		RpcSetModel();
-	}
-	[ClientRpc] public void RpcSetModel()
+	[ServerRpc] public void SetModelServerRpc() => SetModelClientRpc();
+	[ClientRpc] public void SetModelClientRpc()
 	{
 		name = $"__ PLAYER {id} __";
 		col.enabled = true;
@@ -86,17 +82,17 @@ public class MinigameControls : NetworkBehaviour
 		if (models != null && characterInd >= 0 && characterInd < models.Length)
 			models[characterInd].SetActive(true);
 
-		if (isOwned)
+		if (IsOwner)
 			anim = models[characterInd].GetComponent<Animator>();
 	}
 
 	public void SetSpawn()
 	{
-		CmdSetModel();
+		SetModelServerRpc();
 		rb.velocity = Vector3.zero;
 		col.enabled = rb.useGravity = true;
 		transform.position = mm.GetPlayerSpawn(id);
-		CmdReactivate();
+		ReactivateServerRpc();
 		//Debug.Log($"<color=magenta>MinigameControls = Setting Up ({transform.position})</color>");
 		//gameObject.SetActive(true);
 		model.rotation = Quaternion.identity;
@@ -104,8 +100,8 @@ public class MinigameControls : NetworkBehaviour
 	}
 	public void StartGame() => gameStarted = true;
 	
-	[Command] private void CmdReactivate() => RpcReactivate();
-	[ClientRpc] private void RpcReactivate() => gameObject.SetActive(true);
+	[ServerRpc] private void ReactivateServerRpc() => ReactivateClientRpc();
+	[ClientRpc] private void ReactivateClientRpc() => gameObject.SetActive(true);
 	 
 
 	public void SetModel(int ind)
@@ -118,7 +114,7 @@ public class MinigameControls : NetworkBehaviour
 
 	private void FixedUpdate() 
 	{
-		if (!isOwned || !gameStarted) return;
+		if (!IsOwner || !gameStarted) return;
 		if (canMove && !isReceivingKb)
 			Move();
 	}
@@ -142,11 +138,11 @@ public class MinigameControls : NetworkBehaviour
 		var rotation = Quaternion.LookRotation(lookPos);
 		model.rotation = Quaternion.Slerp(model.rotation, rotation, Time.fixedDeltaTime * rotateSpeed);
 	}
-	[Command] public void CmdDeath(Vector3 src, int ind)
+	[ServerRpc] public void DeathServerRpc(Vector3 src, int ind)
 	{
-		RpcDeath(src, ind);
+		DeathClientRpc(src, ind);
 	}
-	[ClientRpc] public void RpcDeath(Vector3 src, int ind)
+	[ClientRpc] public void DeathClientRpc(Vector3 src, int ind)
 	{
 		model.gameObject.SetActive(false);
 
@@ -166,17 +162,17 @@ public class MinigameControls : NetworkBehaviour
 
 	private void OnTriggerEnter(Collider other) 
 	{
-		if (isOwned && gameStarted && enabled && other.gameObject.CompareTag("Death"))
+		if (IsOwner && gameStarted && enabled && other.gameObject.CompareTag("Death"))
 		{
-			mm.CmdPlayerEliminated(id);
+			mm.PlayerEliminatedServerRpc(id);
 			gameStarted = false;
-			CmdDeath(((transform.position - other.transform.position - Vector3.down * 3).normalized + Vector3.up).normalized, characterInd);
+			DeathServerRpc(((transform.position - other.transform.position - Vector3.down * 3).normalized + Vector3.up).normalized, characterInd);
 		}
 	}
 
 	private void OnCollisionEnter(Collision other) 
 	{
-		if (isOwned && canKb && !isReceivingKb && gameStarted && enabled && other.gameObject.CompareTag("Player"))
+		if (IsOwner && canKb && !isReceivingKb && gameStarted && enabled && other.gameObject.CompareTag("Player"))
 		{
 			if (kbCo == null)
 				kbCo = StartCoroutine(ReceiveKbCo((transform.position - other.transform.position).normalized));

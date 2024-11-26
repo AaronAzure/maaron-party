@@ -1,5 +1,5 @@
 using UnityEngine;
-using Mirror;
+using Unity.Netcode;
 
 public class TrickyTileMarker : NetworkBehaviour
 {
@@ -8,8 +8,8 @@ public class TrickyTileMarker : NetworkBehaviour
 	[SerializeField] private Material emptyMat;
 
 
-	[Command(requiresAuthority=false)] public void CmdSetMaterial(int matInd) => RpcSetMaterial(matInd);
-	[ClientRpc] private void RpcSetMaterial(int matInd) => mesh.material = mats[matInd];
-	[Command(requiresAuthority=false)] public void CmdClearMaterial() => RpcClearMaterial();
-	[ClientRpc] private void RpcClearMaterial() => mesh.material = emptyMat;
+	[ServerRpc] public void SetMaterialServerRpc(int matInd) => SetMaterialClientRpc(matInd);
+	[ClientRpc] private void SetMaterialClientRpc(int matInd) => mesh.material = mats[matInd];
+	[ServerRpc] public void ClearMaterialServerRpc() => ClearMaterialClientRpc();
+	[ClientRpc] private void ClearMaterialClientRpc() => mesh.material = emptyMat;
 }

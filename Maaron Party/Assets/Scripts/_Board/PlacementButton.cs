@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
-using Mirror;
+using Unity.Netcode;
 using TMPro;
 
 public class PlacementButton : NetworkBehaviour
@@ -8,7 +8,8 @@ public class PlacementButton : NetworkBehaviour
 	PlayerControls pc {get{return PlayerControls.Instance;}}
 	GameManager gm {get{return GameManager.Instance;}}
 	BoardManager bm {get{return BoardManager.Instance;}}
-	[SyncVar] public int placement;
+	//[SyncVar] public int placement;
+	public int placement;
 	[SerializeField] private int ind;
 	[SerializeField] private Image img;
 	[SerializeField] private Image glow;
@@ -35,12 +36,12 @@ public class PlacementButton : NetworkBehaviour
 	
 	public void _CHOOSE_CARD()
 	{
-		bm.CmdRevealPlacementCard(ind, pc.id, pc.characterInd, placement, connectionToClient);
+		bm.RevealPlacementCardServerRpc(ind, pc.id.Value, pc.characterInd.Value, placement, OwnerClientId);
 	}
 	public void ChooseCard()
 	{
 		bm.DoneChoosingPlacement(placement);
-		pc.CmdSetOrder(placement);
+		pc.SetOrderServerRpc(placement);
 		glow.enabled = btn.enabled = false;
 		img.sprite = cardFront;
 	}

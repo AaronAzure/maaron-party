@@ -1,11 +1,11 @@
 using UnityEngine;
-using Mirror;
+using Unity.Netcode;
 
 public class TrickyTile : NetworkBehaviour
 {
 	[SerializeField] private Animator anim;
 
 
-	[Command(requiresAuthority=false)] public void CmdTriggerTrap() => RpcTriggerTrap();
-	[ClientRpc] private void RpcTriggerTrap() => anim.SetTrigger("open");
+	[ServerRpc] public void TriggerTrapServerRpc() => TriggerTrapClientRpc();
+	[ClientRpc] private void TriggerTrapClientRpc() => anim.SetTrigger("open");
 }
