@@ -16,7 +16,8 @@ public class LobbyRelay : MonoBehaviour
 {
 	private IAuthenticationService aut {get{return AuthenticationService.Instance;}}
 	private IRelayService relay {get{return RelayService.Instance;}}
-	private GameNetworkManager nm => GameNetworkManager.Instance;
+	//private GameNetworkManager nm => GameNetworkManager.Instance;
+	private NetworkManager nm => NetworkManager.Singleton;
 
 	
 	[Space] [Header("Ui")]
@@ -64,20 +65,20 @@ public class LobbyRelay : MonoBehaviour
 			hostingUi?.SetActive(true);
 			Allocation a = await relay.CreateAllocationAsync(4);
 
-			// created lobby, set lobby settings
-			string joinCode = await relay.GetJoinCodeAsync(a.AllocationId);
-
 			var data = new RelayServerData(a, "dtls");
 			nm.GetComponent<UnityTransport>().SetRelayServerData(data);
-
-			hostingUi?.SetActive(false);
-			lobbyUi?.SetActive(true);
-			lobbyCode.text = $"Lobby Code: {joinCode}";
 
 			// start host
 			nm.StartHost();
 			//nm.StartStandardHost(); // without relay
+
 			//todo nm.StartRelayHost(nm.maxConnections); // with relay
+			// created lobby, set lobby settings
+			string joinCode = await relay.GetJoinCodeAsync(a.AllocationId);
+
+			hostingUi?.SetActive(false);
+			lobbyUi?.SetActive(true);
+			lobbyCode.text = $"Lobby Code: {joinCode}";
 
 		} catch (RelayServiceException e) {
 			buttonUi?.SetActive(true);
@@ -99,7 +100,7 @@ public class LobbyRelay : MonoBehaviour
 			// try to join lobby
 			buttonUi?.SetActive(false);
 			joiningUi?.SetActive(true);
-			JoinAllocation a = await relay.JoinAllocationAsync(joinCodeInput.text);
+			JoinAllocation a = await relay.JoinAllocationAsync(joinCodeInput.text[..6]);
 
 			// joined lobby, set lobby settings
 			joiningUi?.SetActive(false);
