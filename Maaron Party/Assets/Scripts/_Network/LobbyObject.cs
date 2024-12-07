@@ -30,22 +30,23 @@ public class LobbyObject : NetworkBehaviour
 	{
 		nm = GameNetworkManager.Instance;
 	}
-	public override void OnNetworkSpawn()
+	//public override void OnNetworkSpawn()
+	//{
+	//	base.OnNetworkSpawn();
+	//	nm.AddConnection(this);
+	//}
+	//public override void OnNetworkDespawn()
+	//{
+	//	base.OnNetworkDespawn();
+	//	nm.RemoveConnection(this);
+	//}
+
+	public override void OnNetworkSpawn() 
 	{
 		base.OnNetworkSpawn();
-		nm.AddConnection(this);
-	}
-	public override void OnNetworkDespawn()
-	{
-		base.OnNetworkDespawn();
-		nm.RemoveConnection(this);
-	}
-
-	private void Start() 
-	{
 		gm = GameManager.Instance;
-		transform.SetParent(gm.spawnHolder, true);
-		transform.localScale = Vector3.one;
+		//transform.SetParent(gm.spawnHolder, true);
+		//transform.localScale = Vector3.one;
 		
 		readyBtn.interactable = IsOwner;
 		//if (isLocalPlayer)
