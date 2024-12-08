@@ -286,6 +286,7 @@ public class LobbyRelay : MonoBehaviour
 			};
 			
 			QueryResponse queryResponse = await Lobbies.Instance.QueryLobbiesAsync(options);
+			Debug.Log($"<color=magenta>Found {queryResponse.Results.Count} Lobbies</color>");
 
 			for (int i=0 ; i<lobbyItems.Length ; i++)
 			{
