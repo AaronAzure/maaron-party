@@ -498,81 +498,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 33640489}
   m_CullTransparentMesh: 1
---- !u!1 &34609281
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 34609282}
-  - component: {fileID: 34609283}
-  - component: {fileID: 34609284}
-  m_Layer: 0
-  m_Name: STEAMWORKS
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &34609282
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 34609281}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -9.118905, y: 1.0487461, z: 5.0189676}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &34609283
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 34609281}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4882e1f0baaa18a45836edebb1e6b881, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  settings: {fileID: 11400000, guid: 778d16d8edb8e394f8c4d8b13957a623, type: 2}
-  evtSteamInitialized:
-    m_PersistentCalls:
-      m_Calls: []
-  evtSteamInitializationError:
-    m_PersistentCalls:
-      m_Calls: []
-  evtLobbyInviteArgumentDetected:
-    m_PersistentCalls:
-      m_Calls: []
---- !u!114 &34609284
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 34609281}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a6ddab46ed16a2c4492b3dc612dbe4df, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  nm: {fileID: 193865296}
-  buttons: {fileID: 1300736597}
-  lobbyUi: {fileID: 851340240}
-  hostBtn: {fileID: 552371406}
-  clientBtn: {fileID: 2092168800}
-  lobbyBtn: {fileID: 1830729052}
-  startBtn: {fileID: 1516030785}
-  lobbyIds: []
 --- !u!1 &36285836
 GameObject:
   m_ObjectHideFlags: 0
@@ -8352,7 +8277,6 @@ GameObject:
   - component: {fileID: 1106040536}
   - component: {fileID: 1106040535}
   - component: {fileID: 1106040534}
-  - component: {fileID: 1106040533}
   - component: {fileID: 1106040532}
   m_Layer: 0
   m_Name: Canvas (1)
@@ -8397,21 +8321,6 @@ MonoBehaviour:
   joinBtn: {fileID: 508560284}
   lobbyCode: {fileID: 2069621396}
   joinCodeInput: {fileID: 2131176797}
---- !u!114 &1106040533
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1106040531}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c3999b1e4f5c01c4293eec8064481a38, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lobbyHolder: {fileID: 1526089325}
-  lobbyUi: {fileID: 1526089325}
-  lobbyDataPrefab: {fileID: 5046130433037459676, guid: 5a5eb7e8ee2dc47459df25291f1d5402, type: 3}
 --- !u!114 &1106040534
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10004,7 +9913,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1106040533}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: LobbyManager, Assembly-CSharp
         m_MethodName: _GET_LOBBIES
         m_Mode: 1
@@ -17305,7 +17214,6 @@ SceneRoots:
   - {fileID: 645441475}
   - {fileID: 6604034122647068091}
   - {fileID: 193865297}
-  - {fileID: 34609282}
   - {fileID: 1147147124}
   - {fileID: 753698519}
   - {fileID: 1751920137}
