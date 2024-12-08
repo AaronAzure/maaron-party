@@ -246,10 +246,10 @@ public class LobbyRelay : MonoBehaviour
 	public async void JoinLobbyBySelection(string lobbyId)
 	{
 		try {
-			JoinLobbyByCodeOptions options = new JoinLobbyByCodeOptions {
+			JoinLobbyByIdOptions options = new JoinLobbyByIdOptions {
 				Player = GetPlayer()
 			};
-			joinedLobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyId, options);
+			joinedLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobbyId, options);
 			lobbyNameTmp.text = joinedLobby.Name;
 			
 			loadingUi?.SetActive(false);
