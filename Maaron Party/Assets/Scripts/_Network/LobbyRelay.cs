@@ -55,6 +55,7 @@ public class LobbyRelay : MonoBehaviour
 	async void Start()
 	{
 		try {
+			Debug.Log("Logging on");
 			var options = new InitializationOptions();
 			options.SetProfile($"{Random.Range(1000,int.MaxValue)}");
 			await UnityServices.InitializeAsync(options);
@@ -326,8 +327,8 @@ public class LobbyRelay : MonoBehaviour
 				heartBeatTimer -= Time.fixedDeltaTime;	
 			else
 			{
-				heartBeatTimer = 20;
 				await LobbyService.Instance.SendHeartbeatPingAsync(hostLobby.Id);
+				heartBeatTimer = 20;
 			}
 		}
 	}
@@ -340,8 +341,8 @@ public class LobbyRelay : MonoBehaviour
 				lobbyPollTimer -= Time.fixedDeltaTime; 
 			else
 			{
-				lobbyPollTimer = 1.5f;
 				Lobby lobby = await LobbyService.Instance.GetLobbyAsync(joinedLobby.Id);
+				lobbyPollTimer = 1.5f;
 				//ListPlayers();
 				//if (hostLobby == null)
 				//	CheckIfStart();
