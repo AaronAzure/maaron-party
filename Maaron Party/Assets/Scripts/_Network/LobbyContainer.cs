@@ -22,8 +22,8 @@ public class LobbyContainer : MonoBehaviour
 	//		lobbyTxt.text = lobbyName;
 	//}
 
-	//public void _JOIN_LOBBY()
-	//{
-	//	SteamLobby.Instance.JoinLobby(lobbyId);
-	//}
+	public void _JOIN_LOBBY()
+	{
+		LobbyRelay.Instance.JoinLobbyBySelection(lobbyId);
+	}
 }

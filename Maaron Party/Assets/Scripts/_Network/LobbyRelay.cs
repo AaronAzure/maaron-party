@@ -16,6 +16,7 @@ using Unity.Services.Lobbies.Models;
 
 public class LobbyRelay : MonoBehaviour
 {
+	public static LobbyRelay Instance;
 	private IAuthenticationService aut {get{return AuthenticationService.Instance;}}
 	private IRelayService relay {get{return RelayService.Instance;}}
 	//private GameNetworkManager nm => GameNetworkManager.Instance;
@@ -49,6 +50,10 @@ public class LobbyRelay : MonoBehaviour
 	[SerializeField] private TextMeshProUGUI lobbyCode;
 	[SerializeField] private TMP_InputField joinCodeInput;
 
+
+	private void Awake() {
+		Instance = this;
+	}
 
 	
 	// Start is called before the first frame update
@@ -238,10 +243,18 @@ public class LobbyRelay : MonoBehaviour
 			Debug.LogError(e);
 		}
 	}
-	public void JoinLobbyBySelection()
+	public async void JoinLobbyBySelection(string lobbyId)
 	{
 		try {
-			//ls.QuickJoinLobbyAsync();
+			JoinLobbyByCodeOptions options = new JoinLobbyByCodeOptions {
+				Player = GetPlayer()
+			};
+			joinedLobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyId, options);
+			lobbyNameTmp.text = joinedLobby.Name;
+			
+			loadingUi?.SetActive(false);
+			lobbyUi.SetActive(true);
+			Debug.Log($"Joined Lobby!");
 		} catch (LobbyServiceException e) {
 			Debug.LogError(e);
 		}
@@ -270,11 +283,17 @@ public class LobbyRelay : MonoBehaviour
 			Debug.LogError(e);
 		}
 	}
+	#endregion
 
 
+
+	#region List Lobbies
+	bool findingLobby;
 	public async void ListLobbies()
 	{
+		if (findingLobby) return;
 		try {
+			findingLobby = true;
 			QueryLobbiesOptions options = new QueryLobbiesOptions {
 				Count = 10,
 				Filters = new List<QueryFilter> {
@@ -303,11 +322,12 @@ public class LobbyRelay : MonoBehaviour
 					lobbyItems[i].gameObject.SetActive(false);
 				}
 			}
+			findingLobby = false;
 		} catch (LobbyServiceException e) {
 			Debug.LogError(e);
+			findingLobby = false;
 		}
 	}
-
 	#endregion
 
 	#region HeartBeat
