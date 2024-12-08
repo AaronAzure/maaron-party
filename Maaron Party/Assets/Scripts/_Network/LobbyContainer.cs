@@ -2,25 +2,28 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Steamworks;
 using TMPro;
+using System.ComponentModel;
 
 public class LobbyContainer : MonoBehaviour
 {
-	public CSteamID lobbyId;
-	public string lobbyName;
-	[SerializeField] TextMeshProUGUI lobbyTxt;
+	public TextMeshProUGUI playerNameTxt;
+	public string playerId;
 
-	public void SetLobbyData()
-	{
-		if (lobbyName == "")
-			lobbyTxt.text = "Untitled Lobby :<";
-		else
-			lobbyTxt.text = lobbyName;
-	}
+	[Space] public TextMeshProUGUI lobbyNameTxt;
+	public TextMeshProUGUI nPlayersTxt;
+	public string lobbyId;
 
-	public void _JOIN_LOBBY()
-	{
-		SteamLobby.Instance.JoinLobby(lobbyId);
-	}
+	//public void SetLobbyData()
+	//{
+	//	if (lobbyName == "")
+	//		lobbyTxt.text = "Untitled Lobby :<";
+	//	else
+	//		lobbyTxt.text = lobbyName;
+	//}
+
+	//public void _JOIN_LOBBY()
+	//{
+	//	SteamLobby.Instance.JoinLobby(lobbyId);
+	//}
 }

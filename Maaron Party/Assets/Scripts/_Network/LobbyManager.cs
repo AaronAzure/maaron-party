@@ -36,9 +36,9 @@ public class LobbyManager : MonoBehaviour
 				GameObject obj = Instantiate(lobbyDataPrefab.gameObject, lobbyHolder);
 
 				LobbyContainer lobby = obj.GetComponent<LobbyContainer>();
-				lobby.lobbyId = (CSteamID)lobbyIds[i].m_SteamID;
-				lobby.lobbyName = SteamMatchmaking.GetLobbyData((CSteamID)lobbyIds[i].m_SteamID, "name");
-				lobby.SetLobbyData();
+				//lobby.lobbyId = (CSteamID)lobbyIds[i].m_SteamID;
+				//lobby.lobbyName = SteamMatchmaking.GetLobbyData((CSteamID)lobbyIds[i].m_SteamID, "name");
+				//lobby.SetLobbyData();
 				lobbies.Add(obj);
 			}
 		}
