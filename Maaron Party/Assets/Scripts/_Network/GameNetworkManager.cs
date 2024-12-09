@@ -306,7 +306,8 @@ public class GameNetworkManager : NetworkManager
 		yield return new WaitForSeconds(0.5f);
 
 		//todo ServerChangeScene(boardScene);
-		SceneManager.LoadScene("TestBoard1", LoadSceneMode.Single);
+		Debug.Log($"SceneManager = {SceneManager != null}");
+		SceneManager.LoadScene("TestBoard", LoadSceneMode.Single);
 		//NetworkManager.Singleton.SceneManager.LoadScene("TestBoard", LoadSceneMode.Single);
 	}
 
