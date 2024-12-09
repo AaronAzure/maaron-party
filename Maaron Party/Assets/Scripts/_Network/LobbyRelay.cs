@@ -159,6 +159,25 @@ public class LobbyRelay : MonoBehaviour
 	//	}
 	//}
 
+	public void EnterLobby()
+	{
+		buttonUi?.SetActive(false);
+		loadingUi?.SetActive(false);
+		lobbyUi.SetActive(true);
+	}
+	public void EnterMainMenu()
+	{
+		loadingUi?.SetActive(false);
+		lobbyUi.SetActive(false);
+		buttonUi?.SetActive(true);
+	}
+	public void ShowLoading()
+	{
+		buttonUi?.SetActive(false);
+		lobbyUi.SetActive(false);
+		loadingUi?.SetActive(true);
+	}
+
 
 	#region Lobby
 
@@ -182,8 +201,7 @@ public class LobbyRelay : MonoBehaviour
 	public async void CreateLobby()
 	{
 		try {
-			buttonUi?.SetActive(false);
-			loadingUi?.SetActive(true);
+			ShowLoading();
 			int maxPlayers = 4;
 
 			string lobbyName = lobbyNameInput.text;
@@ -209,54 +227,39 @@ public class LobbyRelay : MonoBehaviour
 			//foreach (LobbyContainer l in players)
 			//	l.killerBtn.interactable = true;
 			//EnterJoinedLobby();
-			loadingUi?.SetActive(false);
-			lobbyUi.SetActive(true);
+			EnterLobby();
 			lobbyNameTmp.text = $"{lobbyName}";
 		} catch (LobbyServiceException e) {
 			Debug.LogError(e);
-			buttonUi?.SetActive(true);
-			loadingUi?.SetActive(false);
+			EnterMainMenu();
 		}
 	}
 	public async void QuickJoinLobby()
 	{
 		try {
+			ShowLoading();
 			await ls.QuickJoinLobbyAsync();
+			EnterLobby();
 		} catch (LobbyServiceException e) {
 			Debug.LogError(e);
-		}
-	}
-	public async void JoinLobbyByCode()
-	{
-		try {
-			//Debug.Log($"Attempting to Join Lobby ({l.lobbyId})");
-
-			JoinLobbyByIdOptions options = new JoinLobbyByIdOptions {
-				Player = GetPlayer()
-			};
-			joinedLobby = await LobbyService.Instance.JoinLobbyByIdAsync("0", options);
-			//lobbyTitleTxt.text = joinedLobby.Name;
-
-			//EnterJoinedLobby();
-			//Debug.Log($"Joined Lobby!");
-		} catch (LobbyServiceException e) {
-			Debug.LogError(e);
+			EnterMainMenu();
 		}
 	}
 	public async void JoinLobbyBySelection(string lobbyId)
 	{
 		try {
+			ShowLoading();
 			JoinLobbyByIdOptions options = new JoinLobbyByIdOptions {
 				Player = GetPlayer()
 			};
 			joinedLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobbyId, options);
 			lobbyNameTmp.text = joinedLobby.Name;
 			
-			loadingUi?.SetActive(false);
-			lobbyUi.SetActive(true);
+			EnterLobby();
 			Debug.Log($"Joined Lobby!");
 		} catch (LobbyServiceException e) {
 			Debug.LogError(e);
+			EnterMainMenu();
 		}
 	}
 	public void LeaveLobby()
@@ -337,7 +340,7 @@ public class LobbyRelay : MonoBehaviour
 		if (!startGame)
 		{
 			HeartBeatLobby();	
-			PollLobby();	
+			//PollLobby();	
 		}
 	}
 	async void HeartBeatLobby()
