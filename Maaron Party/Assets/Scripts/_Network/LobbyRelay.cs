@@ -40,6 +40,7 @@ public class LobbyRelay : MonoBehaviour
 	[SerializeField] private float lobbyPollTimer=1.5f;
 	[SerializeField] private TMP_InputField lobbyNameInput;
 	[SerializeField] private LobbyContainer[] lobbyItems; // max 10 lobbies
+	[SerializeField] private LobbyPlayer[] players; // max 4 players
 	bool startGame=false;
 	//[SerializeField] private TMP_Dropdown gameModeInput;
 
@@ -367,10 +368,27 @@ public class LobbyRelay : MonoBehaviour
 			{
 				Lobby lobby = await LobbyService.Instance.GetLobbyAsync(joinedLobby.Id);
 				lobbyPollTimer = 1.5f;
-				//ListPlayers();
+				ListPlayers();
 				//if (hostLobby == null)
 				//	CheckIfStart();
 				joinedLobby = lobby;
+			}
+		}
+	}
+
+	public void ListPlayers()
+	{
+		for (int i=0 ; i<players.Length ; i++)
+		{
+			if (i < joinedLobby.Players.Count)
+			{
+				players[i].gameObject.SetActive(true);
+				players[i].playerNameTxt.text = joinedLobby.Players[i].Id;
+				players[i].playerId = joinedLobby.Players[i].Data["PlayerName"].Value;
+			}
+			else
+			{
+				players[i].gameObject.SetActive(false);
 			}
 		}
 	}
