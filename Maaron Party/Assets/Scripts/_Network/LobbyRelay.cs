@@ -160,11 +160,26 @@ public class LobbyRelay : MonoBehaviour
 	//	}
 	//}
 
-	public void EnterLobby()
+	public async void EnterLobby(bool pollPlayers=true)
 	{
 		buttonUi?.SetActive(false);
 		loadingUi?.SetActive(false);
 		lobbyUi.SetActive(true);
+		if (pollPlayers)
+		{
+			try {
+				pollingLobby = true;
+				Lobby lobby = await LobbyService.Instance.GetLobbyAsync(joinedLobby.Id);
+				lobbyPollTimer = 2.5f;
+				ListPlayers();
+				joinedLobby = lobby;
+				pollingLobby = false;
+			} catch (LobbyServiceException e) {
+				Debug.LogError(e);
+				lobbyPollTimer = 2.5f;
+				pollingLobby = false;
+			}
+		}
 	}
 	public void EnterMainMenu()
 	{
@@ -381,6 +396,7 @@ public class LobbyRelay : MonoBehaviour
 					pollingLobby = false;
 				} catch (LobbyServiceException e) {
 					Debug.LogError(e);
+					lobbyPollTimer = 2.5f;
 					pollingLobby = false;
 				}
 			}
