@@ -159,13 +159,13 @@ public class GameNetworkManager : NetworkManager
 	//	//StartClient();
 
 	//}
-	//public void StartGame()
-	//{
-	//	StartBoardGame();
-	//	//nPlayers = NetworkServer.connections.Count;
-	//	Debug.Log($"<color=magenta>NetworkServer.connections.Count = {NetworkServer.connections.Count}</color>");
-	//	startBtn.gameObject.SetActive(false);
-	//}
+	public void StartGame()
+	{
+		StartBoardGame();
+		//nPlayers = NetworkServer.connections.Count;
+		//Debug.Log($"<color=magenta>NetworkServer.connections.Count = {NetworkServer.connections.Count}</color>");
+		//startBtn.gameObject.SetActive(false);
+	}
 
 
 	#region ServerChangeScene
@@ -306,7 +306,7 @@ public class GameNetworkManager : NetworkManager
 		yield return new WaitForSeconds(0.5f);
 
 		//todo ServerChangeScene(boardScene);
-		//SceneManager.LoadScene("TestBoard", LoadSceneMode.Single);
+		SceneManager.LoadScene("TestBoard1", LoadSceneMode.Single);
 		//NetworkManager.Singleton.SceneManager.LoadScene("TestBoard", LoadSceneMode.Single);
 	}
 

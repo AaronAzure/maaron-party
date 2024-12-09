@@ -19,8 +19,8 @@ public class LobbyRelay : MonoBehaviour
 	public static LobbyRelay Instance;
 	private IAuthenticationService aut {get{return AuthenticationService.Instance;}}
 	private IRelayService relay {get{return RelayService.Instance;}}
-	//private GameNetworkManager nm => GameNetworkManager.Instance;
-	private NetworkManager nm => NetworkManager.Singleton;
+	private GameNetworkManager nm => GameNetworkManager.Instance;
+	//private NetworkManager nm => NetworkManager.Singleton;
 	private ILobbyService ls => LobbyService.Instance;
 
 	
@@ -37,7 +37,7 @@ public class LobbyRelay : MonoBehaviour
 	public static Lobby hostLobby;
 	public static Lobby joinedLobby;
 	[SerializeField] private float heartBeatTimer=20;
-	[SerializeField] private float lobbyPollTimer=2.5f;
+	[SerializeField] private float lobbyPollTimer=1.5f;
 	[SerializeField] private TMP_InputField lobbyNameInput;
 	[SerializeField] private LobbyContainer[] lobbyItems; // max 10 lobbies
 	[SerializeField] private LobbyPlayer[] players; // max 4 players
@@ -351,8 +351,8 @@ public class LobbyRelay : MonoBehaviour
 	}
 	#endregion
 
-	#region HeartBeat
 
+	#region HeartBeat
 	bool pollingLobby;
 	private void FixedUpdate() 
 	{
@@ -388,7 +388,7 @@ public class LobbyRelay : MonoBehaviour
 				try {
 					pollingLobby = true;
 					Lobby lobby = await LobbyService.Instance.GetLobbyAsync(joinedLobby.Id);
-					lobbyPollTimer = 2.5f;
+					lobbyPollTimer = 1.5f;
 					ListPlayers();
 					//if (hostLobby == null)
 					//	CheckIfStart();
@@ -396,7 +396,7 @@ public class LobbyRelay : MonoBehaviour
 					pollingLobby = false;
 				} catch (LobbyServiceException e) {
 					Debug.LogError(e);
-					lobbyPollTimer = 2.5f;
+					lobbyPollTimer = 1.5f;
 					pollingLobby = false;
 				}
 			}
@@ -419,6 +419,10 @@ public class LobbyRelay : MonoBehaviour
 			}
 		}
 	}
-
 	#endregion
+
+	public void _START_GAME()
+	{
+		nm.StartGame();
+	}
 }
