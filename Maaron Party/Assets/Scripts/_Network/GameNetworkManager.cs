@@ -301,14 +301,27 @@ public class GameNetworkManager : NetworkManager
 	
 	IEnumerator StartBoardGameCo()
 	{
-		gm.TriggerTransitionServerRpc(true);
+		if (gm != null)
+			gm.TriggerTransition(true);
 		
 		yield return new WaitForSeconds(0.5f);
 
 		//todo ServerChangeScene(boardScene);
-		Debug.Log($"SceneManager = {SceneManager != null}");
-		SceneManager.LoadScene("TestBoard", LoadSceneMode.Single);
-		//NetworkManager.Singleton.SceneManager.LoadScene("TestBoard", LoadSceneMode.Single);
+		StartBoardGameServerRpc();
+		//NetworkManager.Singleton.SceneManager.LoadScene("TestBoard 1", LoadSceneMode.Single);
+	}
+
+	[ServerRpc] void StartBoardGameServerRpc()
+	{
+		string m_SceneName = "TestBoard 1";
+		Debug.Log($"<color=yellow>IsServer = {IsServer} | IsHost = {IsHost}</color>");
+
+		var status = SceneManager.LoadScene(m_SceneName, LoadSceneMode.Single);
+		if (status != SceneEventProgressStatus.Started)
+		{
+			Debug.LogWarning($"Failed to load {m_SceneName} " +
+				$"with a {nameof(SceneEventProgressStatus)}: {status}");
+		}
 	}
 
 	public void UnparentBoardControls()

@@ -32,18 +32,18 @@ public class GameManager : NetworkBehaviour
 	[SerializeField] private NetworkList<int> manas = new NetworkList<int>(null, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 	[SerializeField] private NetworkList<int> doorTolls = new NetworkList<int>(null, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 	[SerializeField] private NetworkVariable<List<List<int>>> items =
-		new NetworkVariable<List<List<int>>>(new List<List<int>>(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+		new(new List<List<int>>(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 	
-	[Space] public NetworkVariable<int> nTurn = new NetworkVariable<int>(1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner); 
-	public NetworkVariable<int> maxTurns = new NetworkVariable<int>(20, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner); 
+	[Space] public NetworkVariable<int> nTurn = new(1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner); 
+	public NetworkVariable<int> maxTurns = new(20, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner); 
 	
-	[Space] public NetworkVariable<bool> isPractice = new NetworkVariable<bool>(false); 
+	[Space] public NetworkVariable<bool> isPractice = new(false); 
 	[SerializeField] private GameObject pmObj;
 
 	[Space] public bool gameStarted; 
 	public int prevStarInd=-1; 
-	public NetworkVariable<int> turretReady = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner); 
-	public NetworkVariable<int> turretRot = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner); 
+	public NetworkVariable<int> turretReady = new(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner); 
+	public NetworkVariable<int> turretRot = new(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner); 
 	[SerializeField] Animator anim;
 
 	#endregion

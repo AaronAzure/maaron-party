@@ -74,10 +74,10 @@ public class LobbyRelay : MonoBehaviour
 
 			buttonUi?.SetActive(true);
 			loadingUi?.SetActive(false);
-			if (hostBtn != null)
-				hostBtn.onClick.AddListener(() => CreateRelay() );
-			if (joinBtn != null)
-				joinBtn.onClick.AddListener(() => JoinRelay() );
+			//if (hostBtn != null)
+			//	hostBtn.onClick.AddListener(() => CreateRelay() );
+			//if (joinBtn != null)
+			//	joinBtn.onClick.AddListener(() => JoinRelay() );
 		} catch (AuthenticationException e) {
 			Debug.LogError(e);
 			Start();
@@ -85,67 +85,64 @@ public class LobbyRelay : MonoBehaviour
 	}
 
 	
-	async void CreateRelay() // plus host
-	{
-		try {
-			// try to create lobby
-			buttonUi?.SetActive(false);
-			hostingUi?.SetActive(true);
-			Allocation a = await relay.CreateAllocationAsync(4);
+	//async void CreateRelay() // plus host
+	//{
+	//	try {
+	//		// try to create lobby
+	//		buttonUi?.SetActive(false);
+	//		hostingUi?.SetActive(true);
+	//		Allocation a = await relay.CreateAllocationAsync(4);
 
-			var data = new RelayServerData(a, "dtls");
-			nm.GetComponent<UnityTransport>().SetRelayServerData(data);
+	//		var data = new RelayServerData(a, "dtls");
+	//		nm.GetComponent<UnityTransport>().SetRelayServerData(data);
 
-			// start host
-			nm.StartHost();
-			//nm.StartStandardHost(); // without relay
+	//		// start host
+	//		nm.StartHost();
 
-			//todo nm.StartRelayHost(nm.maxConnections); // with relay
-			// created lobby, set lobby settings
-			string joinCode = await relay.GetJoinCodeAsync(a.AllocationId);
+	//		string joinCode = await relay.GetJoinCodeAsync(a.AllocationId);
 
-			hostingUi?.SetActive(false);
-			lobbyUi?.SetActive(true);
-			lobbyCode.text = $"Lobby Code: {joinCode}";
+	//		hostingUi?.SetActive(false);
+	//		lobbyUi?.SetActive(true);
+	//		lobbyCode.text = $"Lobby Code: {joinCode}";
 
-		} catch (RelayServiceException e) {
-			buttonUi?.SetActive(true);
-			hostingUi?.SetActive(false);
-			Debug.LogError(e);
-		}
-	}
+	//	} catch (RelayServiceException e) {
+	//		buttonUi?.SetActive(true);
+	//		hostingUi?.SetActive(false);
+	//		Debug.LogError(e);
+	//	}
+	//}
 
-	async void JoinRelay()
-	{
-		if (joinCodeInput.text == "" || joinCodeInput.text.Length < 6)
-    	{
-        	Debug.LogError("Please input a join code.");
-        	return;
-    	}
+	//async void JoinRelay()
+	//{
+	//	if (joinCodeInput.text == "" || joinCodeInput.text.Length < 6)
+	//	{
+	//    	Debug.LogError("Please input a join code.");
+	//    	return;
+	//	}
 
-		Debug.Log($"<color=magenta>Joining with {joinCodeInput.text}</color>");
-		try {
-			// try to join lobby
-			buttonUi?.SetActive(false);
-			joiningUi?.SetActive(true);
-			JoinAllocation a = await relay.JoinAllocationAsync(joinCodeInput.text[..6]);
+	//	Debug.Log($"<color=magenta>Joining with {joinCodeInput.text}</color>");
+	//	try {
+	//		// try to join lobby
+	//		buttonUi?.SetActive(false);
+	//		joiningUi?.SetActive(true);
+	//		JoinAllocation a = await relay.JoinAllocationAsync(joinCodeInput.text[..6]);
 
-			// joined lobby, set lobby settings
-			joiningUi?.SetActive(false);
-			var data = new RelayServerData(a, "dtls");
-			nm.GetComponent<UnityTransport>().SetRelayServerData(data);
+	//		// joined lobby, set lobby settings
+	//		joiningUi?.SetActive(false);
+	//		var data = new RelayServerData(a, "dtls");
+	//		nm.GetComponent<UnityTransport>().SetRelayServerData(data);
 			
-			// start host
-			nm.StartClient();
-			//nm.JoinStandardServer(); // without relay
-			//todo nm.JoinRelayServer(); // with relay
+	//		// start host
+	//		nm.StartClient();
+	//		//nm.JoinStandardServer(); // without relay
+	//		//todo nm.JoinRelayServer(); // with relay
 
-		} catch (RelayServiceException e) {
-			buttonUi?.SetActive(true);
-			joiningUi?.SetActive(false);
-			Debug.LogError(e);
-		}
-	}
+	//	} catch (RelayServiceException e) {
+	//		buttonUi?.SetActive(true);
+	//		joiningUi?.SetActive(false);
+	//		Debug.LogError(e);
+	//	}
+	//}
 
 	//public async void OnJoinCode()
 	//{
@@ -223,7 +220,6 @@ public class LobbyRelay : MonoBehaviour
 			string lobbyName = lobbyNameInput.text;
 			if (lobbyName == "" || lobbyName == null)
 				lobbyName = "MyLobby"; 
-			Debug.Log($"Creating Lobby = {lobbyName}");
 			CreateLobbyOptions options = new CreateLobbyOptions {
 				IsPrivate = false,
 				Player = GetPlayer(),
@@ -390,8 +386,8 @@ public class LobbyRelay : MonoBehaviour
 					Lobby lobby = await LobbyService.Instance.GetLobbyAsync(joinedLobby.Id);
 					lobbyPollTimer = 1.5f;
 					ListPlayers();
-					//if (hostLobby == null)
-					//	CheckIfStart();
+					if (hostLobby == null)
+						CheckIfStart();
 					joinedLobby = lobby;
 					pollingLobby = false;
 				} catch (LobbyServiceException e) {
@@ -421,8 +417,38 @@ public class LobbyRelay : MonoBehaviour
 	}
 	#endregion
 
-	public void _START_GAME()
+	public async void _START_GAME()
 	{
-		nm.StartGame();
+		try {
+			Allocation a = await relay.CreateAllocationAsync(4);
+
+			var data = new RelayServerData(a, "dtls");
+			nm.GetComponent<UnityTransport>().SetRelayServerData(data);
+
+			// start host
+			nm.StartHost();
+
+			string joinCode = await RelayService.Instance.GetJoinCodeAsync(a.AllocationId);
+			await Lobbies.Instance.UpdateLobbyAsync(hostLobby.Id, new UpdateLobbyOptions {
+				Data = new Dictionary<string, DataObject> {
+					{ "Start", new DataObject(DataObject.VisibilityOptions.Member, joinCode)}
+				}
+			});
+			joinedLobby = hostLobby;
+			//nm.StartGame();
+			//Debug.Log("<color=magenta>STARTED</color>");
+
+		} catch (RelayServiceException e) {
+			Debug.LogError(e);
+		}
+	}
+
+	private void CheckIfStart()
+	{
+		if (!startGame && joinedLobby.Data["Start"].Value != "0")
+		{
+			startGame = true;
+			//START_CLIENT();
+		}
 	}
 }
