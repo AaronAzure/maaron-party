@@ -37,7 +37,7 @@ public class LobbyRelay : MonoBehaviour
 	public static Lobby hostLobby;
 	public static Lobby joinedLobby;
 	[SerializeField] private float heartBeatTimer=20;
-	[SerializeField] private float lobbyPollTimer=1.5f;
+	[SerializeField] private float lobbyPollTimer=2.5f;
 	[SerializeField] private TMP_InputField lobbyNameInput;
 	[SerializeField] private LobbyContainer[] lobbyItems; // max 10 lobbies
 	[SerializeField] private LobbyPlayer[] players; // max 4 players
@@ -343,7 +343,7 @@ public class LobbyRelay : MonoBehaviour
 		if (!startGame)
 		{
 			HeartBeatLobby();	
-			//PollLobby();	
+			PollLobby();	
 		}
 	}
 	async void HeartBeatLobby()
@@ -369,7 +369,7 @@ public class LobbyRelay : MonoBehaviour
 			else
 			{
 				Lobby lobby = await LobbyService.Instance.GetLobbyAsync(joinedLobby.Id);
-				lobbyPollTimer = 1.5f;
+				lobbyPollTimer = 2.5f;
 				ListPlayers();
 				//if (hostLobby == null)
 				//	CheckIfStart();

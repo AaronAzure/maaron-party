@@ -9692,7 +9692,7 @@ MonoBehaviour:
   lobbyUi: {fileID: 393376502}
   lobbyNameTmp: {fileID: 1483007635}
   heartBeatTimer: 20
-  lobbyPollTimer: 1.5
+  lobbyPollTimer: 2.5
   lobbyNameInput: {fileID: 1308983528}
   lobbyItems:
   - {fileID: 7984998361029656262}
