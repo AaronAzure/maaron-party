@@ -221,7 +221,8 @@ public class LobbyRelay : MonoBehaviour
 			//currentKillerId = AuthenticationService.Instance.PlayerId;
 
 			//createLobbyObj.SetActive(false);
-			joinedLobby = hostLobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, maxPlayers, options);
+			var lobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, maxPlayers, options);
+			joinedLobby = hostLobby = lobby;
 			Debug.Log($"Created Lobby = {lobbyName}, Id = {hostLobby.Id}, code = {hostLobby.LobbyCode}");
 			
 			//lobbyTitleTxt.text = hostLobby.Name;
@@ -253,7 +254,8 @@ public class LobbyRelay : MonoBehaviour
 			JoinLobbyByIdOptions options = new JoinLobbyByIdOptions {
 				Player = GetPlayer()
 			};
-			joinedLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobbyId, options);
+			var lobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobbyId, options);
+			joinedLobby = lobby;
 			lobbyNameTmp.text = joinedLobby.Name;
 			
 			EnterLobby();
