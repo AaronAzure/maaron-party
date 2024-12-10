@@ -25,6 +25,7 @@ public class GameNetworkManager : NetworkManager
 	[SerializeField] private bool skipSideQuests;
 	public bool skipIntro;
 	public bool skipBoard;
+	//[SerializeField] private GameObject gmObj;
 
 
 	[Space] [Header("Scenes")]
@@ -161,6 +162,7 @@ public class GameNetworkManager : NetworkManager
 	//}
 	public void StartGame()
 	{
+		//gmObj.SetActive(true);
 		StartBoardGame();
 		//nPlayers = NetworkServer.connections.Count;
 		//Debug.Log($"<color=magenta>NetworkServer.connections.Count = {NetworkServer.connections.Count}</color>");
@@ -304,6 +306,7 @@ public class GameNetworkManager : NetworkManager
 		if (gm != null)
 			gm.TriggerTransition(true);
 		
+		Debug.Log($"<color=yellow>fading in</color>");
 		yield return new WaitForSeconds(0.5f);
 
 		//todo ServerChangeScene(boardScene);

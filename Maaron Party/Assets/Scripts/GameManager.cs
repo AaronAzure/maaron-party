@@ -23,27 +23,27 @@ public class GameManager : NetworkBehaviour
 
 
 	[Space] [Header("In game references")]
-	[SerializeField] private List<ushort> currNodes;
+	[SerializeField] private List<ushort> currNodes = new();
 	//public readonly SyncDictionary<int, int[]> traps = new SyncDictionary<int, int[]>();
 	public Dictionary<int, int[]> traps = new Dictionary<int, int[]>();
-	[SerializeField] private NetworkList<int> placements = new NetworkList<int>(null, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-	[SerializeField] private NetworkList<int> coins = new NetworkList<int>(null, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-	[SerializeField] private NetworkList<int> stars = new NetworkList<int>(null, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-	[SerializeField] private NetworkList<int> manas = new NetworkList<int>(null, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-	[SerializeField] private NetworkList<int> doorTolls = new NetworkList<int>(null, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-	[SerializeField] private NetworkVariable<List<List<int>>> items =
-		new(new List<List<int>>(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+	[SerializeField] private NetworkVariable<List<int>> placements = new(new());
+	[SerializeField] private NetworkVariable<List<int>> coins = new(new());
+	[SerializeField] private NetworkVariable<List<int>> stars = new(new());
+	[SerializeField] private NetworkVariable<List<int>> manas = new(new());
+	[SerializeField] private NetworkVariable<List<int>> doorTolls = new(new());
+	//[SerializeField] private NetworkVariable<List<List<int>>> items =
+	//	new(new()r);
 	
-	[Space] public NetworkVariable<int> nTurn = new(1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner); 
-	public NetworkVariable<int> maxTurns = new(20, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner); 
+	[Space] public NetworkVariable<int> nTurn = new(1); 
+	public NetworkVariable<int> maxTurns = new(20); 
 	
 	[Space] public NetworkVariable<bool> isPractice = new(false); 
 	[SerializeField] private GameObject pmObj;
 
 	[Space] public bool gameStarted; 
 	public int prevStarInd=-1; 
-	public NetworkVariable<int> turretReady = new(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner); 
-	public NetworkVariable<int> turretRot = new(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner); 
+	public NetworkVariable<int> turretReady = new(0); 
+	public NetworkVariable<int> turretRot = new(0); 
 	[SerializeField] Animator anim;
 
 	#endregion
@@ -61,12 +61,6 @@ public class GameManager : NetworkBehaviour
 
 	public void Start() 
 	{
-		currNodes = new();
-		//placements = new();
-		//coins = new();
-		//stars = new();
-		//manas = new();
-		//items = new();
 		if (BoardManager.Instance == null)
 			TriggerTransition(false);
 	}
@@ -111,65 +105,66 @@ public class GameManager : NetworkBehaviour
 	{
 		if (coins == null)
 			coins = new();
-		while (coins.Count <= playerId)
-			coins.Add(0);
-		coins[playerId] = newCoin;
+		while (coins.Value.Count <= playerId)
+			coins.Value.Add(0);
+		coins.Value[playerId] = newCoin;
 	}
 	public int GetCoins(int playerId)
 	{
-		return coins[playerId];
+		return coins.Value[playerId];
 	}
 	[ServerRpc] public void SaveItemsServerRpc(int[] newItems, int playerId)
 	{
 		//if (items == null)
 		//	items = new();
-		while (items.Value.Count <= playerId)
-			items.Value.Add(new());
-		items.Value[playerId] = new List<int>(newItems);
+		//while (items.Value.Count <= playerId)
+		//	items.Value.Add(new());
+		//items.Value[playerId] = new List<int>(newItems);
 	}
 	public List<int> GetItems(int playerId)
 	{
-		return items.Value[playerId];
+		return null;
+		//return items.Value[playerId];
 	}
 
 	[ServerRpc] public void SaveStarsServerRpc(int newStar, int playerId)
 	{
 		if (stars == null)
 			stars = new();
-		while (stars.Count <= playerId)
-			stars.Add(0);
-		stars[playerId] = newStar;
+		while (stars.Value.Count <= playerId)
+			stars.Value.Add(0);
+		stars.Value[playerId] = newStar;
 	}
 	public int GetStars(int playerId)
 	{
-		return stars[playerId];
+		return stars.Value[playerId];
 	}
 	[ServerRpc] public void SaveManaServerRpc(int newMana, int playerId)
 	{
 		if (manas == null)
 			manas = new();
-		while (manas.Count <= playerId)
-			manas.Add(0);
-		manas[playerId] = newMana;
+		while (manas.Value.Count <= playerId)
+			manas.Value.Add(0);
+		manas.Value[playerId] = newMana;
 	}
 	public int GetMana(int playerId)
 	{
-		return manas[playerId];
+		return manas.Value[playerId];
 	}
 
 	[ServerRpc] public void SavePlacementsServerRpc(int newPlacement, int playerId)
 	{
 		if (placements == null)
 			placements = new();
-		while (placements.Count <= playerId)
-			placements.Add(0);
-		placements[playerId] = newPlacement;
+		while (placements.Value.Count <= playerId)
+			placements.Value.Add(0);
+		placements.Value[playerId] = newPlacement;
 	}
 	public int GetPlacements(int playerId)
 	{
-		if (playerId < 0 || placements == null || playerId >= placements.Count)
+		if (playerId < 0 || placements == null || playerId >= placements.Value.Count)
 			return 0;
-		return placements[playerId];
+		return placements.Value[playerId];
 	}
 	//* ------- save -------
 	//* --------------------
@@ -187,14 +182,14 @@ public class GameManager : NetworkBehaviour
 		doorTolls = new();
 		for (int i=0 ; i<nDoors ; i++)
 		{
-			doorTolls.Add(0);
+			doorTolls.Value.Add(0);
 			if (BoardManager.Instance != null)
 				BoardManager.Instance.SetNewTollServerRpc(i, 1);
 		}
 	}
 	[ServerRpc] public void SetDoorTollServerRpc(int ind, int newToll)
 	{
-		if (doorTolls == null || ind < 0 || ind >= doorTolls.Count)
+		if (doorTolls == null || ind < 0 || ind >= doorTolls.Value.Count)
 			return;
 		SetDoorTollClientRpc(ind, newToll);
 		if (BoardManager.Instance != null)
@@ -202,15 +197,15 @@ public class GameManager : NetworkBehaviour
 	}
 	[ClientRpc] public void SetDoorTollClientRpc(int ind, int newToll)
 	{
-		if (doorTolls == null || ind < 0 || ind >= doorTolls.Count)
+		if (doorTolls == null || ind < 0 || ind >= doorTolls.Value.Count)
 			return;
-		doorTolls[ind] = newToll;
+		doorTolls.Value[ind] = newToll;
 	}
 	public int GetDoorToll(int ind)
 	{
-		if (doorTolls == null || ind < 0 || ind >= doorTolls.Count)
+		if (doorTolls == null || ind < 0 || ind >= doorTolls.Value.Count)
 			return 0;
-		return doorTolls[ind] == 0 ? 1 : doorTolls[ind];
+		return doorTolls.Value[ind] == 0 ? 1 : doorTolls.Value[ind];
 	}
 
 	#endregion
@@ -234,7 +229,6 @@ public class GameManager : NetworkBehaviour
 	}
 
 
-	public NetworkVariable<string> minigameName = new();
 
 	#region minigame
 	public void SetProfilePic(int[] inds) => SetProfilePicClientRpc(inds);
@@ -256,8 +250,6 @@ public class GameManager : NetworkBehaviour
 	} 
 	IEnumerator StartMiniGameCo(string minigameName)
 	{
-		this.minigameName.Value = minigameName;
-
 		AsyncOperation async = SceneManager.LoadSceneAsync(minigameName, LoadSceneMode.Additive);
 
 		while (!async.isDone)
@@ -288,15 +280,15 @@ public class GameManager : NetworkBehaviour
 	{
 		for (int i=0 ; i<rewards.Length ; i++)
 		{
-			if (i < coins.Count)
+			if (i < coins.Value.Count)
 			{
-				coins[i] += rewards[i];
+				coins.Value[i] += rewards[i];
 			}
 		}
 	}
 	public void AwardManaPrize(int id)
 	{
-		if (id >= 0 && id < manas.Count)
-			manas[id] = Mathf.Clamp(manas[id] + 1, 0, 5);
+		if (id >= 0 && id < manas.Value.Count)
+			manas.Value[id] = Mathf.Clamp(manas.Value[id] + 1, 0, 5);
 	}
 }

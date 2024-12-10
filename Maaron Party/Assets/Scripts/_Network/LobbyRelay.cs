@@ -68,12 +68,11 @@ public class LobbyRelay : MonoBehaviour
 
 			aut.SignedIn += () => {
 				Debug.Log("Signed in " + aut.PlayerId);
+				ShowMainMenu();
 			};
 			
 			await aut.SignInAnonymouslyAsync();
 
-			buttonUi?.SetActive(true);
-			loadingUi?.SetActive(false);
 			//if (hostBtn != null)
 			//	hostBtn.onClick.AddListener(() => CreateRelay() );
 			//if (joinBtn != null)
@@ -157,7 +156,7 @@ public class LobbyRelay : MonoBehaviour
 	//	}
 	//}
 
-	public async void EnterLobby(bool pollPlayers=true)
+	public async void ShowLobby(bool pollPlayers=true)
 	{
 		buttonUi?.SetActive(false);
 		loadingUi?.SetActive(false);
@@ -178,7 +177,7 @@ public class LobbyRelay : MonoBehaviour
 			}
 		}
 	}
-	public void EnterMainMenu()
+	public void ShowMainMenu()
 	{
 		loadingUi?.SetActive(false);
 		lobbyUi.SetActive(false);
@@ -240,11 +239,11 @@ public class LobbyRelay : MonoBehaviour
 			//foreach (LobbyContainer l in players)
 			//	l.killerBtn.interactable = true;
 			//EnterJoinedLobby();
-			EnterLobby();
+			ShowLobby();
 			lobbyNameTmp.text = $"{lobbyName}";
 		} catch (LobbyServiceException e) {
 			Debug.LogError(e);
-			EnterMainMenu();
+			ShowMainMenu();
 		}
 	}
 	public async void QuickJoinLobby()
@@ -252,10 +251,10 @@ public class LobbyRelay : MonoBehaviour
 		try {
 			ShowLoading();
 			await ls.QuickJoinLobbyAsync();
-			EnterLobby();
+			ShowLobby();
 		} catch (LobbyServiceException e) {
 			Debug.LogError(e);
-			EnterMainMenu();
+			ShowMainMenu();
 		}
 	}
 	public async void JoinLobbyBySelection(string lobbyId)
@@ -269,11 +268,11 @@ public class LobbyRelay : MonoBehaviour
 			joinedLobby = lobby;
 			lobbyNameTmp.text = joinedLobby.Name;
 			
-			EnterLobby();
+			ShowLobby();
 			Debug.Log($"Joined Lobby!");
 		} catch (LobbyServiceException e) {
 			Debug.LogError(e);
-			EnterMainMenu();
+			ShowMainMenu();
 		}
 	}
 	public void LeaveLobby()
@@ -420,6 +419,7 @@ public class LobbyRelay : MonoBehaviour
 	public async void _START_GAME()
 	{
 		try {
+			ShowLoading();
 			Allocation a = await relay.CreateAllocationAsync(4);
 
 			var data = new RelayServerData(a, "dtls");
@@ -440,6 +440,7 @@ public class LobbyRelay : MonoBehaviour
 
 		} catch (RelayServiceException e) {
 			Debug.LogError(e);
+			ShowLobby(false);
 		}
 	}
 
