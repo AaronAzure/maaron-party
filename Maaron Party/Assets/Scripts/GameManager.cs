@@ -23,6 +23,7 @@ public class GameManager : NetworkBehaviour
 
 
 	[Space] [Header("In game references")]
+	public NetworkVariable<int> nConnected = new(0); 
 	[SerializeField] private List<ushort> currNodes = new();
 	//public readonly SyncDictionary<int, int[]> traps = new SyncDictionary<int, int[]>();
 	public Dictionary<int, int[]> traps = new Dictionary<int, int[]>();
@@ -70,6 +71,11 @@ public class GameManager : NetworkBehaviour
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~ NETWORK ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	#region Network
+
+	[ServerRpc] public void ConnectServerRpc() {
+		nConnected.Value++;
+		Debug.Log($"<color=white>== ConnectServerRpc ==</color>");
+	} 
 
 
 	#endregion
