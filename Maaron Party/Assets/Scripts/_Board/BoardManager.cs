@@ -150,8 +150,8 @@ public class BoardManager : NetworkBehaviour
 				MaaronIntroServerRpc();
 
 				yield return new WaitForSeconds(2);
-				ToggleDialogue(true, introSents);
-				ToggleDialogueServerRpc(true, introSents);
+				//ToggleDialogue(true, introSents);
+				//ToggleDialogueServerRpc(true, introSents);
 				ToggleNextButtonServerRpc(true);
 
 				yield break;
@@ -172,8 +172,8 @@ public class BoardManager : NetworkBehaviour
 			MaaronIntroServerRpc();
 
 			yield return new WaitForSeconds(2);
-			ToggleDialogue(true, gameOverSents);
-			ToggleDialogueServerRpc(true, gameOverSents);
+			//ToggleDialogue(true, gameOverSents);
+			//ToggleDialogueServerRpc(true, gameOverSents);
 			ToggleNextButtonServerRpc(true);
 
 			yield break;
@@ -192,8 +192,8 @@ public class BoardManager : NetworkBehaviour
 			MaaronIntroServerRpc();
 
 			yield return new WaitForSeconds(2);
-			ToggleDialogue(true, lastSents);
-			ToggleDialogueServerRpc(true, lastSents);
+			//ToggleDialogue(true, lastSents);
+			//ToggleDialogueServerRpc(true, lastSents);
 			ToggleNextButtonServerRpc(true);
 
 			yield break;
@@ -230,9 +230,9 @@ public class BoardManager : NetworkBehaviour
 	[ClientRpc] void ToggleMainUiClientRpc(bool active) => mainUi.gameObject.SetActive(active);
 	
 	// Dialogue
-	public void ToggleDialogue(bool active, FixedString128Bytes[] sents) => dialogue.SetSentence(active, "Maaron", sents);
-	[ServerRpc] public void ToggleDialogueServerRpc(bool active, FixedString128Bytes[] sents) => ToggleDialogueClientRpc(active, sents);
-	[ClientRpc] void ToggleDialogueClientRpc(bool active, FixedString128Bytes[] sents) => dialogue.SetSentence(active, "Maaron", sents);
+	//public void ToggleDialogue(bool active, FixedString128Bytes[] sents) => dialogue.SetSentence(active, "Maaron", sents);
+	//[ServerRpc] public void ToggleDialogueServerRpc(bool active, FixedString128Bytes[] sents) => ToggleDialogueClientRpc(active, sents);
+	//[ClientRpc] void ToggleDialogueClientRpc(bool active, FixedString128Bytes[] sents) => dialogue.SetSentence(active, "Maaron", sents);
 
 	[ServerRpc] public void ToggleNextButtonServerRpc(bool targeted) 
 	{

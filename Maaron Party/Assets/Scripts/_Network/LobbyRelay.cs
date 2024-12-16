@@ -61,6 +61,7 @@ public class LobbyRelay : MonoBehaviour
 	async void Start()
 	{
 		try {
+			ShowLoading();
 			Debug.Log("Logging on");
 			var options = new InitializationOptions();
 			options.SetProfile($"{Random.Range(1000,int.MaxValue)}");

@@ -10,8 +10,6 @@ public class NetcodeTest : NetworkBehaviour
 	[SerializeField] private NetworkVariable<int[]> coins;
 
 
-	//[GenerateSerializationForTypeAttribute(typeof(System.Int32[]))]
-	[GenerateSerializationForType(typeof(int[]))]
 	public override void OnNetworkSpawn()
 	{
 		base.OnNetworkSpawn();
