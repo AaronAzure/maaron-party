@@ -2520,9 +2520,38 @@ MonoBehaviour:
     ProtocolVersion: 0
     NetworkTransport: {fileID: 193865300}
     PlayerPrefab: {fileID: 1475912968890849094, guid: 654a332c1a7faef42a4c684bfd1f21f7, type: 3}
+<<<<<<< Updated upstream
     Prefabs:
       NetworkPrefabsLists:
       - {fileID: 11400000, guid: 029a9ce011e7b39428f8b8886114f180, type: 2}
+=======
+    NetworkPrefabs:
+    - Override: 0
+      Prefab: {fileID: 5611867278237887193, guid: 8a9d11e354baf9d48b9000cbafda63eb, type: 3}
+      SourcePrefabToOverride: {fileID: 0}
+      SourceHashToOverride: 0
+      OverridingTargetPrefab: {fileID: 0}
+    - Override: 0
+      Prefab: {fileID: 6432613922619178981, guid: a8be1d7671adca64ea71e7d4a57fbdf0, type: 3}
+      SourcePrefabToOverride: {fileID: 0}
+      SourceHashToOverride: 0
+      OverridingTargetPrefab: {fileID: 0}
+    - Override: 0
+      Prefab: {fileID: 5611867278237887193, guid: 249e06af49db8f54bb16e7597754b811, type: 3}
+      SourcePrefabToOverride: {fileID: 0}
+      SourceHashToOverride: 0
+      OverridingTargetPrefab: {fileID: 0}
+    - Override: 0
+      Prefab: {fileID: 4286328577593527152, guid: f026a3d90512fc24d939842f15901ed0, type: 3}
+      SourcePrefabToOverride: {fileID: 0}
+      SourceHashToOverride: 0
+      OverridingTargetPrefab: {fileID: 0}
+    - Override: 0
+      Prefab: {fileID: 1475912968890849094, guid: 654a332c1a7faef42a4c684bfd1f21f7, type: 3}
+      SourcePrefabToOverride: {fileID: 0}
+      SourceHashToOverride: 0
+      OverridingTargetPrefab: {fileID: 0}
+>>>>>>> Stashed changes
     TickRate: 30
     ClientConnectionBufferTimeout: 10
     ConnectionApproval: 0
@@ -9195,7 +9224,11 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1982649122}
   m_HandleRect: {fileID: 1982649121}
   m_Direction: 2
+<<<<<<< Updated upstream
   m_Value: 0
+=======
+  m_Value: 1
+>>>>>>> Stashed changes
   m_Size: 0.99999994
   m_NumberOfSteps: 0
   m_OnValueChanged:

@@ -80,7 +80,7 @@ public class BoardManager : NetworkBehaviour
 
 	private void Start() 
 	{
-		ReadyUpServerRpc();
+
 		turnTxt.text = $"Turn: {gm.nTurn.Value}/{gm.maxTurns.Value}";
 
 		if (!gm.gameStarted)
