@@ -152,13 +152,7 @@ public class GameNetworkManager : NetworkManager
 		var success = StartHost();
 		if (success)
 		{
-			SceneManager.OnLoad += (ulong clientId, string sceneName, LoadSceneMode loadSceneMode, AsyncOperation asyncOperation) => {
-				Debug.Log($"<color=magenta>== ({clientId}) SceneManager.OnLoad ({sceneName}) ==</color>");
-			};
-			SceneManager.OnLoadComplete += (ulong clientId, string sceneName, LoadSceneMode loadSceneMode) => {
-				Debug.Log($"<color=cyan>== ({clientId}) SceneManager.OnLoadComplete ({sceneName}) ==</color>");
-			};
-			SceneManager.OnSceneEvent += SceneManager_OnSceneEvent;
+			DebugSync();
 		}
 		//buttons.SetActive(false);
 		//lobbyUi.SetActive(false);
@@ -171,17 +165,24 @@ public class GameNetworkManager : NetworkManager
 		var success = StartClient();
 		if (success)
 		{
-			SceneManager.OnLoad += (ulong clientId, string sceneName, LoadSceneMode loadSceneMode, AsyncOperation asyncOperation) => {
-				Debug.Log($"<color=magenta>== ({clientId}) SceneManager.OnLoad ({sceneName}) ==</color>");
-			};
-			SceneManager.OnLoadComplete += (ulong clientId, string sceneName, LoadSceneMode loadSceneMode) => {
-				Debug.Log($"<color=cyan>== ({clientId}) SceneManager.OnLoadComplete ({sceneName}) ==</color>");
-			};
-			SceneManager.OnSceneEvent += SceneManager_OnSceneEvent;
+			DebugSync();
 		}
 	}
 
-
+	private void DebugSync()
+	{
+		SceneManager.OnLoad += (ulong clientId, string sceneName, LoadSceneMode loadSceneMode, AsyncOperation asyncOperation) => {
+			Debug.Log($"<color=magenta>== ({clientId}) SceneManager.OnLoad ({sceneName}) ==</color>");
+		};
+		SceneManager.OnLoadComplete += (ulong clientId, string sceneName, LoadSceneMode loadSceneMode) => {
+			Debug.Log($"<color=cyan>== ({clientId}) SceneManager.OnLoadComplete ({sceneName}) ==</color>");
+		};
+		SceneManager.OnSceneEvent += SceneManager_OnSceneEvent;
+		OnClientConnectedCallback += (ulong id) => {
+			Debug.Log($"<color=yellow>== client ({id}) joined! ==</color>");
+			
+		};
+	}
 	private void SceneManager_OnSceneEvent(SceneEvent sceneEvent)
 	{
 		Debug.Log($"<color=#EC9A33>== ({LocalClientId}) SceneManager.OnLoad ({sceneEvent.SceneEventType}) ==</color>");
@@ -289,7 +290,7 @@ public class GameNetworkManager : NetworkManager
 	}
 
 
-
+	
 	public void StartGame()
 	{
 		//gmObj.SetActive(true);
