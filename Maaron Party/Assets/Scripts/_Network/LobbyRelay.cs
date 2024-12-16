@@ -55,6 +55,7 @@ public class LobbyRelay : MonoBehaviour
 
 	private void Awake() {
 		Instance = this;
+		hostLobby = joinedLobby = null;
 	}
 
 	
