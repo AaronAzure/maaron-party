@@ -46,6 +46,7 @@ public class LobbyRelay : MonoBehaviour
 
 	
 	[Space] [Header("Interactive")]
+	[SerializeField] private GameObject startButton;
 	[SerializeField] private Button hostBtn;
 	[SerializeField] private Button joinBtn;
 	[SerializeField] private TextMeshProUGUI lobbyCode;
@@ -84,82 +85,12 @@ public class LobbyRelay : MonoBehaviour
 		}
 	}
 
-	
-	//async void CreateRelay() // plus host
-	//{
-	//	try {
-	//		// try to create lobby
-	//		buttonUi?.SetActive(false);
-	//		hostingUi?.SetActive(true);
-	//		Allocation a = await relay.CreateAllocationAsync(4);
-
-	//		var data = new RelayServerData(a, "dtls");
-	//		nm.GetComponent<UnityTransport>().SetRelayServerData(data);
-
-	//		// start host
-	//		nm.StartHost();
-
-	//		string joinCode = await relay.GetJoinCodeAsync(a.AllocationId);
-
-	//		hostingUi?.SetActive(false);
-	//		lobbyUi?.SetActive(true);
-	//		lobbyCode.text = $"Lobby Code: {joinCode}";
-
-	//	} catch (RelayServiceException e) {
-	//		buttonUi?.SetActive(true);
-	//		hostingUi?.SetActive(false);
-	//		Debug.LogError(e);
-	//	}
-	//}
-
-	//async void JoinRelay()
-	//{
-	//	if (joinCodeInput.text == "" || joinCodeInput.text.Length < 6)
-	//	{
-	//    	Debug.LogError("Please input a join code.");
-	//    	return;
-	//	}
-
-	//	Debug.Log($"<color=magenta>Joining with {joinCodeInput.text}</color>");
-	//	try {
-	//		// try to join lobby
-	//		buttonUi?.SetActive(false);
-	//		joiningUi?.SetActive(true);
-	//		JoinAllocation a = await relay.JoinAllocationAsync(joinCodeInput.text[..6]);
-
-	//		// joined lobby, set lobby settings
-	//		joiningUi?.SetActive(false);
-	//		var data = new RelayServerData(a, "dtls");
-	//		nm.GetComponent<UnityTransport>().SetRelayServerData(data);
-			
-	//		// start client
-	//		nm._START_CLIENT();
-
-	//	} catch (RelayServiceException e) {
-	//		buttonUi?.SetActive(true);
-	//		joiningUi?.SetActive(false);
-	//		Debug.LogError(e);
-	//	}
-	//}
-
-	//public async void OnJoinCode()
-	//{
-	//	try
-	//	{
-	//		string joinCode = await RelayService.Instance.GetJoinCodeAsync(hostAllocation.AllocationId);
-	//		Debug.Log("Host - Got join code: " + joinCode);
-	//	}
-	//	catch (RelayServiceException ex)
-	//	{
-	//		Debug.LogError(ex.Message + "\n" + ex.StackTrace);
-	//	}
-	//}
-
 	public async void ShowLobby(bool pollPlayers=true)
 	{
 		buttonUi?.SetActive(false);
 		loadingUi?.SetActive(false);
 		lobbyUi.SetActive(true);
+		startButton.SetActive(hostLobby != null);
 		if (pollPlayers)
 		{
 			try {
