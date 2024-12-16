@@ -156,20 +156,149 @@ public class GameNetworkManager : NetworkManager
 
 	#endregion
 
-	//public void _START_HOST()
-	//{
-	//	buttons.SetActive(false);
-	//	lobbyUi.SetActive(false);
-	//	//StartHost();
-	//	//startBtn.gameObject.SetActive(true);
-	//	SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypePublic, maxConnections);
-	//}
-	//public void _START_CLIENT()
-	//{
-	//	//buttons.SetActive(false);
-	//	//StartClient();
+	public void _START_HOST()
+	{
+		var success = StartHost();
+		if (success)
+		{
+			SceneManager.OnLoad += (ulong clientId, string sceneName, LoadSceneMode loadSceneMode, AsyncOperation asyncOperation) => {
+				Debug.Log($"<color=magenta>== ({clientId}) SceneManager.OnLoad ({sceneName}) ==</color>");
+			};
+			SceneManager.OnLoadComplete += (ulong clientId, string sceneName, LoadSceneMode loadSceneMode) => {
+				Debug.Log($"<color=cyan>== ({clientId}) SceneManager.OnLoadComplete ({sceneName}) ==</color>");
+			};
+			SceneManager.OnSceneEvent += SceneManager_OnSceneEvent;
+		}
+		//buttons.SetActive(false);
+		//lobbyUi.SetActive(false);
+		//startBtn.gameObject.SetActive(true);
+		//SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypePublic, maxConnections);
+	}
+	public void _START_CLIENT()
+	{
+		//buttons.SetActive(false);
+		var success = StartClient();
+		if (success)
+		{
+			SceneManager.OnLoad += (ulong clientId, string sceneName, LoadSceneMode loadSceneMode, AsyncOperation asyncOperation) => {
+				Debug.Log($"<color=magenta>== ({clientId}) SceneManager.OnLoad ({sceneName}) ==</color>");
+			};
+			SceneManager.OnLoadComplete += (ulong clientId, string sceneName, LoadSceneMode loadSceneMode) => {
+				Debug.Log($"<color=cyan>== ({clientId}) SceneManager.OnLoadComplete ({sceneName}) ==</color>");
+			};
+			SceneManager.OnSceneEvent += SceneManager_OnSceneEvent;
+		}
+	}
 
-	//}
+
+	private void SceneManager_OnSceneEvent(SceneEvent sceneEvent)
+	{
+		Debug.Log($"<color=#EC9A33>== ({LocalClientId}) SceneManager.OnLoad ({sceneEvent.SceneEventType}) ==</color>");
+		// Both client and server receive these notifications
+		switch (sceneEvent.SceneEventType)
+		{
+			// Handle server to client Load Notifications
+			case SceneEventType.Load:
+				{
+					// This event provides you with the associated AsyncOperation
+					// AsyncOperation.progress can be used to determine scene loading progression
+					var asyncOperation = sceneEvent.AsyncOperation;
+					// Since the server "initiates" the event we can simply just check if we are the server here
+					if (IsServer)
+					{
+						// Handle server side load event related tasks here
+					}
+					else
+					{
+						// Handle client side load event related tasks here
+					}                        
+					break;
+				}
+			// Handle server to client unload notifications
+			case SceneEventType.Unload:
+				{
+					// You can use the same pattern above under SceneEventType.Load here
+					break;
+				}
+			// Handle client to server LoadComplete notifications
+			case SceneEventType.LoadComplete:
+				{
+					// This will let you know when a load is completed
+					// Server Side: receives thisn'tification for both itself and all clients
+					if (IsServer)
+					{                            
+						if (sceneEvent.ClientId == LocalClientId)
+						{
+							// Handle server side LoadComplete related tasks here
+						}
+						else
+						{
+							// Handle client LoadComplete **server-side** notifications here
+						}
+					}
+					else // Clients generate thisn'tification locally
+					{
+						// Handle client side LoadComplete related tasks here
+					}
+
+					// So you can use sceneEvent.ClientId to also track when clients are finished loading a scene
+					break;
+				}
+			// Handle Client to Server Unload Complete Notification(s)
+			case SceneEventType.UnloadComplete:
+				{
+					// This will let you know when an unload is completed
+					// You can follow the same pattern above as SceneEventType.LoadComplete here
+
+					// Server Side: receives thisn'tification for both itself and all clients
+					// Client Side: receives thisn'tification for itself
+
+					// So you can use sceneEvent.ClientId to also track when clients are finished unloading a scene
+					break;
+				}
+			// Handle Server to Client Load Complete (all clients finished loading notification)
+			case SceneEventType.LoadEventCompleted:
+				{
+					// This will let you know when all clients have finished loading a scene
+					// Received on both server and clients
+					foreach (var clientId in sceneEvent.ClientsThatCompleted)
+					{
+						// Example of parsing through the clients that completed list
+						if (IsServer)
+						{
+							// Handle any server-side tasks here
+						}
+						else
+						{
+							// Handle any client-side tasks here
+						}
+					}
+					break;
+				}
+			// Handle Server to Client unload Complete (all clients finished unloading notification)
+			case SceneEventType.UnloadEventCompleted:
+				{
+					// This will let you know when all clients have finished unloading a scene
+					// Received on both server and clients
+					foreach (var clientId in sceneEvent.ClientsThatCompleted)
+					{
+						// Example of parsing through the clients that completed list
+						if (IsServer)
+						{
+							// Handle any server-side tasks here
+						}
+						else
+						{
+							// Handle any client-side tasks here
+						}
+					}
+					break;
+				}
+		}
+	}
+
+
+
 	public void StartGame()
 	{
 		//gmObj.SetActive(true);

@@ -7,12 +7,12 @@ using Unity.Services.Authentication;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using Unity.Networking.Transport.Relay;
-using Unity.Networking.Transport;
 using UnityEngine.UI;
 using TMPro;
 using Unity.Netcode.Transports.UTP;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
+using UnityEngine.SceneManagement;
 
 public class LobbyRelay : MonoBehaviour
 {
@@ -427,7 +427,7 @@ public class LobbyRelay : MonoBehaviour
 			nm.GetComponent<UnityTransport>().SetRelayServerData(data);
 
 			// start host
-			nm.StartHost();
+			nm._START_HOST();
 
 			string joinCode = await RelayService.Instance.GetJoinCodeAsync(a.AllocationId);
 			await Lobbies.Instance.UpdateLobbyAsync(hostLobby.Id, new UpdateLobbyOptions {
@@ -450,7 +450,7 @@ public class LobbyRelay : MonoBehaviour
 		if (!startGame && joinedLobby.Data["Start"].Value != "0")
 		{
 			startGame = true;
-			//START_CLIENT();
+			nm._START_CLIENT();
 		}
 	}
 }
