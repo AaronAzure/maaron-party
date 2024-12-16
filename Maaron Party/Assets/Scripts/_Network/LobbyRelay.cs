@@ -132,10 +132,8 @@ public class LobbyRelay : MonoBehaviour
 	//		var data = new RelayServerData(a, "dtls");
 	//		nm.GetComponent<UnityTransport>().SetRelayServerData(data);
 			
-	//		// start host
-	//		nm.StartClient();
-	//		//nm.JoinStandardServer(); // without relay
-	//		//todo nm.JoinRelayServer(); // with relay
+	//		// start client
+	//		nm._START_CLIENT();
 
 	//	} catch (RelayServiceException e) {
 	//		buttonUi?.SetActive(true);
@@ -426,9 +424,6 @@ public class LobbyRelay : MonoBehaviour
 			var data = new RelayServerData(a, "dtls");
 			nm.GetComponent<UnityTransport>().SetRelayServerData(data);
 
-			// start host
-			nm._START_HOST();
-
 			string joinCode = await RelayService.Instance.GetJoinCodeAsync(a.AllocationId);
 			await Lobbies.Instance.UpdateLobbyAsync(hostLobby.Id, new UpdateLobbyOptions {
 				Data = new Dictionary<string, DataObject> {
@@ -436,8 +431,34 @@ public class LobbyRelay : MonoBehaviour
 				}
 			});
 			joinedLobby = hostLobby;
-			//nm.StartGame();
-			//Debug.Log("<color=magenta>STARTED</color>");
+
+			// start host
+			nm._START_HOST();
+
+		} catch (RelayServiceException e) {
+			Debug.LogError(e);
+			ShowLobby(false);
+		}
+	}
+	public async void StartClient()
+	{
+		try {
+			ShowLoading();
+
+			JoinAllocation a = await relay.JoinAllocationAsync(joinedLobby.Data["Start"].Value);
+
+			var data = new RelayServerData(a, "dtls");
+			nm.GetComponent<UnityTransport>().SetRelayServerData(data);
+
+			// start host
+			nm._START_CLIENT();
+
+			//string joinCode = await RelayService.Instance.GetJoinCodeAsync(a.AllocationId);
+			//await Lobbies.Instance.UpdateLobbyAsync(hostLobby.Id, new UpdateLobbyOptions {
+			//	Data = new Dictionary<string, DataObject> {
+			//		{ "Start", new DataObject(DataObject.VisibilityOptions.Member, joinCode)}
+			//	}
+			//});
 
 		} catch (RelayServiceException e) {
 			Debug.LogError(e);
@@ -450,7 +471,8 @@ public class LobbyRelay : MonoBehaviour
 		if (!startGame && joinedLobby.Data["Start"].Value != "0")
 		{
 			startGame = true;
-			nm._START_CLIENT();
+			StartClient();
+			//nm._START_CLIENT();
 		}
 	}
 }
