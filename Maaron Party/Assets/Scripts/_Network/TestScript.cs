@@ -7,6 +7,6 @@ public class TestScript : NetworkBehaviour
 {
 	public override void OnNetworkSpawn()
 	{
-		//GameNetworkManager.Instance.StartGame();
+		GameNetworkManager.Instance.StartGame();
 	}
 }

@@ -180,7 +180,9 @@ public class GameNetworkManager : NetworkManager
 		SceneManager.OnSceneEvent += SceneManager_OnSceneEvent;
 		OnClientConnectedCallback += (ulong id) => {
 			Debug.Log($"<color=yellow>== client ({id}) joined! ==</color>");
-			
+		};
+		ConnectionApprovalCallback += (ConnectionApprovalRequest a, ConnectionApprovalResponse b) => {
+			Debug.Log($"<color=yellow>== client ({a.ClientNetworkId}) connected! ==</color>");
 		};
 	}
 	private void SceneManager_OnSceneEvent(SceneEvent sceneEvent)
