@@ -443,6 +443,7 @@ public class LobbyRelay : MonoBehaviour
 	public async void StartClient()
 	{
 		try {
+			Debug.Log("Starting Client!");
 			ShowLoading();
 
 			JoinAllocation a = await relay.JoinAllocationAsync(joinedLobby.Data["Start"].Value);
@@ -451,6 +452,7 @@ public class LobbyRelay : MonoBehaviour
 			nm.GetComponent<UnityTransport>().SetRelayServerData(data);
 
 			// start host
+			Debug.Log("Started!");
 			nm._START_CLIENT();
 
 			//string joinCode = await RelayService.Instance.GetJoinCodeAsync(a.AllocationId);
@@ -470,6 +472,7 @@ public class LobbyRelay : MonoBehaviour
 	{
 		if (!startGame && joinedLobby.Data["Start"].Value != "0")
 		{
+			Debug.Log("Server game has begun!");
 			startGame = true;
 			StartClient();
 			//nm._START_CLIENT();
