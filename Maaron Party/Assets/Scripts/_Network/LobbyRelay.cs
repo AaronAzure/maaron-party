@@ -90,6 +90,7 @@ public class LobbyRelay : MonoBehaviour
 		buttonUi?.SetActive(false);
 		loadingUi?.SetActive(false);
 		lobbyUi.SetActive(true);
+		Debug.Log($"<color=white>hostLobby != null = {hostLobby != null}</color>");
 		startButton.SetActive(hostLobby != null);
 		if (pollPlayers)
 		{
