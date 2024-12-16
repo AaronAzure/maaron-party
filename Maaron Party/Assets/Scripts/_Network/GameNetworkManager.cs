@@ -86,15 +86,6 @@ public class GameNetworkManager : NetworkManager
 	//		hostLostUi.SetActive(true);
 	//}
 
-	private void Start() 
-	{
-		SceneManager.OnLoad += (ulong clientId, string sceneName, LoadSceneMode loadSceneMode, AsyncOperation asyncOperation) => {
-			Debug.Log($"<color=magenta>== ({clientId}) SceneManager.OnLoad ==</color>");
-		};
-		SceneManager.OnLoadComplete += (ulong clientId, string sceneName, LoadSceneMode loadSceneMode) => {
-			Debug.Log($"<color=cyan>== ({clientId}) SceneManager.OnLoadComplete ==</color>");
-		};
-	}
 
 	public void AddConnection(LobbyObject lo)
 	{

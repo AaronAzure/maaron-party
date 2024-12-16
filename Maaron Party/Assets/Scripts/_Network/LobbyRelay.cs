@@ -384,9 +384,9 @@ public class LobbyRelay : MonoBehaviour
 					Lobby lobby = await LobbyService.Instance.GetLobbyAsync(joinedLobby.Id);
 					lobbyPollTimer = 1.5f;
 					ListPlayers();
+					joinedLobby = lobby;
 					if (hostLobby == null)
 						CheckIfStart();
-					joinedLobby = lobby;
 					pollingLobby = false;
 				} catch (LobbyServiceException e) {
 					Debug.LogError(e);
