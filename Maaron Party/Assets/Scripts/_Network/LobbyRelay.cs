@@ -36,6 +36,7 @@ public class LobbyRelay : MonoBehaviour
 	[Space] [Header("Lobby")]
 	public static Lobby hostLobby;
 	public static Lobby joinedLobby;
+	[SerializeField] private TextMeshProUGUI lobbyCodeTxt;
 	[SerializeField] private float heartBeatTimer=20;
 	[SerializeField] private float lobbyPollTimer=1.5f;
 	[SerializeField] private TMP_InputField lobbyNameInput;
@@ -164,6 +165,7 @@ public class LobbyRelay : MonoBehaviour
 			//createLobbyObj.SetActive(false);
 			var lobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, maxPlayers, options);
 			joinedLobby = hostLobby = lobby;
+			lobbyCodeTxt.text = $"Lobby Code: {lobby.LobbyCode}";
 			Debug.Log($"Created Lobby = {lobbyName}, Id = {hostLobby.Id}, code = {hostLobby.LobbyCode}");
 			
 			//lobbyTitleTxt.text = hostLobby.Name;
@@ -197,6 +199,7 @@ public class LobbyRelay : MonoBehaviour
 			};
 			var lobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobbyId, options);
 			joinedLobby = lobby;
+			lobbyCodeTxt.text = $"Lobby Code: {lobby.LobbyCode}";
 			lobbyNameTmp.text = joinedLobby.Name;
 			
 			ShowLobby();
@@ -376,7 +379,7 @@ public class LobbyRelay : MonoBehaviour
 	public async void StartClient()
 	{
 		try {
-			Debug.Log("Starting Client!");
+			Debug.Log($"Starting Client! <color=cyan>({joinedLobby.Data["Start"].Value})</color>");
 			ShowLoading();
 
 			JoinAllocation a = await relay.JoinAllocationAsync(joinedLobby.Data["Start"].Value);

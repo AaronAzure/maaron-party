@@ -8171,7 +8171,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1982649122}
   m_HandleRect: {fileID: 1982649121}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -8806,6 +8806,7 @@ MonoBehaviour:
   joiningUi: {fileID: 1823818494}
   lobbyUi: {fileID: 393376502}
   lobbyNameTmp: {fileID: 1483007635}
+  lobbyCodeTxt: {fileID: 2069621396}
   heartBeatTimer: 20
   lobbyPollTimer: 2.5
   lobbyNameInput: {fileID: 1308983528}
