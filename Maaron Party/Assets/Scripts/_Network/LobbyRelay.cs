@@ -303,11 +303,13 @@ public class LobbyRelay : MonoBehaviour
 
 	#region HeartBeat
 	bool pollingLobby;
+	bool isHeartBeat;
 	private void FixedUpdate() 
 	{
 		if (!startGame)
 		{
-			HeartBeatLobby();	
+			if (!isHeartBeat)
+				HeartBeatLobby();	
 			if (!pollingLobby)
 				PollLobby();	
 		}
@@ -320,8 +322,16 @@ public class LobbyRelay : MonoBehaviour
 				heartBeatTimer -= Time.fixedDeltaTime;	
 			else
 			{
-				await LobbyService.Instance.SendHeartbeatPingAsync(hostLobby.Id);
-				heartBeatTimer = 20;
+				try {
+					isHeartBeat = true;
+					await LobbyService.Instance.SendHeartbeatPingAsync(hostLobby.Id);
+					isHeartBeat = false;
+					heartBeatTimer = 20;
+				} catch (LobbyServiceException e) {
+					isHeartBeat = false;
+					heartBeatTimer = 20;
+					Debug.LogError(e);
+				}
 			}
 		}
 	}
@@ -336,8 +346,8 @@ public class LobbyRelay : MonoBehaviour
 			{
 				try {
 					pollingLobby = true;
-					Lobby lobby = await LobbyService.Instance.GetLobbyAsync(joinedLobby.Id);
 					lobbyPollTimer = 1.5f;
+					Lobby lobby = await LobbyService.Instance.GetLobbyAsync(joinedLobby.Id);
 					ListPlayers();
 					joinedLobby = lobby;
 					if (hostLobby == null)
