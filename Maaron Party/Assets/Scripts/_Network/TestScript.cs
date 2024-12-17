@@ -9,5 +9,6 @@ public class TestScript : NetworkBehaviour
 	{
 		GameManager.Instance.ConnectServerRpc();
 		//GameNetworkManager.Instance.StartGame();
+		name = $"_ PLAYER {OwnerClientId} _";
 	}
 }

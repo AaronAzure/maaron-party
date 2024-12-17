@@ -366,6 +366,7 @@ public class LobbyRelay : MonoBehaviour
 
 			// start host
 			nm._START_HOST();
+			startGame = true;
 
 		} catch (RelayServiceException e) {
 			Debug.LogError(e);
