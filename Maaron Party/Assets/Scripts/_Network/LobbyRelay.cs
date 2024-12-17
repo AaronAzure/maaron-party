@@ -68,7 +68,7 @@ public class LobbyRelay : MonoBehaviour
 			ShowLoading();
 			Debug.Log("Logging on");
 			var options = new InitializationOptions();
-			options.SetProfile($"{Random.Range(1000,int.MaxValue)}");
+			options.SetProfile($"{Random.Range(100,1000000)}");
 			await UnityServices.InitializeAsync(options);
 
 			aut.SignedIn += () => {

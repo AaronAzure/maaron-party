@@ -72,9 +72,10 @@ public class GameManager : NetworkBehaviour
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~ NETWORK ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	#region Network
 
-	[ServerRpc] public void ConnectServerRpc() {
+	[ServerRpc(RequireOwnership=false)] public void ConnectServerRpc() 
+	{
 		nConnected.Value++;
-		Debug.Log($"<color=white>== ConnectServerRpc ==</color>");
+		Debug.Log($"<color=white>== ConnectServerRpc ({nConnected.Value}) ==</color>");
 	} 
 
 
