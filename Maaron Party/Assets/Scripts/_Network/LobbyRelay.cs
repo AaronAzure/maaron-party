@@ -40,6 +40,7 @@ public class LobbyRelay : MonoBehaviour
 	[SerializeField] private float heartBeatTimer=20;
 	[SerializeField] private float lobbyPollTimer=1.5f;
 	[SerializeField] private TMP_InputField lobbyNameInput;
+	[SerializeField] private TMP_InputField lobbyCodeInput;
 	[SerializeField] private LobbyContainer[] lobbyItems; // max 10 lobbies
 	[SerializeField] private LobbyPlayer[] players; // max 4 players
 	bool startGame=false;
@@ -150,7 +151,7 @@ public class LobbyRelay : MonoBehaviour
 
 			string lobbyName = lobbyNameInput.text;
 			if (lobbyName == "" || lobbyName == null)
-				lobbyName = "MyLobby"; 
+				lobbyName = "MyLobby" + Random.Range(1,1000).ToString("000"); 
 			CreateLobbyOptions options = new CreateLobbyOptions {
 				IsPrivate = false,
 				Player = GetPlayer(),
@@ -185,6 +186,25 @@ public class LobbyRelay : MonoBehaviour
 			ShowLoading();
 			await ls.QuickJoinLobbyAsync();
 			ShowLobby();
+		} catch (LobbyServiceException e) {
+			Debug.LogError(e);
+			ShowMainMenu();
+		}
+	}
+	public async void _JOIN_LOBBY_BY_CODE()
+	{
+		try {
+			ShowLoading();
+			JoinLobbyByCodeOptions options = new JoinLobbyByCodeOptions {
+				Player = GetPlayer()
+			};
+			var lobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCodeInput.text, options);
+			joinedLobby = lobby;
+			lobbyCodeTxt.text = $"Lobby Code: {lobby.LobbyCode}";
+			lobbyNameTmp.text = joinedLobby.Name;
+			
+			ShowLobby();
+			Debug.Log($"Joined Lobby!");
 		} catch (LobbyServiceException e) {
 			Debug.LogError(e);
 			ShowMainMenu();
@@ -350,6 +370,19 @@ public class LobbyRelay : MonoBehaviour
 	}
 	#endregion
 
+
+	#region Starting
+	private void CheckIfStart()
+	{
+		if (!startGame && joinedLobby.Data["Start"].Value != "0")
+		{
+			Debug.Log("Server game has begun!");
+			startGame = true;
+			StartClient();
+			//nm._START_CLIENT();
+		}
+	}
+
 	public async void _START_GAME()
 	{
 		try {
@@ -391,27 +424,10 @@ public class LobbyRelay : MonoBehaviour
 			Debug.Log("Started!");
 			nm._START_CLIENT();
 
-			//string joinCode = await RelayService.Instance.GetJoinCodeAsync(a.AllocationId);
-			//await Lobbies.Instance.UpdateLobbyAsync(hostLobby.Id, new UpdateLobbyOptions {
-			//	Data = new Dictionary<string, DataObject> {
-			//		{ "Start", new DataObject(DataObject.VisibilityOptions.Member, joinCode)}
-			//	}
-			//});
-
 		} catch (RelayServiceException e) {
 			Debug.LogError(e);
 			ShowLobby(false);
 		}
 	}
-
-	private void CheckIfStart()
-	{
-		if (!startGame && joinedLobby.Data["Start"].Value != "0")
-		{
-			Debug.Log("Server game has begun!");
-			startGame = true;
-			StartClient();
-			//nm._START_CLIENT();
-		}
-	}
+	#endregion
 }
