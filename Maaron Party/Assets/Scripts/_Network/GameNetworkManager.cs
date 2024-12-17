@@ -179,7 +179,7 @@ public class GameNetworkManager : NetworkManager
 		};
 		SceneManager.OnSceneEvent += SceneManager_OnSceneEvent;
 		OnClientConnectedCallback += (ulong id) => {
-			Debug.Log($"<color=yellow>== client ({id}) joined! ==</color>");
+			OnClientConnect(id);
 		};
 		ConnectionApprovalCallback += (ConnectionApprovalRequest a, ConnectionApprovalResponse b) => {
 			Debug.Log($"<color=yellow>== client ({a.ClientNetworkId}) connected! ==</color>");
@@ -290,7 +290,10 @@ public class GameNetworkManager : NetworkManager
 				}
 		}
 	}
-
+	private void OnClientConnect(ulong clientId)
+	{
+		Debug.Log($"<color=yellow>== client ({clientId}) joined! nConnected ({ConnectedClientsIds.Count}) ==</color>");
+	}
 
 	
 	public void StartGame()
