@@ -295,10 +295,10 @@ public class GameNetworkManager : NetworkManager
 		{
 			Debug.Log($"<color=yellow>== ConnectedClientsIds ({ConnectedClientsIds.Count}) ==</color>");
 			Debug.Log($"<color=yellow>== PendingClients ({PendingClients.Count}) ==</color>");
-			if (PendingClients.Count >= ConnectedClientsIds.Count)
-			{
-				StartGame();
-			}
+			//if (PendingClients.Count >= ConnectedClientsIds.Count)
+			//{
+			//	StartGame();
+			//}
 		}
 	}
 

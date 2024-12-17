@@ -9,7 +9,7 @@ public class GameManager : NetworkBehaviour
 {
 	#region Variables
 	public static GameManager Instance;
-	//private GameNetworkManager nm {get{return GameNetworkManager.Instance;}}
+	private GameNetworkManager nm {get{return GameNetworkManager.Instance;}}
 	[SerializeField] private PreviewManager pm;
 
 
@@ -76,6 +76,10 @@ public class GameManager : NetworkBehaviour
 	{
 		nConnected.Value++;
 		Debug.Log($"<color=white>== ConnectServerRpc ({nConnected.Value}) ==</color>");
+		if (nConnected.Value >= nm.ConnectedClientsIds.Count)
+		{
+			nm.StartGame();
+		}
 	} 
 
 
