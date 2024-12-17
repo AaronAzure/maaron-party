@@ -426,7 +426,8 @@ public class LobbyRelay : MonoBehaviour
 
 		} catch (RelayServiceException e) {
 			Debug.LogError(e);
-			ShowLobby(false);
+			//ShowLobby(false);
+			StartClient(); // try again
 		}
 	}
 	#endregion
