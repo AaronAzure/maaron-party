@@ -38,7 +38,7 @@ public class BoardManager : NetworkBehaviour
 	[SerializeField] private GameObject placementUi;
 	[SerializeField] private CinemachineVirtualCamera boardCam;
 	[SerializeField] private PlacementButton[] placementBtns;
-	NetworkVariable<bool[]> placementChosen = new();
+	NetworkVariable<bool[]> placementChosen;
 
 	[Space] [SerializeField] private TreasureChest[] chests;
 	public int nBmReady; 
@@ -90,7 +90,6 @@ public class BoardManager : NetworkBehaviour
 			if (IsServer)
 			{
 				placementChosen = new NetworkVariable<bool[]>(new bool[placementBtns.Length], NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-				//placementChosen = new bool[placementBtns.Length];
 				gm.SetupDoorTollsServerRpc(doors == null ? 0 : doors.Length);
 			}
 		}
