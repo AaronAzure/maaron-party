@@ -38,7 +38,9 @@ public class BoardManager : NetworkBehaviour
 	[SerializeField] private GameObject placementUi;
 	[SerializeField] private CinemachineVirtualCamera boardCam;
 	[SerializeField] private PlacementButton[] placementBtns;
-	NetworkVariable<bool[]> placementChosen;
+	//NetworkVariable<bool[]> placementChosen = new NetworkVariable<bool[]>(null, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+	int nPlacementChosen;
+	bool[] placementChosen;
 
 	[Space] [SerializeField] private TreasureChest[] chests;
 	public int nBmReady; 
@@ -89,7 +91,7 @@ public class BoardManager : NetworkBehaviour
 			ToggleMainUiServerRpc(false);
 			if (IsServer)
 			{
-				placementChosen = new NetworkVariable<bool[]>(new bool[placementBtns.Length], NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+				placementChosen = new bool[placementBtns.Length];
 				gm.SetupDoorTollsServerRpc(doors == null ? 0 : doors.Length);
 			}
 		}
@@ -323,17 +325,17 @@ public class BoardManager : NetworkBehaviour
 		if (!placementBtns[ind].enabled) return;
 
 		if (ind >= 0 && ind < placementBtns.Length && placementBtns[ind] != null &&
-			ind < placementChosen.Value.Length && !placementChosen.Value[ind])
+			ind < placementChosen.Length && !placementChosen[ind])
 		{
 			placementBtns[ind].enabled = false;
-			placementChosen.Value[ind] = true;
+			placementChosen[ind] = true;
 			tempPlayerOrder[placement] = playerId;
 			RevealPlacementCardClientRpc(ind, new ClientRpcParams{Send={TargetClientIds=new ulong[]{targetId}}});
 			RevealPlacementCardClientRpc(ind, characterInd);
 		}
 		bool allReady = true;
 		for (int i=0 ; i<tempPlayerOrder.Count ; i++)
-			if (!placementChosen.Value[i])
+			if (!placementChosen[i])
 				allReady = false;
 		if (allReady && endPlacementCo == null)
 			endPlacementCo = StartCoroutine( EndPlacementCo() );
