@@ -568,7 +568,7 @@ public class Node : MonoBehaviour
 			//targetAnim.enabled = false;
 		}
 		// trap spell cost
-		if (p._spellInd >= 0 && p._spellInd <= 2)
+		if (p != null && p._spellInd >= 0 && p._spellInd <= 2)
 			p.SetSpellCost(p._spellInd + 1, 0);
 	}
 
