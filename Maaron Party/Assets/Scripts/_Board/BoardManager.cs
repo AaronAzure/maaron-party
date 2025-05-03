@@ -9,6 +9,7 @@ using Unity.Collections;
 public class BoardManager : NetworkBehaviour
 {
 	public static BoardManager Instance;
+	[SerializeField] private GameObject boardControlsPref;
 	//[SerializeField] private PlayerControls playerPrefab;
 	[SerializeField] private GameObject startCam;
 	[SerializeField] private Transform spawnPos;
@@ -71,6 +72,7 @@ public class BoardManager : NetworkBehaviour
 		Instance = this;		
 	}
 
+	#region Set Up
 	public void SetUiLayout(Transform ui)
 	{
 		if (ui != null)
@@ -110,14 +112,23 @@ public class BoardManager : NetworkBehaviour
 	public void SetUpPlayer()
 	//private void SetUpPlayerClientRpc()
 	{
-		pc = PlayerControls.Instance;
-		if (pc != null)
-			pc.Setup();
-		if (gm.nTurn.Value == 1)
-			pc.SetStartNode(startNode);
-		if (IsServer)
-			StartCoroutine( StartGameCo() );
+		if (boardControlsPref != null)
+		{
+			var obj = Instantiate(nm.GetNetworkPrefabOverride(boardControlsPref));
+			obj.GetComponent<NetworkObject>().Spawn();
+			
+			pc = PlayerControls.Instance;
+			if (pc != null)
+				pc.Setup();
+			if (gm.nTurn.Value == 1)
+				pc.SetStartNode(startNode);
+			if (IsServer)
+				StartCoroutine( StartGameCo() );
+		}
 	}
+	#endregion
+
+
 	public Transform GetSpawnPos() => spawnPos;
 	
 	#region Start game
