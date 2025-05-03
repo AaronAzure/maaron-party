@@ -115,8 +115,8 @@ public class BoardManager : NetworkBehaviour
 		if (boardControlsPref != null)
 		{
 			var obj = Instantiate(nm.GetNetworkPrefabOverride(boardControlsPref));
-			obj.GetComponent<NetworkObject>().Spawn();
-			
+			obj.GetComponent<NetworkObject>().SpawnWithOwnership(OwnerClientId);
+
 			pc = PlayerControls.Instance;
 			if (pc != null)
 				pc.Setup();
