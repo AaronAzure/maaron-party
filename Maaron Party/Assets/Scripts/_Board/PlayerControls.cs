@@ -231,13 +231,14 @@ public class PlayerControls : NetworkBehaviour
 	}
 
 
-	public void MediateRemoteStart()
-	{
-		RemoteStartClientRpc(new ClientRpcParams{Send={TargetClientIds=new[]{OwnerClientId}}});
-	}
+	//public void MediateRemoteStart()
+	//{
+	//	RemoteStartClientRpc(new ClientRpcParams{Send={TargetClientIds=new[]{OwnerClientId}}});
+	//}
 	
 	// Start()
-	[ClientRpc] private void RemoteStartClientRpc(ClientRpcParams rpc) 
+	public void Setup()
+	//[ClientRpc] private void RemoteStartClientRpc(ClientRpcParams rpc) 
 	{
 		//Debug.Log($"<color=yellow>TargetRemoteStart</color>");
 		player = ReInput.players.GetPlayer(0);

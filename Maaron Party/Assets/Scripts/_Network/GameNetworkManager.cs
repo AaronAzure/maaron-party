@@ -184,6 +184,8 @@ public class GameNetworkManager : NetworkManager
 			Debug.Log($"<color=yellow>== client ({a.ClientNetworkId}) connected! ==</color>");
 		};
 	}
+
+	#region OnSceneEvent
 	private void SceneManager_OnSceneEvent(SceneEvent sceneEvent)
 	{
 		Debug.Log($"<color=#EC9A33>== ({LocalClientId}) SceneManager.OnLoad ({sceneEvent.SceneEventType}) ==</color>");
@@ -256,20 +258,25 @@ public class GameNetworkManager : NetworkManager
 					// Received on both server and clients
 					foreach (var clientId in sceneEvent.ClientsThatCompleted)
 					{
-						// Example of parsing through the clients that completed list
+						// Handle any server-side tasks here
 						if (IsServer)
 						{
-							// Handle any server-side tasks here
-
 							// board scene
 							if (bm != null)
 							{
 								bm.StartUp();
+								if (IsHost)
+									bm.SetUpPlayer();
 							}
 						}
+						// Handle any client-side tasks here
 						else
 						{
-							// Handle any client-side tasks here
+							// board scene
+							if (bm != null)
+							{
+								bm.SetUpPlayer();
+							}
 						}
 					}
 					break;
@@ -295,6 +302,7 @@ public class GameNetworkManager : NetworkManager
 				}
 		}
 	}
+	#endregion
 	private void OnClientConnect(ulong clientId)
 	{
 		Debug.Log($"<color=yellow>== client ({clientId}) joined! ==</color>");
@@ -477,14 +485,14 @@ public class GameNetworkManager : NetworkManager
 		}
 	}
 
-	public void UnparentBoardControls()
-	{
-		for (int i=0 ; i<boardControls.Count ; i++)
-		{
-			if (boardControls[i] != null)
-				boardControls[i].MediateRemoteStart();
-		}
-	}
+	//public void UnparentBoardControls()
+	//{
+	//	for (int i=0 ; i<boardControls.Count ; i++)
+	//	{
+	//		if (boardControls[i] != null)
+	//			boardControls[i].MediateRemoteStart();
+	//	}
+	//}
 
 	[SerializeField] int nPlayerOrder; 
 	public bool StillHavePlayerTurns() => nPlayerOrder < boardControls.Count;

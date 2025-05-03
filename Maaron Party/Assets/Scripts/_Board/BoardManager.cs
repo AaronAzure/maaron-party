@@ -13,7 +13,7 @@ public class BoardManager : NetworkBehaviour
 	[SerializeField] private GameObject startCam;
 	[SerializeField] private Transform spawnPos;
 	[SerializeField] private Transform maaronSpawnPos;
-	private PlayerControls _player;
+	private PlayerControls pc;
 	GameManager gm {get{return GameManager.Instance;}}
 	GameNetworkManager nm {get{return GameNetworkManager.Instance;}}
 	UiDialogue dialogue {get{return UiDialogue.Instance;}}
@@ -97,21 +97,24 @@ public class BoardManager : NetworkBehaviour
 	}
 
 
-	[ServerRpc] public void ReadyUpServerRpc()
+	//[ServerRpc] public void ReadyUpServerRpc()
+	//{
+	//	++nBmReady;
+	//	//Debug.Log($"<color=white>{nBmReady} >= {nm.numPlayers}</color>");
+	//	if (nBmReady >= NetworkManager.Singleton.ConnectedClients.Count)
+	//	{
+	//		SetUpPlayerClientRpc();
+	//		nm.UnparentBoardControls();
+	//	}
+	//} 
+	public void SetUpPlayer()
+	//private void SetUpPlayerClientRpc()
 	{
-		++nBmReady;
-		//Debug.Log($"<color=white>{nBmReady} >= {nm.numPlayers}</color>");
-		if (nBmReady >= NetworkManager.Singleton.ConnectedClients.Count)
-		{
-			SetUpPlayerClientRpc();
-			nm.UnparentBoardControls();
-		}
-	} 
-	[ClientRpc] private void SetUpPlayerClientRpc()
-	{
-		_player = PlayerControls.Instance;
+		pc = PlayerControls.Instance;
+		if (pc != null)
+			pc.Setup();
 		if (gm.nTurn.Value == 1)
-			_player.SetStartNode(startNode);
+			pc.SetStartNode(startNode);
 		if (IsServer)
 			StartCoroutine( StartGameCo() );
 	}
@@ -237,7 +240,7 @@ public class BoardManager : NetworkBehaviour
 	[ServerRpc] public void ToggleNextButtonServerRpc(bool targeted) 
 	{
 		if (targeted)
-			ToggleNextButtonClientRpc(new ClientRpcParams{ Send = { TargetClientIds = new[] { _player.OwnerClientId } }});
+			ToggleNextButtonClientRpc(new ClientRpcParams{ Send = { TargetClientIds = new[] { pc.OwnerClientId } }});
 		else
 			DisableNextButtonClientRpc();
 	}
@@ -313,8 +316,8 @@ public class BoardManager : NetworkBehaviour
 	public void DoneChoosingPlacement(int placement)
 	{
 		placementCg.interactable = false;
-		gm.SavePlacementsServerRpc(placement, _player.id.Value);
-		_player.SetDataUiServerRpc(placement);
+		gm.SavePlacementsServerRpc(placement, pc.id.Value);
+		pc.SetDataUiServerRpc(placement);
 	}
 	[ServerRpc] public void RevealPlacementCardServerRpc(
 		int ind, int playerId, int characterInd, int placement, ulong targetId
@@ -612,7 +615,7 @@ public class BoardManager : NetworkBehaviour
 	[ClientRpc] void MaaronMagicClientRpc() => maaronAnim.SetTrigger("magicOnly");
 
 	[ServerRpc] void ShowFinalDataServerRpc() => ShowFinalDataClientRpc();
-	[ClientRpc] void ShowFinalDataClientRpc() => _player.SetFinalUiServerRpc();
+	[ClientRpc] void ShowFinalDataClientRpc() => pc.SetFinalUiServerRpc();
 	#endregion
 
 	public void NextPlayerTurn()
