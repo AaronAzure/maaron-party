@@ -11,6 +11,7 @@ public class GameNetworkManager : NetworkManager
 	public static GameNetworkManager Instance;
 	public Transform spawnHolder;
 	private GameManager gm {get{return GameManager.Instance;}}
+	private BoardManager bm {get{return BoardManager.Instance;}}
 	private PreviewManager pm {get{return PreviewManager.Instance;}}
 	//GameObject ball;
 	[SerializeField] private GameObject buttons;
@@ -259,6 +260,12 @@ public class GameNetworkManager : NetworkManager
 						if (IsServer)
 						{
 							// Handle any server-side tasks here
+
+							// board scene
+							if (bm != null)
+							{
+								bm.StartUp();
+							}
 						}
 						else
 						{
@@ -501,7 +508,7 @@ public class GameNetworkManager : NetworkManager
 				else
 				{
 					++nPlayerOrder;
-					BoardManager.Instance.NextPlayerTurn();
+					bm.NextPlayerTurn();
 				}
 			}
 			else
@@ -516,7 +523,7 @@ public class GameNetworkManager : NetworkManager
 				else
 				{
 					++nPlayerOrder;
-					BoardManager.Instance.NextPlayerTurn();
+					bm.NextPlayerTurn();
 				}
 			}
 		}
