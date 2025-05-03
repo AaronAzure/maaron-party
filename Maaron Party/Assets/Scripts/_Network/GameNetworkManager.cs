@@ -265,8 +265,9 @@ public class GameNetworkManager : NetworkManager
 							if (bm != null)
 							{
 								bm.StartUp();
-								if (IsHost)
-									bm.SetUpPlayer();
+								bm.SetUpPlayers();
+								//if (IsHost)
+								//	bm.SetUpPlayer();
 							}
 						}
 						// Handle any client-side tasks here
@@ -275,7 +276,7 @@ public class GameNetworkManager : NetworkManager
 							// board scene
 							if (bm != null)
 							{
-								bm.SetUpPlayer();
+								//bm.SetUpPlayer();
 							}
 						}
 					}

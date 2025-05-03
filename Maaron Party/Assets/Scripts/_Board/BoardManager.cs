@@ -109,22 +109,27 @@ public class BoardManager : NetworkBehaviour
 	//		nm.UnparentBoardControls();
 	//	}
 	//} 
-	public void SetUpPlayer()
-	//private void SetUpPlayerClientRpc()
+	public void SetUpPlayers()
 	{
 		if (boardControlsPref != null)
 		{
-			var obj = Instantiate(nm.GetNetworkPrefabOverride(boardControlsPref));
-			obj.GetComponent<NetworkObject>().SpawnWithOwnership(OwnerClientId);
-
-			pc = PlayerControls.Instance;
-			if (pc != null)
-				pc.Setup();
-			if (gm.nTurn.Value == 1)
-				pc.SetStartNode(startNode);
-			if (IsServer)
-				StartCoroutine( StartGameCo() );
+			foreach (ulong id in nm.ConnectedClients.Keys)
+			{
+				var obj = Instantiate(nm.GetNetworkPrefabOverride(boardControlsPref));
+				obj.GetComponent<NetworkObject>().SpawnWithOwnership(id);
+			}
 		}
+	}
+	public void SetUpPlayer()
+	//private void SetUpPlayerClientRpc()
+	{
+		pc = PlayerControls.Instance;
+		if (pc != null)
+			pc.Setup();
+		if (gm.nTurn.Value == 1)
+			pc.SetStartNode(startNode);
+		if (IsServer)
+			StartCoroutine( StartGameCo() );
 	}
 	#endregion
 
