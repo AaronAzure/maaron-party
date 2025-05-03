@@ -176,7 +176,10 @@ public class PlayerControls : NetworkBehaviour
 
 	[Space] [Header("Shop")]
 	[SerializeField] private Button[] shopItems;
-	[SerializeField] NetworkVariable<int[]> itemInds = new NetworkVariable<int[]>(new int[3], NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+	[SerializeField] private int nItems;
+	[SerializeField] NetworkVariable<int> itemInd0 = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+	[SerializeField] NetworkVariable<int> itemInd1 = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+	[SerializeField] NetworkVariable<int> itemInd2 = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 	[SerializeField] Image[] itemImgs;
 	[SerializeField] private Sprite emptySpr;
 	[SerializeField] private GameObject buyBtnObj;
@@ -578,7 +581,8 @@ public class PlayerControls : NetworkBehaviour
 		gm.SaveCoinsServerRpc(coins.Value, id.Value);
 		gm.SaveStarsServerRpc(stars.Value, id.Value);
 		gm.SaveManaServerRpc(mana.Value, id.Value);
-		gm.SaveItemsServerRpc(itemInds.Value, id.Value);
+		gm.SaveNumItemsServerRpc(nItems, id.Value);
+		gm.SaveItemsServerRpc(new int[]{itemInd0.Value, itemInd1.Value, itemInd2.Value}, id.Value);
 		DataSavedServerRpc();
 	}
 	[ServerRpc] void DataSavedServerRpc() => nm.IncreasePlayerDataSaved();
@@ -589,7 +593,8 @@ public class PlayerControls : NetworkBehaviour
 		gm.SaveCoinsServerRpc(coins.Value, id.Value);
 		gm.SaveStarsServerRpc(stars.Value, id.Value);
 		gm.SaveManaServerRpc(mana.Value, id.Value);
-		gm.SaveItemsServerRpc(itemInds.Value, id.Value);
+		gm.SaveNumItemsServerRpc(nItems, id.Value);
+		gm.SaveItemsServerRpc(new int[]{itemInd0.Value, itemInd1.Value, itemInd2.Value}, id.Value);
 	}
 	private void LoadData()
 	{
@@ -600,7 +605,11 @@ public class PlayerControls : NetworkBehaviour
 		coinsT = coins.Value = gm.GetCoins(id.Value);
 		starsT = stars.Value = gm.GetStars(id.Value);
 		mana.Value = gm.GetMana(id.Value);
-		itemInds = new NetworkVariable<int[]>(gm.GetItems(id.Value), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+		nItems = gm.GetNumItems(id.Value);
+		int[] itemInds = gm.GetItems(id.Value);
+		itemInd0 = new NetworkVariable<int>(itemInds[0], NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+		itemInd1 = new NetworkVariable<int>(itemInds[1], NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+		itemInd2 = new NetworkVariable<int>(itemInds[2], NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 	}
 
 	#endregion
@@ -713,9 +722,11 @@ public class PlayerControls : NetworkBehaviour
 		if (!freeShop)
 			NodeEffect(-itemCost);
 
-		if (itemInds.Value.Length < 3)
+		if (nItems < 3)
 		{
-			itemInds.Value[0] = (itemId);
+			if (nItems == 0) itemInd0.Value = itemId;
+			if (nItems == 1) itemInd1.Value = itemId;
+			if (nItems == 2) itemInd2.Value = itemId;
 			ShowItemsServerRpc();
 			if (!freeShop)
 				StartCoroutine( CloseShopCo() );
@@ -725,7 +736,7 @@ public class PlayerControls : NetworkBehaviour
 		{
 			newSpellId = itemId;
 			for (int i=0 ; i<newSpellBtns.Length ; i++)
-				newSpellBtns[i].ind = i >= 0 && i < itemInds.Value.Length ? itemInds.Value[i] : itemId;
+				newSpellBtns[i].ind = i >= 0 && i < nItems ? GetItemInd(i) : itemId;
 			fullUi.SetActive(true);
 			shopUi.SetActive(false);
 		}
@@ -733,9 +744,12 @@ public class PlayerControls : NetworkBehaviour
 	public void _REPLACE_ITEM(int ind)
 	{
 		// replaced item
-		if (ind >= 0 && ind < itemInds.Value.Length)
+		if (ind >= 0 && ind < nItems)
 		{
-			itemInds.Value[ind] = newSpellId;
+			if (nItems == 0) itemInd0.Value = newSpellId;
+			if (nItems == 1) itemInd1.Value = newSpellId;
+			if (nItems == 2) itemInd2.Value = newSpellId;
+			//itemInds.Value[ind] = newSpellId;
 			ShowItemsServerRpc();
 			fullUi.SetActive(false);
 			//if (isAtShop)
@@ -1195,6 +1209,20 @@ public class PlayerControls : NetworkBehaviour
 
 
 	#region Items/Spells
+	private int GetItemInd(int ind)
+	{
+		if (nItems == 0) return itemInd0.Value;
+		if (nItems == 1) return itemInd1.Value;
+		if (nItems == 2) return itemInd2.Value;
+		return -1;
+	}
+	private void SetItemInd(int ind, int itemId)
+	{
+		if (nItems == 0) itemInd0.Value = itemId;
+		if (nItems == 1) itemInd1.Value = itemId;
+		if (nItems == 2) itemInd2.Value = itemId;
+	}
+
 	public void NoManaAlert() 
 	{
 		if (manalessUi != null)
@@ -1225,8 +1253,8 @@ public class PlayerControls : NetworkBehaviour
 
 	private void RemoveSpell(int ind)
 	{
-		if (itemInds != null && ind >= 0 && ind < itemInds.Value.Length)
-			itemInds.Value[ind] = (-1);
+		if (ind >= 0 && ind < nItems)
+			SetItemInd(ind, -1);
 		ShowItemsServerRpc();
 	}
 	[ServerRpc] private void ShowItemsServerRpc() => ShowItemsClientRpc();
@@ -1234,16 +1262,16 @@ public class PlayerControls : NetworkBehaviour
 	{
 		for (int i = 0; i < itemImgs.Length; i++)
 		{
-			if (itemInds.Value.Length > i)
-				itemImgs[i].sprite = Item.instance.GetSprite( itemInds.Value[i] );
+			if (nItems > i)
+				itemImgs[i].sprite = Item.instance.GetSprite( GetItemInd(i) );
 			else
 				itemImgs[i].sprite = emptySpr;
 		}
 		for (int i = 0; i < items.Length; i++)
 		{
-			if (itemInds.Value.Length > i)
+			if (nItems > i)
 			{
-				items[i].ind = itemInds.Value[i];
+				items[i].ind = GetItemInd(i);
 				items[i].SetImage();
 			}
 			else

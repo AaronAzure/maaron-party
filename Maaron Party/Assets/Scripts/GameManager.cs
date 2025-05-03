@@ -31,6 +31,7 @@ public class GameManager : NetworkBehaviour
 	[SerializeField] private List<int> coins = new();
 	[SerializeField] private List<int> stars = new();
 	[SerializeField] private List<int> manas = new();
+	[SerializeField] private List<int> numItems = new();
 	[SerializeField] private List<int> doorTolls = new();
 	//[SerializeField] private NetworkVariable<List<List<int>>> items =
 	//	new(new()r);
@@ -136,6 +137,24 @@ public class GameManager : NetworkBehaviour
 	public int[] GetItems(int playerId)
 	{
 		return null;
+		//return items.Value[playerId];
+	}
+	[ServerRpc] public void SaveNumItemsServerRpc(int numItems, int playerId)
+	{
+		//if (items == null)
+		//	items = new();
+		//while (items.Value.Count <= playerId)
+		//	items.Value.Add(new());
+		//items.Value[playerId] = new List<int>(newItems);
+	}
+	public int GetNumItems(int playerId)
+	{
+		if (playerId < 0 || playerId >= numItems.Count)
+		{
+			Debug.LogError($"{playerId}.GetNumItems()");
+			return 0;
+		}
+		return numItems[playerId];
 		//return items.Value[playerId];
 	}
 
