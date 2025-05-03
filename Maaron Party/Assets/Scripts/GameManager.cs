@@ -133,7 +133,7 @@ public class GameManager : NetworkBehaviour
 		//	items.Value.Add(new());
 		//items.Value[playerId] = new List<int>(newItems);
 	}
-	public List<int> GetItems(int playerId)
+	public int[] GetItems(int playerId)
 	{
 		return null;
 		//return items.Value[playerId];
